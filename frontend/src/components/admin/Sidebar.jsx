@@ -75,6 +75,11 @@ const navigation = [
         icon: <BanknoteArrowUp size={20} />
     },
     {
+        name: 'Subscriptions',
+        path: '/admin/subscriptions',
+        icon: <DollarSign size={20} />
+    },
+    {
         name: 'Categories',
         path: '/admin/categories',
         icon: <Tags size={20} />
@@ -185,8 +190,9 @@ function Sidebar() {
             `}>
                 {/* Logo/Brand */}
                 <div className="px-4 mb-8 flex items-center justify-between pb-2 border-b border-gray-700">
-                    <Link to={'/'}>
-                        <img src={logo} className="h-8 md:h-10 brightness-125" alt="logo" />
+                    <Link to='/' className="z-50 mb-4 flex items-center gap-2">
+                        <img src={logo} alt="logo" className="h-8 md:h-10" />
+                        <span className={`text-xl font-bold text-pure-white`}>JLTM</span>
                     </Link>
                     <button
                         onClick={() => setIsOpen(false)}

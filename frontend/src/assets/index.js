@@ -10,6 +10,7 @@ import soldAuctions from './soldAuctions.webp';
 import endingSoonAuctions from './endingSoonAuctions.webp';
 import upcomingAuctions from './upcomingAuctions.webp';
 import about from './about.webp';
+import about2 from './about2.webp';
 import spinner from './spinner.png';
 
 function formatPhone(phone) {
@@ -19,17 +20,22 @@ function formatPhone(phone) {
 // (202) 555-0125
 
 const otherData = {
-    phone: '1234567890',
+    phone: '5551234567',
     phoneCode: '+1',
-    email: 'admin@hangerstock.com',
-    address: 'USA',
-    brandName: 'HangerStock',
-    formatPhone
+    email: 'tech@jltmselect.com',
+    address: '123 Luxury Lane, New York, NY 10001',
+    brandName: 'JLTM',
+    formatPhone,
+    hours: [
+        {days: 'Mon–Sat', time: '10am – 7pm'},
+        {days: 'Sun', time: '12pm – 5pm'},
+    ]
 }
 
 export {
     otherData,
     about,
+    about2,
     darkLogo,
     logo,
     heroImg,

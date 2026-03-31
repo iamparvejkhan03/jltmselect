@@ -1,7 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Container } from "../components";
 import { logo, otherData } from "../assets";
-import { Facebook, Instagram, Linkedin, Mail, Phone, Twitter, X, Youtube } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter, X, Youtube } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 function Footer() {
@@ -32,7 +32,7 @@ function Footer() {
         { name: 'Privacy Policy', href: '/privacy-policy' },
         { name: 'Terms of Use', href: '/terms-of-use' },
         { name: 'Buyer Agreement', href: '/buyer-agreement' },
-        { name: 'Seller Agreement', href: '/seller-agreement' },
+        // { name: 'Seller Agreement', href: '/seller-agreement' },
     ];
 
     const categoryImg = [
@@ -89,11 +89,12 @@ function Footer() {
             >
                 <div className='flex flex-wrap justify-between gap-12 md:gap-6'>
                     <div className='max-w-80 relative z-20'>
-                        <Link to='/' className="flex gap-2 z-50 mb-4">
-                            <img src={logo} alt="logo" className="h-10 md:h-12 brightness-125" />
+                        <Link to='/' className="z-50 mb-4 flex items-center gap-2">
+                            <img src={logo} alt="logo" className="h-10 md:h-12" />
+                            <span className={`text-xl font-bold text-pure-white`}>{otherData?.brandName}</span>
                         </Link>
                         <p className='text-bg-secondary-dark/80'>
-                            Bid with confidence on quality fashion items — verified listings, real-time updates, and complete transparency. That's the {otherData?.brandName} promise.
+                            Premium membership for luxury furniture enthusiasts. Experience exclusive auctions and in-store benefits.
                         </p>
                         <div className='flex items-center gap-3 mt-4'>
                             <Link to="#" target="_blank" className="text-bg-secondary-dark/80 hover:text-white transition-colors">
@@ -106,15 +107,15 @@ function Footer() {
                     </div>
 
                     <div className="relative z-20">
-                        <p className='text-lg text-white font-semibold mb-3'>
-                            Quick Links
+                        <p className='text-sm text-white font-semibold mb-3 uppercase'>
+                            Explore
                         </p>
                         <ul className='mt-3 flex flex-col gap-2'>
                             {quickLinks.map(link => (
                                 <li className="relative py-1" key={link.name}>
                                     <NavLink
                                         className={({ isActive }) =>
-                                            `text-bg-secondary-dark/80 hover:text-white transition-colors ${isActive ? 'text-pure-white' : ''}`
+                                            `text-bg-secondary-dark/80 hover:text-white transition-colors ${isActive ? 'text-secondary' : ''}`
                                         }
                                         to={link.href}
                                     >
@@ -126,7 +127,7 @@ function Footer() {
                     </div>
 
                     <div className="relative z-20">
-                        <p className='text-lg text-white font-semibold mb-3'>
+                        <p className='text-sm uppercase text-white font-semibold mb-3'>
                             Auctions
                         </p>
                         <ul className='mt-3 flex flex-col gap-2'>
@@ -144,8 +145,8 @@ function Footer() {
                     </div>
 
                     <div className="relative z-20">
-                        <p className='text-lg text-white font-semibold mb-3'>
-                            Legal Policies
+                        <p className='text-sm uppercase text-white font-semibold mb-3'>
+                            Legal
                         </p>
                         <ul className='mt-3 flex flex-col gap-2'>
                             {legalPolicies.map(service => (
@@ -153,7 +154,7 @@ function Footer() {
                                     <NavLink
                                         to={service.href}
                                         className={({ isActive }) =>
-                                            `text-bg-secondary-dark/80 hover:text-white transition-colors ${isActive ? 'text-pure-white' : ''}`
+                                            `text-bg-secondary-dark/80 hover:text-white transition-colors ${isActive ? 'text-secondary' : ''}`
                                         }
                                     >
                                         {service.name}
@@ -164,10 +165,18 @@ function Footer() {
                     </div>
 
                     <div className='max-w-80 relative z-20'>
-                        <p className='text-lg text-white font-semibold mb-3'>
-                            Reach Out
+                        <p className='text-sm uppercase text-white font-semibold mb-3'>
+                            Contact
                         </p>
                         <ul className='mt-3 flex flex-col gap-2'>
+                            <li className="flex items-center gap-2">
+                                <MapPin size={18} className="text-bg-secondary-dark/80" />
+                                <p
+                                    className="text-bg-secondary-dark/80 hover:text-white transition-colors"
+                                >
+                                    {otherData?.address}
+                                </p>
+                            </li>
                             <li className="flex items-center gap-2">
                                 <Phone size={18} className="text-bg-secondary-dark/80" />
                                 <Link

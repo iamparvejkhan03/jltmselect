@@ -15,6 +15,7 @@ const TestimonialSection = lazy(() => import('../components/TestimonialSection')
 const About = lazy(() => import('../components/About'));
 const CorePlatformFeatures = lazy(() => import('../components/CorePlatformFeatures'));
 const AuctionWorkflow = lazy(() => import('../components/AuctionWorkflow'));
+const SubscriptionSection = lazy(() => import('../components/SubscriptionSection'));
 
 function Home() {
     const [auctions, setAuctions] = useState([]);
@@ -280,6 +281,11 @@ function Home() {
             {/* Auction work flow */}
             <Suspense fallback={<LoadingSpinner />}>
                 <AuctionWorkflow />
+            </Suspense>
+
+            {/* Subscription Plan Section */}
+            <Suspense fallback={<LoadingSpinner />}>
+                <SubscriptionSection />
             </Suspense>
 
             {/* Testimonials */}

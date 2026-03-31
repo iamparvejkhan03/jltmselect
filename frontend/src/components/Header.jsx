@@ -1,13 +1,11 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { closeMenu, darkLogo, logo, menuIcon } from "../assets";
 import Container from "./Container";
-import { ChevronRight, LayoutDashboard, LogIn, Search, ChevronDown, X, Gavel, Clock, DollarSign, Gift, Store, User } from "lucide-react";
+import { ChevronRight, LayoutDashboard, LogIn, Search, ChevronDown, X, Gavel, Clock, DollarSign, Gift, Store, User, UserPlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { usePopUp } from "../contexts/PopUpContextProvider";
 import axiosInstance from "../utils/axiosInstance";
-import ThemeToggle from "./ThemeToggle";
-import LanguageSwitcher from "./LanguageSwitcher";
 
 const navLinks = [
     {
@@ -18,45 +16,28 @@ const navLinks = [
         name: 'About',
         href: '/about'
     },
-    // {
-    //     name: 'Contact',
-    //     href: '/contact'
-    // },
-    // {
-    //     name: 'FAQs',
-    //     href: '/faqs'
-    // },
-];
-
-const auctionTypes = [
-    { name: "Standard Auction", slug: "standard", icon: Gavel },
-    { name: "Reserve Auction", slug: "reserve", icon: Clock },
-    { name: "Buy Now", slug: "buy_now", icon: DollarSign },
-];
-
-const registerTypes = [
-    { name: "Seller Account", slug: "seller", icon: Store },
-    { name: "Buyer Account", slug: "bidder", icon: User },
+    {
+        name: 'FAQs',
+        href: '/faqs'
+    },
+    {
+        name: 'Contact',
+        href: '/contact'
+    },
 ];
 
 function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
-    const [isAuctionTypesOpen, setIsAuctionTypesOpen] = useState(false);
-    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [categories, setCategories] = useState([]);
     const [hoveredCategory, setHoveredCategory] = useState(null);
     const [loading, setLoading] = useState(false);
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const { user } = useAuth();
-    const auctionTypesRef = useRef(null);
-    const registerRef = useRef(null);
 
     const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
-    const [mobileAuctionTypesOpen, setMobileAuctionTypesOpen] = useState(false);
-    const [mobileRegisterOpen, setMobileRegisterOpen] = useState(false);
     const [activeMobileCategory, setActiveMobileCategory] = useState(null);
 
     useEffect(() => {
@@ -64,24 +45,6 @@ function Header() {
             setHoveredCategory(categories[0].slug);
         }
     }, [categories]);
-
-    // Add click outside handler
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (auctionTypesRef.current && !auctionTypesRef.current.contains(event.target)) {
-                setIsAuctionTypesOpen(false);
-            }
-
-            if (registerRef.current && !registerRef.current.contains(event.target)) {
-                setIsRegisterOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
 
     // Fetch categories when popup opens
     useEffect(() => {
@@ -141,34 +104,19 @@ function Header() {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
     };
 
-    // Handle auction type selection
-    const handleAuctionTypeSelect = (slug) => {
-        const searchParams = new URLSearchParams(location.search);
-        searchParams.set('auctionType', slug);
-        navigate(`/auctions?${searchParams.toString()}`);
-        setIsAuctionTypesOpen(false);
-        setMobileAuctionTypesOpen(false);
-    };
-
-    // Handle auction type selection
-    const handleRegisterTypeSelect = (slug) => {
-        navigate(`/register`);
-        setIsRegisterOpen(false);
-        setMobileRegisterOpen(false);
-    };
-
     return (
         <header className={`${isScrolled
-            ? 'fixed bg-bg-secondary dark:bg-bg-primary bg-opacity-100 shadow-lg shadow-pure-black/4 dark:shadow-pure-white/4'
-            : 'absolute bg-opacity-0'} w-full transition-all duration-150 z-50`}
+            ? 'fixed bg-primary dark:bg-primary bg-opacity-100 shadow-lg shadow-primary/15 dark:shadow-pure-white/4'
+            : 'fixed bg-primary dark:bg-primary bg-opacity-100 shadow-lg shadow-primary/15 dark:shadow-pure-white/4'} w-full transition-all duration-150 z-50`}
         >
             <Container className={`flex items-center justify-between py-4`}>
-                <Link to="/">
+                <Link to="/" className="flex items-center justify-center gap-2">
                     <img
                         src={logo}
-                        alt="Hangerstock's Logo"
-                        className={`h-8 md:h-10 z-10 ${!isScrolled && pathname === '/' ? 'brightness-150 dark:brightness-150' : 'brightness-125'}`}
+                        alt="Logo"
+                        className={`h-10 md:h-12 z-10`}
                     />
+                    <span className={`text-xl font-bold text-pure-white ${!isScrolled && pathname === '/' ? '' : ''}`}>JLTM</span>
                 </Link>
 
                 {/* Navlinks for larger screens */}
@@ -179,10 +127,10 @@ function Header() {
                                 <NavLink
                                     to={link.href}
                                     className={({ isActive }) =>
-                                        `${isActive && isScrolled ? 'text-text-primary/80 dark:text-text-primary-dark/80' :
-                                            isActive && !isScrolled ? 'text-text-primary-dark/80' :
-                                                isScrolled ? 'text-text-primary dark:text-text-primary-dark' :
-                                                    'text-text-primary-dark'} hover:underline`
+                                        `${isActive && isScrolled ? 'text-secondary dark:text-text-primary-dark/80' :
+                                            isActive && !isScrolled ? 'text-secondary' :
+                                                isScrolled ? 'text-pure-white dark:text-text-primary-dark' :
+                                                    'text-pure-white'} hover:text-secondary transition-colors duration-200`
                                     }
                                 >
                                     {link.name}
@@ -190,58 +138,14 @@ function Header() {
                             </li>
                         ))}
 
-                        {/* Auction Types Dropdown */}
-                        <li
-                            ref={auctionTypesRef}
-                            className={`${isScrolled
-                                ? 'text-text-primary dark:text-text-primary-dark'
-                                : 'text-text-primary-dark'} relative`}
-                        >
-                            <button
-                                onClick={() => setIsAuctionTypesOpen(!isAuctionTypesOpen)}
-                                className="auction-types-trigger flex gap-1 items-center cursor-pointer hover:underline"
-                            >
-                                <span>Auctions</span>
-                                <ChevronDown size={16} className={`transition-transform ${isAuctionTypesOpen ? 'rotate-180' : ''}`} />
-                            </button>
-
-                            {isAuctionTypesOpen && (
-                                <div className="absolute top-full left-0 mt-2 w-56 bg-bg-secondary dark:bg-bg-primary rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50">
-                                    {auctionTypes.map((type) => {
-                                        const Icon = type.icon;
-                                        return (
-                                            <button
-                                                key={type.slug}
-                                                onClick={() => handleAuctionTypeSelect(type.slug)}
-                                                className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-orange-50 dark:hover:bg-gray-800 transition-colors text-text-primary dark:text-text-primary-dark"
-                                            >
-                                                <Icon size={18} className="text-orange-500" />
-                                                <span>{type.name}</span>
-                                            </button>
-                                        );
-                                    })}
-                                    <div className="border-t border-gray-200 dark:border-gray-700">
-                                        <Link
-                                            to="/auctions"
-                                            onClick={() => setIsAuctionTypesOpen(false)}
-                                            className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-orange-50 dark:hover:bg-gray-800 transition-colors text-orange-500 font-medium"
-                                        >
-                                            <ChevronRight size={18} />
-                                            <span>View All Auctions</span>
-                                        </Link>
-                                    </div>
-                                </div>
-                            )}
-                        </li>
-
                         {/* Categories Dropdown */}
                         <li className={`${isScrolled
-                            ? 'text-text-primary dark:text-text-primary-dark'
-                            : 'text-text-primary-dark'} relative`}
+                            ? 'text-pure-white dark:text-text-primary-dark'
+                            : 'text-pure-white'} relative`}
                         >
                             <button
                                 onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
-                                className="categories-trigger flex gap-1 items-center cursor-pointer hover:underline"
+                                className="categories-trigger flex gap-1 items-center cursor-pointer hover:text-secondary transition-colors duration-200"
                             >
                                 <span>Categories</span>
                                 <ChevronDown size={16} className={`transition-transform ${isCategoriesOpen ? 'rotate-180' : ''}`} />
@@ -313,63 +217,41 @@ function Header() {
                             )}
                         </li>
 
-                        {/* Registration Dropdown */}
-                        <li
-                            ref={registerRef}
-                            className={`${isScrolled
-                                ? 'text-text-primary dark:text-text-primary-dark'
-                                : 'text-text-primary-dark'} relative`}
-                        >
-                            <button
-                                onClick={() => setIsRegisterOpen(!isRegisterOpen)}
-                                className="auction-types-trigger flex gap-1 items-center cursor-pointer hover:underline"
-                            >
-                                <span>Register</span>
-                                <ChevronDown size={16} className={`transition-transform ${isRegisterOpen ? 'rotate-180' : ''}`} />
-                            </button>
-
-                            {isRegisterOpen && (
-                                <div className="absolute top-full -right-full mt-2 w-56 bg-bg-secondary dark:bg-bg-primary rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50">
-                                    {registerTypes.map((type) => {
-                                        const Icon = type.icon;
-                                        return (
-                                            <button
-                                                key={type.slug}
-                                                onClick={() => handleRegisterTypeSelect(type.slug)}
-                                                className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-orange-50 dark:hover:bg-gray-800 transition-colors text-text-primary dark:text-text-primary-dark"
-                                            >
-                                                <Icon size={18} className="text-orange-500" />
-                                                <span>{type.name}</span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </li>
-
-                        <li>
-                            <ThemeToggle />
-                        </li>
-
-                        <li>
-                            <LanguageSwitcher />
-                        </li>
-
                         <li>
                             {user ? (
                                 <button
-                                    className="flex items-center gap-2 inset-0 bg-bg-primary hover:bg-bg-primary-light dark:bg-bg-secondary dark:hover:bg-bg-secondary-dark transition-colors text-pure-white dark:text-pure-black px-5 py-2 rounded-md cursor-pointer"
+                                    className="flex items-center gap-2 inset-0 bg-secondary hover:bg-secondary dark:bg-bg-secondary dark:hover:bg-bg-secondary-dark transition-colors text-pure-white dark:text-pure-black px-5 py-2 rounded-md cursor-pointer"
                                     onClick={() => navigate(`/${user.userType}/dashboard`)}
                                 >
                                     <LayoutDashboard size={20} /> Dashboard
                                 </button>
                             ) : (
-                                <button
-                                    className="flex items-center gap-2 inset-0 bg-bg-primary hover:bg-bg-primary-light dark:bg-bg-secondary dark:hover:bg-bg-secondary-dark transition-colors text-pure-white dark:text-pure-black px-5 py-2 rounded-md cursor-pointer"
-                                    onClick={() => navigate('/login')}
-                                >
-                                    <LogIn size={20} /> Log In
-                                </button>
+                                <div className="flex items-center gap-7">
+                                    <NavLink
+                                        to={`/login`}
+                                        className={({ isActive }) =>
+                                            `${isActive && isScrolled ? 'text-secondary dark:text-text-primary-dark/80' :
+                                                isActive && !isScrolled ? 'text-secondary' :
+                                                    isScrolled ? 'text-pure-white dark:text-text-primary-dark' :
+                                                        'text-pure-white'} hover:text-secondary transition-colors duration-200 flex items-center gap-1`
+                                        }
+                                    >
+                                        <LogIn size={18} />
+                                        <span>Log In</span>
+                                    </NavLink>
+                                    <NavLink
+                                        to={`/register`}
+                                        className={({ isActive }) =>
+                                            `${isActive && isScrolled ? 'text-secondary dark:text-text-primary-dark/80' :
+                                                isActive && !isScrolled ? 'text-secondary' :
+                                                    isScrolled ? 'text-pure-white dark:text-text-primary-dark' :
+                                                        'text-pure-white'} hover:text-secondary transition-colors duration-200 flex items-center gap-1`
+                                        }
+                                    >
+                                        <UserPlus size={18} />
+                                        <span>Register</span>
+                                    </NavLink>
+                                </div>
                             )}
                         </li>
                     </ul>
@@ -380,25 +262,11 @@ function Header() {
                     <ul>
                         {navLinks.map(link => (
                             <li onClick={() => setIsMenuOpen(false)} key={link.name} className="relative mx-5 py-2">
-                                <NavLink className={({ isActive }) => ``} to={link.href}>{link.name}</NavLink>
+                                <NavLink className={({ isActive }) => `hover:text-secondary ${isActive ? 'text-secondary' : 'text-primary'}`} to={link.href}>{link.name}</NavLink>
                             </li>
                         ))}
 
-                        {/* Mobile Auction Types */}
-                        <li className="relative mx-5 py-2 mb-2">
-                            <button
-                                onClick={() => {
-                                    setMobileAuctionTypesOpen(true);
-                                    setIsMenuOpen(false);
-                                }}
-                                className="flex items-center gap-1"
-                            >
-                                Auctions
-                                <ChevronRight size={16} />
-                            </button>
-                        </li>
-
-                        <li className="relative mx-5 py-2 mb-2">
+                        <li className="relative mx-5 py-2 mb-2 justify-self-center">
                             <button
                                 onClick={() => {
                                     setMobileCategoriesOpen(true);
@@ -411,130 +279,45 @@ function Header() {
                             </button>
                         </li>
 
-                        {/* Mobile Register Types */}
-                        <li className="relative mx-5 py-2 mb-2">
-                            <button
-                                onClick={() => {
-                                    setMobileRegisterOpen(true);
-                                    setIsMenuOpen(false);
-                                }}
-                                className="flex items-center gap-1"
-                            >
-                                Register
-                                <ChevronRight size={16} />
-                            </button>
-                        </li>
-
                         <li>
                             {user ? (
                                 <button
-                                    className="flex items-center gap-2 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-pure-white px-5 py-2 rounded-md cursor-pointer"
+                                    className="flex items-center gap-2 bg-bg-primary hover:bg-bg-primary-light dark:bg-bg-secondary dark:hover:bg-bg-secondary-dark transition-colors text-pure-white dark:text-pure-black px-5 py-2 rounded-md cursor-pointer"
                                     onClick={() => navigate(`/${user.userType}/dashboard`)}
                                 >
                                     <LayoutDashboard size={20} /> Dashboard
                                 </button>
                             ) : (
-                                <button
-                                    className="flex items-center gap-2 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-pure-white px-5 py-2 rounded-md cursor-pointer"
-                                    onClick={() => {
-                                        navigate('/login');
-                                        setIsMenuOpen(false);
-                                    }}
-                                >
-                                    <LogIn size={20} /> Log In
-                                </button>
+                                <div className="flex flex-col justify-center items-center gap-5">
+                                    <NavLink
+                                        to={`/login`}
+                                        className={({ isActive }) =>
+                                            `${isActive && isScrolled ? 'text-secondary dark:text-text-primary-dark/80' :
+                                                isActive && !isScrolled ? 'text-secondary' :
+                                                    isScrolled ? 'text-primary dark:text-text-primary-dark' :
+                                                        'text-primary'} hover:text-secondary transition-colors duration-200 flex items-center gap-1`
+                                        }
+                                    >
+                                        <LogIn size={18} />
+                                        <span>Log In</span>
+                                    </NavLink>
+                                    <NavLink
+                                        to={`/register`}
+                                        className={({ isActive }) =>
+                                            `${isActive && isScrolled ? 'text-secondary dark:text-text-primary-dark/80' :
+                                                isActive && !isScrolled ? 'text-secondary' :
+                                                    isScrolled ? 'text-primary dark:text-text-primary-dark' :
+                                                        'text-primary'} hover:text-secondary transition-colors duration-200 flex items-center gap-1`
+                                        }
+                                    >
+                                        <UserPlus size={18} />
+                                        <span>Register</span>
+                                    </NavLink>
+                                </div>
                             )}
                         </li>
                     </ul>
                 </nav>
-
-                {/* MOBILE AUCTION TYPES DRAWER */}
-                <div
-                    className={`fixed inset-0 bg-bg-secondary dark:bg-bg-primary z-[100] transform transition-transform duration-300 ${mobileAuctionTypesOpen ? "translate-x-0" : "translate-x-full"}`}
-                >
-                    <div className="h-full overflow-y-auto text-text-primary dark:text-text-primary-dark">
-                        <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-gray-700">
-                            <h2 className="text-xl font-bold">Auctions</h2>
-                            <X
-                                className="cursor-pointer"
-                                onClick={() => setMobileAuctionTypesOpen(false)}
-                            />
-                        </div>
-
-                        <div className="p-5 space-y-3">
-                            {auctionTypes.map((type) => {
-                                const Icon = type.icon;
-                                return (
-                                    <div
-                                        key={type.slug}
-                                        onClick={() => {
-                                            handleAuctionTypeSelect(type.slug);
-                                            setMobileAuctionTypesOpen(false);
-                                        }}
-                                        className="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-gray-400 dark:hover:border-gray-500 cursor-pointer"
-                                    >
-                                        <div className="p-2 rounded-lg bg-bg-primary dark:bg-bg-secondary">
-                                            <Icon size={20} className="text-text-primary-dark dark:text-text-primary" />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold">{type.name}</h3>
-                                            <p className="text-sm text-text-secondary dark:text-text-secondary-dark">{type.description}</p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-
-                            <div className="pt-4 mt-2">
-                                <Link
-                                    to="/auctions"
-                                    onClick={() => setMobileAuctionTypesOpen(false)}
-                                    className="flex items-center gap-2 text-text-primary dark:text-text-primary-dark font-medium"
-                                >
-                                    View all auctions <ChevronRight size={16} />
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* MOBILE REGISTER TYPES DRAWER */}
-                <div
-                    className={`fixed inset-0 bg-bg-secondary dark:bg-bg-primary z-[100] transform transition-transform duration-300 ${mobileRegisterOpen ? "translate-x-0" : "translate-x-full"}`}
-                >
-                    <div className="h-full overflow-y-auto text-text-primary dark:text-text-primary-dark">
-                        <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-gray-700">
-                            <h2 className="text-xl font-bold">Register</h2>
-                            <X
-                                className="cursor-pointer"
-                                onClick={() => setMobileRegisterOpen(false)}
-                            />
-                        </div>
-
-                        <div className="p-5 space-y-3">
-                            {registerTypes.map((type) => {
-                                const Icon = type.icon;
-                                return (
-                                    <div
-                                        key={type.slug}
-                                        onClick={() => {
-                                            handleRegisterTypeSelect(type.slug);
-                                            setMobileRegisterOpen(false);
-                                        }}
-                                        className="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-gray-400 dark:hover:border-gray-500 cursor-pointer"
-                                    >
-                                        <div className="p-2 rounded-lg bg-bg-primary dark:bg-bg-secondary">
-                                            <Icon size={20} className="text-text-primary-dark dark:text-text-primary" />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold">{type.name}</h3>
-                                            <p className="text-sm text-text-secondary dark:text-text-secondary-dark">{type.description}</p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
 
                 {/* MOBILE CATEGORIES DRAWER */}
                 <div
@@ -611,8 +394,6 @@ function Header() {
                 </div>
 
                 <div className="lg:hidden z-50 flex items-center gap-5">
-                    <LanguageSwitcher />
-                    <ThemeToggle />
                     {isMenuOpen ? (
                         <img
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -625,7 +406,7 @@ function Header() {
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             src={menuIcon}
                             alt="menu icon"
-                            className={`h-5 cursor-pointer ${!isScrolled && pathname === '/' ? 'invert-0 dark:invert-0' : 'invert dark:invert-0'} z-50`}
+                            className={`h-5 cursor-pointer ${!isScrolled && pathname === '/' ? 'invert-0 dark:invert-0' : 'invert-0 dark:invert-0'} z-50`}
                         />
                     )}
                 </div>

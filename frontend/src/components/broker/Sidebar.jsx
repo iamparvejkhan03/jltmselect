@@ -91,8 +91,9 @@ function Sidebar() {
       `}>
                 {/* Logo/Brand */}
                 <div className="px-4 mb-8 flex items-center justify-between pb-2">
-                    <Link to={'/'}>
-                        <img src={logo} className="h-8 md:h-10 brightness-125" alt="logo" />
+                    <Link to='/' className="z-50 mb-4 flex items-center gap-2">
+                        <img src={logo} alt="logo" className="h-8 md:h-10" />
+                        <span className={`text-xl font-bold text-pure-white`}>JLTM</span>
                     </Link>
                     <button
                         onClick={() => setIsOpen(false)}

@@ -338,7 +338,7 @@ const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [userType, setUserType] = useState('');
+    const [userType, setUserType] = useState('bidder');
     const navigate = useNavigate();
     const { setUser, user } = useAuth();
     const { useCountries, useStatesByCountry } = useCountryStates();
@@ -377,7 +377,7 @@ const Register = () => {
             firstName: '',
             lastName: '',
             country: '',
-            userType: '',
+            userType: 'bidder',
             street: '',
             city: '',
             state: '',
@@ -460,16 +460,16 @@ const Register = () => {
         }
 
         // Validate ID document for both user types (since it's required)
-        if (!identificationDocument) {
-            setIdVerificationError('Please upload an identification document');
-            // Scroll to the ID verification section
-            const idSection = document.getElementById('id-verification-section');
-            if (idSection) {
-                idSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            toast.error('Identification document is required');
-            return;
-        }
+        // if (!identificationDocument) {
+        //     setIdVerificationError('Please upload an identification document');
+        //     // Scroll to the ID verification section
+        //     const idSection = document.getElementById('id-verification-section');
+        //     if (idSection) {
+        //         idSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        //     }
+        //     toast.error('Identification document is required');
+        //     return;
+        // }
 
         // Clear any previous error
         setIdVerificationError('');
@@ -606,10 +606,13 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen pt-32 pb-16 bg-bg-secondary dark:bg-bg-primary flex items-center justify-center p-4">
-            <div className="bg-gradient-to-b from-bg-primary/[0.03] to-transparent dark:from-white/[0.03] dark:to-transparent rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden border border-gray-200 dark:border-bg-primary-light">
+        <div className="min-h-screen pt-32 pb-16 bg-bg-secondary-dark dark:bg-bg-primary flex items-center justify-center p-4">
+            <div className="bg-gradient-to-b from-secondary/[0.03] to-transparent dark:from-white/[0.03] dark:to-transparent rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden border border-gray-200 dark:border-bg-primary-light">
                 <div className="pt-8 text-center flex flex-col items-center justify-center gap-3">
-                    <img src={darkLogo} alt="logo" className='h-8 brightness-125' />
+                    <Link to='/' className="mb-4 flex items-center gap-2">
+                        <img src={darkLogo} alt="logo" className="h-8 md:h-10" />
+                        <span className={`text-xl font-bold text-primary`}>JLTM</span>
+                    </Link>
                     <p className="text-text-primary dark:text-text-primary-dark text-lg">Create your account</p>
                 </div>
 
@@ -891,7 +894,7 @@ const Register = () => {
                             </div>
 
                             {/* User Type Selection */}
-                            <div className="border-t border-gray-200 dark:border-bg-primary-light pt-6">
+                            {/* <div className="border-t border-gray-200 dark:border-bg-primary-light pt-6">
                                 <label className="text-sm font-medium leading-none text-text-secondary dark:text-text-secondary-dark flex items-center gap-2 mb-4">
                                     <User size={20} />
                                     <span>User Type</span>
@@ -940,10 +943,10 @@ const Register = () => {
                                 {errors.userType && (
                                     <p className="text-red-500 text-sm mt-1">{errors.userType.message}</p>
                                 )}
-                            </div>
+                            </div> */}
 
                             {/* ID Verification Section */}
-                            <div id="id-verification-section" className="border-t border-gray-200 dark:border-bg-primary-light pt-6">
+                            {/* <div id="id-verification-section" className="border-t border-gray-200 dark:border-bg-primary-light pt-6">
                                 <h3 className="text-lg font-semibold text-text-primary dark:text-text-primary-dark mb-4">Identity Verification <span className='text-red-600'>*</span></h3>
                                 <p className="text-sm text-text-secondary dark:text-text-secondary-dark mb-4">
                                     Please upload a valid government-issued ID (Driver's License, Passport, or National ID Card)
@@ -1015,7 +1018,7 @@ const Register = () => {
                                         </p>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* Stripe Card Section for Bidders */}
                             {userType === 'bidder' && <CardSection />}
@@ -1059,7 +1062,7 @@ const Register = () => {
                     </div>
                 </div>
 
-                <div className="bg-bg-secondary dark:bg-bg-primary px-4 pb-4 text-center">
+                <div className="dark:bg-bg-primary px-4 pb-4 text-center">
                     <p className="text-xs text-text-secondary dark:text-text-secondary-dark">
                         © {new Date().getFullYear()} {otherData?.brandName}. All rights reserved.
                     </p>

@@ -25,6 +25,7 @@ import payoutRouter from "./routes/payout.route.js";
 import buyNowPaymentRouter from "./routes/buyNowPayment.route.js";
 import shippingRouter from "./routes/shipping.route.js";
 import checkoutRouter from "./routes/checkout.route.js";
+import subscriptionRouter from "./routes/subscription.route.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -76,8 +77,8 @@ app.use('/api/v1/bid-deposit', bidDepositRouter);
 app.use('/api/v1/contact', contactQueryRouter);
 app.use('/api/v1/offers', offerRouter);
 app.use('/api/v1/buy-now', buyNowRouter);
-// app.use('/api/v1/admin/categories', categoryRouter);
 app.use('/api/v1/categories', categoryRouter);
+app.use('/api/v1/subscriptions', subscriptionRouter);
 app.use('/api/v1/otp', otpRouter);
 app.use('/api/v1/payments', paymentRouter);
 app.use("/api/v1/payouts", payoutRouter);

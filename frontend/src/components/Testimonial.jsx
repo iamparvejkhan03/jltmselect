@@ -3,7 +3,7 @@ import { dummyUserImg } from "../assets";
 
 function TestimonialCard({ name, position, review, image, date }) {
     return (
-        <div className='bg-gradient-to-b from-bg-primary/[0.03] to-transparent dark:from-white/[0.03] dark:to-transparent text-text-primary dark:text-text-primary-dark border border-gray-200 dark:border-bg-primary-light rounded-2xl p-6 h-full flex flex-col'>
+        <div className='bg-gradient-to-b from-secondary/[0.03] to-transparent dark:from-white/[0.03] dark:to-transparent text-text-primary dark:text-text-primary-dark border border-gray-200 dark:border-bg-primary-light rounded-2xl p-6 h-full flex flex-col'>
             {/* Rating and Date */}
             <div className='flex items-start justify-between mb-2'>
                 <div className="flex">

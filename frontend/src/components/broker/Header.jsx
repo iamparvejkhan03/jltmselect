@@ -14,7 +14,7 @@ function Header() {
         <header className="bg-white w-full fixed top-0 md:static shadow-sm border-b border-gray-200 h-16 flex items-center justify-between px-4 md:px-6 z-20">
             {/* Left section with search */}
             <div className="flex-1 max-w-lg flex justify-end md:justify-start px-2">
-                <Link to={`/`} className="text-secondary"><Home size={22} /></Link>
+                <Link to={`/`} className="text-bg-primary-light"><Home size={22} /></Link>
                 {/* {
                     dashboardType === 'broker'
                     ?
@@ -27,7 +27,7 @@ function Header() {
             {/* Right section with icons and user */}
             <div className="flex items-center space-x-4 md:space-x-5">
                 {/* Notifications */}
-                {/* <button className="relative p-2 text-secondary hover:text-black transition-colors">
+                {/* <button className="relative p-2 text-bg-primary-light hover:text-black transition-colors">
                     <Bell size={22} />
                     {notificationsCount > 0 && (
                         <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -40,7 +40,7 @@ function Header() {
                 <div className="flex items-center space-x-3 pl-3 border-l border-gray-200">
                     <div className="text-right hidden md:block">
                         <Link to={`/broker/profile`} className="text-sm font-medium text-black">{user?.firstName + ' ' + user?.lastName}</Link>
-                        <p className="text-xs text-secondary">{user.username}</p>
+                        <p className="text-xs text-bg-primary-light">{user.username}</p>
                     </div>
                     {
                         user?.image

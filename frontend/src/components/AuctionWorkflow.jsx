@@ -1,31 +1,32 @@
-import { Tag, Gavel, Timer, HandCoins } from "lucide-react";
+import { Tag, Gavel, Timer, HandCoins, Percent, Video, Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Container from "./Container";
+import { otherData } from "../assets";
 
 const steps = [
     {
-        icon: Tag,
-        title: "Seller Listing",
-        description:
-            "Sellers create detailed listings, uploads images, setting starting prices, reserve limits, and auction duration via our intuitive tools.",
-    },
-    {
         icon: Gavel,
-        title: "Live Bidding",
+        title: "Daily Auctions",
         description:
-            "Buyers place bids in real time. The current price rises with each new bid—no algorithms, just fair and transparent bidding.",
+            "Exclusive members-only auction every day on luxury furniture pieces at incredible starting prices.",
     },
     {
-        icon: Timer,
-        title: "Real-time Tracking",
+        icon: Percent,
+        title: "20% In-Store Discount",
         description:
-            "Participants receive live updates, instant outbid alerts, and countdown notifications to stay engaged until the final second.",
+            "One-time 20% discount on any in-store purchase. Valid for 30 days from membership activation.",
     },
     {
-        icon: HandCoins,
-        title: "Close & Settlement",
+        icon: Video,
+        title: "In The Store Access",
         description:
-            "Highest valid bid/offer wins instantly. Funds are secured with the platform and released only upon verified delivery.",
+            "Members-only video gallery with behind-the-scenes looks at our finest luxury furniture collections.",
+    },
+    {
+        icon: Shield,
+        title: "Member ID",
+        description:
+            `Your unique ${otherData?.brandName} member ID unlocks exclusive in-store experiences and VIP treatment.`,
     },
 ];
 
@@ -36,7 +37,7 @@ function AuctionWorkflow() {
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => setVisible(entry.isIntersecting),
-            { threshold: 0.25 }
+            { threshold: 0.15 }
         );
 
         if (ref.current) observer.observe(ref.current);
@@ -50,13 +51,15 @@ function AuctionWorkflow() {
 
                     {/* Heading */}
                     <div className="text-center max-w-3xl mx-auto mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-pure-black dark:text-pure-white">
-                            The Journey of Every Lot
+                        <div className="flex items-center justify-center gap-3 mb-4"><div className="h-px w-8 bg-secondary"></div><span className="text-secondary text-xs font-medium uppercase tracking-[0.2em]">Why Join</span><div className="h-px w-8 bg-secondary"></div></div>
+
+                        <h2 className="text-3xl md:text-4xl font-bold text-primary dark:text-pure-white">
+                            Membership Benefits
                         </h2>
 
-                        <p className="text-sm md:text-base text-text-secondary dark:text-text-secondary-dark mt-3">
+                        {/* <p className="text-sm md:text-base text-text-secondary dark:text-text-secondary-dark mt-3">
                             A seamless path from listing to fulfillment—automated, transparent, and built for confidence at every turn. We handle the automation. You handle the wins.
-                        </p>
+                        </p> */}
                     </div>
 
                     {/* Workflow */}
@@ -78,13 +81,8 @@ function AuctionWorkflow() {
                                         style={{ animationDelay: `${index * 120}s` }}
                                     >
                                         {/* circle icon */}
-                                        <div className="relative mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-bg-primary dark:bg-bg-primary-light border border-bg-primary dark:border-bg-primary-light backdrop-blur-md transition-all duration-300 group-hover:bg-bg-primary-light dark:group-hover:bg-bg-border-bg-primary-light group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(0,0,0,0.1)] dark:group-hover:shadow-[0_0_15px_rgba(255,255,255,0.15)]">
-                                            <Icon size={30} className="text-pure-white dark:text-text-primary-dark" />
-
-                                            {/* number bubble */}
-                                            <span className="absolute top-0 right-0 text-sm bg-bg-secondary-dark dark:bg-bg-secondary text-pure-black dark:text-pure-black rounded-full w-6 h-6 flex items-center justify-center font-semibold">
-                                                {index + 1}
-                                            </span>
+                                        <div className="relative mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-bg-secondary-dark dark:bg-bg-primary-light border border-bg-secondary-dark dark:border-bg-primary-light backdrop-blur-md transition-all duration-300 group-hover:bg-secondary dark:group-hover:bg-bg-border-bg-primary-light group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(0,0,0,0.1)] dark:group-hover:shadow-[0_0_15px_rgba(255,255,255,0.15)]">
+                                            <Icon size={30} className="text-secondary group-hover:text-pure-white dark:text-text-primary-dark" />
                                         </div>
 
                                         {/* text */}

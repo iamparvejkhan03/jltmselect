@@ -54,13 +54,16 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen pt-32 pb-16 bg-bg-secondary dark:bg-bg-primary flex items-center justify-center p-4">
+        <div className="min-h-screen pt-32 pb-16 bg-bg-secondary-dark dark:bg-bg-primary flex items-center justify-center p-4">
             <ForgotPasswordModal isOpen={showForgotPasswordModel} onClose={() => setShowForgotPasswordModal(false)} />
-            <div className="bg-gradient-to-b from-bg-primary/[0.03] to-transparent dark:from-white/[0.03] dark:to-transparent rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-bg-primary-light">
+            <div className="bg-gradient-to-b from-secondary/[0.03] to-transparent dark:from-white/[0.03] dark:to-transparent rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-bg-primary-light">
                 {/* Header */}
                 <div className="pt-8 text-center flex flex-col items-center justify-center gap-3">
-                    <img src={darkLogo} alt="logo" className='h-8 brightness-125' />
-                    <p className="text-text-primary dark:text-text-primary-dark text-lg">Let's sign you in</p>
+                    <Link to='/' className="mb-4 flex items-center gap-2">
+                        <img src={darkLogo} alt="logo" className="h-8 md:h-10" />
+                        <span className={`text-xl font-bold text-primary`}>JLTM</span>
+                    </Link>
+                    <p className="text-text-primary dark:text-text-primary-dark text-lg">Sign in to continue</p>
                 </div>
 
                 {/* Login Form */}
@@ -79,7 +82,7 @@ const Login = () => {
                                     type="email"
                                     id="email"
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-bg-primary-light bg-bg-secondary dark:bg-bg-primary text-text-primary dark:text-text-primary-dark rounded-lg focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500 focus:border-transparent"
-                                    placeholder="Enter your email"
+                                    placeholder="you@example.com"
                                     required
                                     {...register('email', { required: true })}
                                 />
@@ -99,7 +102,7 @@ const Login = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     id="password"
                                     className="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-bg-primary-light bg-bg-secondary dark:bg-bg-primary text-text-primary dark:text-text-primary-dark rounded-lg focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500 focus:border-transparent"
-                                    placeholder="Enter your password"
+                                    placeholder="••••••••"
                                     required
                                     {...register('password', { required: true })}
                                 />
@@ -151,16 +154,16 @@ const Login = () => {
                     {/* Get in Touch/Register */}
                     <div className="text-center">
                         <p className="text-text-secondary dark:text-text-secondary-dark text-sm">
-                            Don't have an account?{' '}
+                            Need an account?{' '}
                             <Link to={`/register`} className="text-text-primary dark:text-text-primary-dark font-semibold underline hover:text-opacity-80">
-                                Register Now
+                                Sign Up
                             </Link>
                         </p>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="bg-bg-secondary dark:bg-bg-primary px-4 pb-4 text-center">
+                <div className=" dark:bg-bg-primary px-4 pb-4 text-center">
                     <p className="text-xs text-text-secondary dark:text-text-secondary-dark">
                         © {new Date().getFullYear()} {otherData?.brandName}. All rights reserved.
                     </p>

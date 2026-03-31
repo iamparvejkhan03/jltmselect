@@ -19,8 +19,8 @@ function ScrollToTopIcon() {
 
     return (
         <>
-            <div className={`bg-bg-primary-light p-2 rounded-md fixed bottom-20 right-5 lg:bottom-5 lg:right-5 flex items-center z-50 cursor-pointer ${!scrolled && 'hidden'}`} onClick={() => handleScroll()}>
-                <div className="text-white font-bold align-middle">
+            <div className={`bg-secondary p-2 rounded-md fixed bottom-20 right-5 lg:bottom-5 lg:right-5 flex items-center z-50 cursor-pointer ${!scrolled && 'hidden'}`} onClick={() => handleScroll()}>
+                <div className="text-pure-white font-bold align-middle">
                     <ArrowBigUp size={32} strokeWidth={1.5} />
                 </div>
             </div>

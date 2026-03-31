@@ -13,55 +13,54 @@ const BuyerAgreement = () => {
     });
 
     return (
-        <section className="pt-28 pb-16 bg-bg-secondary dark:bg-bg-primary">
-            <Container>
+        <section className="pt-10 md:pt-20 bg-bg-secondary dark:bg-primary">
                 {/* Header */}
-                <div className="max-w-full mx-auto mb-10">
-                    <h1 className="text-3xl md:text-4xl font-bold text-text-primary dark:text-text-primary-dark mb-3">Buyer Agreement</h1>
-                    <p className="text-text-secondary dark:text-text-secondary-dark mb-6">{otherData?.brandName} | Last Updated: {formattedDate}</p>
+            <div className="max-w-full mx-auto text-center px-6 py-16 bg-primary">
 
-                    <div className="bg-bg-primary dark:bg-bg-secondary border-l-4 border-text-primary dark:border-text-primary-dark p-4 mb-6">
-                        <p className="text-text-primary-dark dark:text-text-primary font-semibold mb-2">IMPORTANT – PLEASE READ CAREFULLY</p>
-                        <p className="text-text-primary-dark dark:text-text-primary text-sm">
-                            This Buyer Agreement governs all purchases made through {otherData?.brandName}.
-                            By placing a bid, making an offer, or using Buy Now, you agree to be bound by this Agreement.
-                        </p>
-                    </div>
-                </div>
+                <div className="flex items-center justify-center gap-3 mb-4"><div className="h-px w-8 bg-secondary"></div><span className="text-secondary text-xs font-medium uppercase tracking-[0.2em]">Legal Policy</span><div className="h-px w-8 bg-secondary"></div></div>
 
-                {/* Main Content */}
+                {/* headline */}
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-pure-white dark:text-text-primary-dark leading-tight">
+                    Buyer Agreement
+                </h1>
+            </div>
+
+                <Container className={`my-14`}>
+                    {/* Main Content */}
                 <div className="max-w-full mx-auto">
                     <div className="space-y-8">
                         {/* Introduction */}
                         <div className="mb-8">
                             <p className="text-text-primary dark:text-text-primary-dark mb-4">
-                                <strong>{otherData?.brandName}</strong> ("we", "our", "us") and you, the buyer ("Buyer"),
-                                enter into this Buyer Agreement governing all purchases made through our fashion closeout auction platform.
+                                <strong>{otherData?.brandName}</strong> ("we", "our", "us") and you, the member/buyer ("Member", "Buyer"),
+                                enter into this Membership & Auction Agreement governing all purchases made through our exclusive furniture auction platform.
                             </p>
                             <p className="text-text-primary dark:text-text-primary-dark">
-                                By placing a bid, making an offer, or using Buy Now, you agree to be bound by this Agreement.
+                                By purchasing a membership or placing a bid, you agree to be bound by this Agreement.
                             </p>
                         </div>
 
-                        {/* Section 1 - Eligibility */}
+                        {/* Section 1 - Membership Requirement */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">1. Eligibility</h2>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">1. Membership Requirement</h2>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
-                                <li>{otherData?.brandName} is open to luxury shoppers, vintage collectors, resellers, and fashion enthusiasts</li>
-                                <li>All buyers must register and maintain accurate account information</li>
-                                <li>We reserve the right to verify identity and eligibility</li>
-                                <li>Buyers must be at least 18 years of age</li>
+                                <li>An active {otherData?.brandName} Membership is required to participate in all auctions</li>
+                                <li>Membership plans: Classic (6 months for $120) and Premium (12 months for $200)</li>
+                                <li>Memberships are non-refundable and non-transferable</li>
+                                <li>Membership benefits are available only during active membership status</li>
+                                <li>We do not offer auto-renewal. You will be notified when your membership expires and must purchase a new plan to continue</li>
                             </ul>
                         </div>
 
-                        {/* Section 2 - Deposit Requirement */}
+                        {/* Section 2 - Eligibility */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">2. Deposit Requirement</h2>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">2. Eligibility</h2>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
-                                <li>A deposit is required before placing your first bid</li>
-                                <li>Deposit amounts may be fixed or a percentage of your bid, depending on the listing</li>
-                                <li>The deposit secures your bidding power on the platform</li>
-                                <li>Deposit terms are clearly displayed before you place your first bid</li>
+                                <li>Membership is restricted to individuals aged 18 and older</li>
+                                <li>All members must provide accurate and complete registration information</li>
+                                <li>We reserve the right to verify identity and eligibility</li>
+                                <li>Duplicate accounts are not permitted</li>
+                                <li>False information may result in immediate membership termination</li>
                             </ul>
                         </div>
 
@@ -70,133 +69,154 @@ const BuyerAgreement = () => {
                             <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">3. Binding Contract</h2>
                             <p className="text-text-primary dark:text-text-primary-dark mb-3">A legally binding contract is formed when:</p>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5 mb-3">
-                                <li>You win an auction (highest bid at closing)</li>
-                                <li>Your offer is accepted by the seller</li>
-                                <li>You complete a Buy Now purchase</li>
+                                <li>You win an auction as the highest bidder at closing time</li>
+                                <li>Each auction is conducted fairly with the highest bidder declared the winner</li>
                             </ul>
-                            <div className="bg-bg-primary dark:bg-bg-secondary p-4 rounded">
+                            <div className="bg-primary dark:bg-bg-secondary p-4 rounded">
                                 <p className="text-text-primary-dark dark:text-text-primary font-semibold text-sm">
-                                    All bids, offers, and Buy Now actions are legally binding. Bid retractions are not permitted.
+                                    All bids are legally binding and cannot be retracted. By placing a bid, you commit to purchasing the item if you win.
                                 </p>
                             </div>
                         </div>
 
-                        {/* Section 4 - Buyer Fees */}
+                        {/* Section 4 - Auction Process */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">4. Buyer Fees</h2>
-                            <p className="text-text-secondary dark:text-text-secondary-dark">
-                                A buyer's premium (a percentage of the winning bid amount) applies to all successful purchases.
-                                The exact percentage is clearly displayed before you bid, make an offer, or complete a Buy Now purchase.
-                                All fees are in USD and are non-refundable except as required by applicable law.
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">4. Auction Process</h2>
+                            <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
+                                <li>Each day, one luxury furniture piece is listed for auction exclusively for members</li>
+                                <li>Bidding starts at $1 with $1 minimum increments</li>
+                                <li>You can place as many bids as you'd like on any auction</li>
+                                <li>You'll receive email notifications when someone outbids you</li>
+                                <li>The highest bidder when the auction closes wins the item</li>
+                            </ul>
+                        </div>
+
+                        {/* Section 5 - Payment Requirement */}
+                        <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">5. Payment Requirement</h2>
+                            <div className="bg-primary dark:bg-bg-secondary p-4 rounded mb-3">
+                                <p className="text-text-primary-dark dark:text-text-primary font-semibold mb-2">PAYMENT DEADLINE</p>
+                                <ul className="text-text-primary-dark/90 dark:text-text-primary/90 space-y-1 list-disc pl-5">
+                                    <li>Winning bidders have 6-8 hours to complete payment</li>
+                                    <li>Payment must be made in full through our secure payment processor (Stripe)</li>
+                                    <li>Failure to pay within the required timeframe will result in:</li>
+                                    <ul className="list-disc pl-5 mt-1">
+                                        <li>Immediate loss of the auction win</li>
+                                        <li>Account suspension</li>
+                                        <li>Potential permanent account termination for repeat violations</li>
+                                    </ul>
+                                </ul>
+                            </div>
+                            <p className="text-text-secondary dark:text-text-secondary-dark text-sm">
+                                All payments are processed in USD. We do not automatically charge winning bidders; you must initiate payment within the required timeframe.
                             </p>
                         </div>
 
-                        {/* Section 5 - Item Condition */}
+                        {/* Section 6 - In-Store Pickup */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">5. Item Condition</h2>
-                            <p className="text-text-primary dark:text-text-primary-dark mb-3">All fashion items are sold:</p>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">6. In-Store Pickup</h2>
+                            <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
+                                <li>All won items must be picked up in-store at {address}</li>
+                                <li>Winners have 5 days to pick up their items after payment is confirmed</li>
+                                <li>A valid ID is required at pickup</li>
+                                <li>Our staff will coordinate pickup scheduling with you</li>
+                                <li>We do not offer shipping or delivery services under any circumstances</li>
+                                <li>Storage fees of $5 per day apply after the 5-day pickup deadline</li>
+                                <li>Items not picked up within 30 days may be forfeited and resold without refund</li>
+                            </ul>
+                        </div>
+
+                        {/* Section 7 - Item Condition */}
+                        <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">7. Item Condition</h2>
+                            <p className="text-text-primary dark:text-text-primary-dark mb-3">All furniture items are sold:</p>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5 mb-3">
                                 <li>As-is / "Final Sale"</li>
                                 <li>Without any warranty, express or implied</li>
-                                <li>No returns accepted</li>
+                                <li>No returns, exchanges, or refunds accepted</li>
                             </ul>
                             <p className="text-text-secondary dark:text-text-secondary-dark text-sm">
-                                Descriptions, photographs, and specifications are provided by sellers for guidance only and do not
-                                form part of any contractual warranty. Buyers are responsible for reviewing all details before bidding.
+                                Descriptions, photographs, and specifications are provided for guidance only. Members are encouraged to inspect items in person before bidding by scheduling an in-store viewing appointment.
                             </p>
                         </div>
 
-                        {/* Section 6 - Inspections & Authentication */}
+                        {/* Section 8 - Inspections */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">6. Inspections & Authentication</h2>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">8. Inspections</h2>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
-                                <li>Physical inspections are not available before bidding</li>
-                                <li>{otherData?.brandName} does not provide authentication services</li>
-                                <li>Sellers are responsible for accurate descriptions and photos</li>
-                                <li>If you have questions about a listing, please contact us before bidding</li>
-                                <li>Failure to ask questions before bidding is at the buyer's sole risk</li>
+                                <li>Members are welcome to inspect items in person before bidding</li>
+                                <li>Contact us to schedule an in-store viewing appointment</li>
+                                <li>Items are displayed in-store and through detailed photos online</li>
+                                <li>Failure to inspect before bidding is at the member's sole risk</li>
+                                <li>All sales are final regardless of inspection status</li>
                             </ul>
                         </div>
 
-                        {/* Section 7 - Concerns After Purchase */}
+                        {/* Section 9 - Discount Benefit */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">7. Concerns After Purchase</h2>
-                            <p className="text-text-primary dark:text-text-primary-dark mb-3">
-                                If you have concerns after winning an auction or completing a purchase:
-                            </p>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">9. Discount Benefit</h2>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
-                                <li>Contact us immediately at <a href={`mailto:${email}`} className="text-text-primary dark:text-text-primary-dark hover:underline">{email}</a></li>
-                                <li>We will review your concerns and help mediate between buyer and seller</li>
-                                <li>Returns are not accepted as all sales are final</li>
-                                <li>Any disputes are handled in good faith with both parties</li>
+                                <li>Every new member receives a one-time 20% in-store discount</li>
+                                <li>Discount is valid for 30 days from membership activation date</li>
+                                <li>Must present Member ID at checkout to receive discount</li>
+                                <li>Discount is non-transferable and cannot be combined with other offers</li>
+                                <li>Not valid for auction purchases or online purchases</li>
+                                <li>No exclusions apply to eligible in-store items</li>
                             </ul>
                         </div>
 
-                        {/* Section 8 - Payment & Escrow */}
+                        {/* Section 10 - Account Suspension & Termination */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">8. Payment & Escrow</h2>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">10. Account Suspension & Termination</h2>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
-                                <li>We accept card payments via Stripe and bank transfers via Wise</li>
-                                <li>All payments are held in escrow until delivery is confirmed</li>
-                                <li>Funds are released to sellers only after you confirm receipt</li>
-                                <li>Payment terms vary by listing – check each auction for specific deadlines</li>
-                                <li>All payments must be made in USD</li>
-                                <li>Title and ownership pass only after full payment is received</li>
+                                <li>Failure to pay for won auctions within the 6-8 hour window may result in account suspension</li>
+                                <li>Multiple violations may lead to permanent account termination</li>
+                                <li>Violation of this Agreement may result in immediate membership termination without refund</li>
+                                <li>We reserve the right to suspend accounts suspected of fraudulent activity</li>
+                                <li>Suspended accounts lose access to all member benefits and active auctions</li>
                             </ul>
                         </div>
 
-                        {/* Section 9 - Shipping & Delivery */}
+                        {/* Section 11 - Default & Enforcement */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">9. Shipping & Delivery</h2>
-                            <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
-                                <li>Buyers and sellers arrange shipping directly with each other</li>
-                                <li>{otherData?.brandName} does not handle physical shipping or logistics</li>
-                                <li>We recommend agreeing on shipping terms and costs before bidding</li>
-                                <li>Risk of loss or damage transfers to the buyer upon delivery confirmation</li>
-                                <li>Funds remain in escrow until you confirm delivery</li>
-                                <li>Buyers are responsible for insurance from the moment of delivery</li>
-                            </ul>
-                        </div>
-
-                        {/* Section 10 - Default & Enforcement */}
-                        <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">10. Default & Enforcement</h2>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">11. Default & Enforcement</h2>
                             <p className="text-text-primary dark:text-text-primary-dark mb-2">If payment is not completed within the required timeframe, we may:</p>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
-                                <li>Cancel the sale and relist the item</li>
+                                <li>Cancel the sale and relist the item for auction</li>
+                                <li>Suspend or permanently terminate the member's account</li>
                                 <li>Seek recovery of any losses or costs incurred</li>
-                                <li>Suspend or permanently terminate the buyer's account</li>
                                 <li>Report to relevant authorities if fraud is suspected</li>
                             </ul>
                         </div>
 
-                        {/* Section 11 - Limitation of Liability */}
+                        {/* Section 12 - Limitation of Liability */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">11. Limitation of Liability</h2>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">12. Limitation of Liability</h2>
                             <p className="text-text-secondary dark:text-text-secondary-dark">
                                 To the extent permitted by US law, {otherData?.brandName}'s total liability is limited to the
-                                purchase price of the item in question. We are not liable for indirect or consequential
-                                losses including but not limited to lost profits or business interruption.
+                                purchase price of the item in question. We are not liable for any indirect, incidental, or consequential
+                                damages arising from the use of our platform, participation in auctions, or in-store pickup experience.
                                 This does not limit liability for fraud, death, or personal injury caused by negligence.
                             </p>
                         </div>
 
-                        {/* Section 12 - Governing Law */}
+                        {/* Section 13 - Governing Law */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">12. Governing Law & Disputes</h2>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">13. Governing Law & Disputes</h2>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
                                 <li>This Agreement is governed by the laws of the United States</li>
                                 <li>Any disputes shall be resolved by the courts of the United States</li>
                                 <li>{otherData?.brandName} is located at {address}</li>
+                                <li>You agree to submit to the exclusive jurisdiction of these courts</li>
                             </ul>
                         </div>
 
-                        {/* Section 13 - Entire Agreement */}
+                        {/* Section 14 - Entire Agreement */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">13. Entire Agreement</h2>
+                            <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">14. Entire Agreement</h2>
                             <p className="text-text-secondary dark:text-text-secondary-dark">
-                                This Buyer Agreement, together with our Terms of Use and Privacy Policy, constitutes the
-                                entire agreement between you and {otherData?.brandName} regarding your purchases on our platform.
+                                This Membership & Auction Agreement, together with our Terms of Use and Privacy Policy, constitutes the
+                                entire agreement between you and {otherData?.brandName} regarding your membership and purchases on our platform.
                             </p>
                         </div>
 
@@ -204,9 +224,9 @@ const BuyerAgreement = () => {
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
                             <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-4">Acceptance & Contact</h2>
                             <p className="text-text-primary dark:text-text-primary-dark mb-4">
-                                By using {otherData?.brandName}, you acknowledge that you have read, understood, and agree to this Buyer Agreement.
+                                By purchasing a {otherData?.brandName} Membership and participating in our auctions, you acknowledge that you have read, understood, and agree to this Membership & Auction Agreement.
                             </p>
-                            <div className="bg-bg-primary dark:bg-bg-secondary p-4 rounded">
+                            <div className="bg-primary dark:bg-bg-secondary p-4 rounded">
                                 <p className="font-semibold text-text-primary-dark dark:text-text-primary mb-2">{otherData?.brandName}</p>
                                 <p className="text-text-primary-dark dark:text-text-primary text-sm mb-1 whitespace-pre-line">{address}</p>
                                 <p className="text-text-primary-dark dark:text-text-primary text-sm mb-1">
@@ -221,8 +241,8 @@ const BuyerAgreement = () => {
                         {/* Footer Note */}
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6 mt-8">
                             <p className="text-text-secondary dark:text-text-secondary-dark text-sm">
-                                This Buyer Agreement was last updated on {formattedDate}. It forms an integral part of
-                                the contract for every fashion purchase made through {otherData?.brandName}.
+                                This Membership & Auction Agreement was last updated on {formattedDate}. It forms an integral part of
+                                the contract for every furniture purchase made through {otherData?.brandName}.
                             </p>
                         </div>
                     </div>
@@ -232,20 +252,20 @@ const BuyerAgreement = () => {
                         <div className="flex flex-wrap gap-3">
                             <Link
                                 to="/terms-of-use"
-                                className="px-4 py-2 bg-bg-primary dark:bg-bg-secondary border border-gray-200 dark:border-gray-700 hover:bg-gray-800 dark:hover:bg-gray-200 text-text-primary-dark dark:text-text-primary rounded text-sm font-medium transition-colors"
+                                className="px-4 py-2 bg-primary dark:bg-bg-secondary border border-gray-200 dark:border-gray-700 hover:bg-gray-800 dark:hover:bg-gray-200 text-text-primary-dark dark:text-text-primary rounded text-sm font-medium transition-colors"
                             >
                                 Terms of Use
                             </Link>
                             <Link
                                 to="/privacy-policy"
-                                className="px-4 py-2 bg-bg-primary dark:bg-bg-secondary border border-gray-200 dark:border-gray-700 hover:bg-gray-800 dark:hover:bg-gray-200 text-text-primary-dark dark:text-text-primary rounded text-sm font-medium transition-colors"
+                                className="px-4 py-2 bg-primary dark:bg-bg-secondary border border-gray-200 dark:border-gray-700 hover:bg-gray-800 dark:hover:bg-gray-200 text-text-primary-dark dark:text-text-primary rounded text-sm font-medium transition-colors"
                             >
                                 Privacy Policy
                             </Link>
                         </div>
                     </div>
                 </div>
-            </Container>
+                </Container>
         </section>
     );
 };

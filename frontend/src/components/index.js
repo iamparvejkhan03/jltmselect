@@ -26,9 +26,6 @@ import SellerHeader from "./seller/Header";
 import SellerContainer from "./seller/Container";
 import SellerSidebar from "./seller/Sidebar";
 import StatCard from "./StatCard";
-import RecentActivity from "./seller/RecentActivity";
-import QuickActions from "./seller/QuickActions";
-import TopPerformers from "./seller/TopPerformers";
 import BrokerHeader from "./broker/Header";
 import BrokerContainer from "./broker/Container";
 import BrokerSidebar from "./broker/Sidebar";
@@ -37,7 +34,6 @@ import BidderContainer from "./bidder/Container";
 import BidderSidebar from "./bidder/Sidebar";
 import BidderHeader from "./bidder/Header";
 import AdminHeader from "./admin/Header";
-import AdminRoute from "./admin/AdminRoute";
 import AdminSidebar from "./admin/Sidebar";
 import AdminContainer from "./admin/Container";
 import TimerDisplay from "./TimerDisplay";
@@ -67,7 +63,7 @@ import BundleManifest from "./BundleMenifest";
 import EmailVerificationWarning from "./EmailVerificationWarning";
 import OTP from "./OTP";
 import ThemeToggle from "./ThemeToggle";
-import LanguageSwitcher from "./LanguageSwitcher";
+import SubscriptionSection from "./SubscriptionSection";
 
 export {
     Container,
@@ -98,9 +94,6 @@ export {
     SellerContainer,
     SellerSidebar,
     StatCard,
-    RecentActivity,
-    QuickActions,
-    TopPerformers,
     BrokerHeader,
     BrokerContainer,
     BrokerSidebar,
@@ -111,7 +104,6 @@ export {
     AdminContainer,
     AdminHeader,
     AdminSidebar,
-    AdminRoute,
     TimerDisplay,
     WatchlistButton,
     SpecificationsSection,
@@ -139,5 +131,5 @@ export {
     EmailVerificationWarning,
     OTP,
     ThemeToggle,
-    LanguageSwitcher,
+    SubscriptionSection,
 }

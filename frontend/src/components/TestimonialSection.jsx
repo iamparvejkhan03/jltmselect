@@ -10,65 +10,65 @@ import { otherData } from "../assets";
 const testimonials = [
   {
     name: `Jessica M.`,
-    position: `Luxury Shopper | New York, NY`,
+    position: `Homeowner | New York, NY`,
     review:
-      `I never thought I'd find designer pieces at these prices. ${otherData?.brandName} is my go-to for adding rare finds to my wardrobe without the retail markup.`,
+      `I never thought I'd find premium furniture at these prices. ${otherData?.brandName} is my go-to for adding unique pieces to my home without the retail markup.`,
     image: `/avatars/1.jpg`,
     date: `February 12, 2026`
   },
   {
     name: `Marcus T.`,
-    position: `Vintage Collector | Austin, TX`,
+    position: `Interior Designer | Austin, TX`,
     review:
-      `The hunt is real here. I've scored archival streetwear and deadstock sneakers that you just can't find anywhere else. ${otherData?.brandName} gets it.`,
+      `The hunt is real here. I've scored vintage mid-century pieces that you just can't find anywhere else. ${otherData?.brandName} gets it.`,
     image: `/avatars/2.jpg`,
     date: `January 28, 2026`
   },
   {
     name: `Danielle K.`,
-    position: `Fashion Enthusiast | Los Angeles, CA`,
+    position: `Furniture Collector | Los Angeles, CA`,
     review:
-      `I love checking the 'Ending Soon' section. Snagged a bundle of silk blouses for less than the price of one. The thrill of the win never gets old.`,
+      `I love checking the 'Ending Soon' section. Snagged a dining table set for less than the price of one chair. The thrill of the win never gets old.`,
     image: `/avatars/3.jpg`,
     date: `March 5, 2026`
   },
   {
     name: `Ryan P.`,
-    position: `Reseller | Miami, FL`,
+    position: `Property Stager | Miami, FL`,
     review:
-      `${otherData?.brandName} is my inventory pipeline. The closeout bundles let me stock my shop with quality pieces at margins that actually make sense. Best in the game.`,
+      `${otherData?.brandName} is my go-to for staging luxury homes. The quality pieces let me create stunning spaces at margins that actually make sense. Best in the game.`,
     image: `/avatars/4.jpg`,
     date: `February 19, 2026`
   },
   {
     name: `Olivia W.`,
-    position: `Bargain Hunter | Chicago, IL`,
+    position: `First-Time Homeowner | Chicago, IL`,
     review:
-      `From kids' bundles to designer bags, I've won it all here. The platform is easy to use and I love getting outbid notifications so I can jump back in.`,
+      `From bedroom sets to accent chairs, I've won it all here. The platform is easy to use and I love getting outbid notifications so I can jump back in.`,
     image: `/avatars/5.jpg`,
     date: `January 15, 2026`
   },
   {
     name: `Christopher L.`,
-    position: `Collector & Curator | Seattle, WA`,
+    position: `Antique Collector | Seattle, WA`,
     review:
-      `I'm after specific eras and labels. ${otherData?.brandName}'s filtering makes it easy to find exactly what I want. Already won three vintage Levi's lots this month.`,
+      `I'm after specific eras and styles. ${otherData?.brandName}'s filtering makes it easy to find exactly what I want. Already won three vintage credenzas this month.`,
     image: `/avatars/6.jpg`,
     date: `March 10, 2026`
   },
   {
     name: `Amanda R.`,
-    position: `Seller | Boutique Owner | Denver, CO`,
+    position: `Home Stylist | Denver, CO`,
     review:
-      `I use ${otherData?.brandName} to move end-of-season inventory fast. The auction format creates urgency, and the payouts are quick. A total game changer for my business.`,
+      `I use ${otherData?.brandName} to find statement pieces for my clients. The auction format creates excitement, and the in-store pickup experience is seamless. A total game changer for my business.`,
     image: `/avatars/7.jpg`,
     date: `February 3, 2026`
   },
   {
     name: `Jonathan H.`,
-    position: `Seller | Vintage Dealer | Portland, OR`,
+    position: `Art & Furniture Collector | Portland, OR`,
     review:
-      `I've sold everything from accessories to outerwear here. The platform attracts serious buyers who actually know fashion. No lowballs, just real bids.`,
+      `I've collected everything from lighting to accent tables here. The platform attracts serious bidders who appreciate quality craftsmanship. No lowballs, just real bids.`,
     image: `/avatars/8.jpg`,
     date: `January 22, 2026`
   }
@@ -115,7 +115,7 @@ export default function TestimonialSection() {
   });
 
   return (
-    <section ref={sectionRef} className="pb-14 bg-bg-secondary dark:bg-bg-primary overflow-hidden">
+    <section ref={sectionRef} className="pb-14 pt-10 bg-bg-secondary dark:bg-bg-primary overflow-hidden">
       <Container>
         <div className="w-full max-w-full mx-auto">
           {/* Header */}

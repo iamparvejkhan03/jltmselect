@@ -6,14 +6,15 @@ export default {
     extend: {
       colors: {
         // Background colors
-        "primary": "#1A1A1A",
-        "bg-primary": "#1A1A1A", // Dark bg in light mode, Light bg in dark mode
+        "primary": "#1A1A2E",
+        "secondary": "#C9A84C",
+        "bg-primary": "#1A1A2E", // Dark bg in light mode, Light bg in dark mode
         "bg-primary-light": "#313131", // Dark bg in light mode, Light bg in dark mode
-        "bg-secondary": "#FFFFFF", // Light bg in light mode, Dark bg in dark mode
-        "bg-secondary-dark": "#E5E7EB", // Light bg in light mode, Dark bg in dark mode
+        "bg-secondary": "#ffffff", // Light bg in light mode, Dark bg in dark mode
+        "bg-secondary-dark": "#FAF8F5", // Light bg in light mode, Dark bg in dark mode
 
         // Text colors
-        "text-primary": "#000000", // Primary text in light mode
+        "text-primary": "#1A1A2E", // Primary text in light mode
         "text-secondary": "#313131", // Secondary text in light mode
         "text-primary-dark": "#FFFFFF", // Primary text in dark mode
         "text-secondary-dark": "#E5E5E5", // Secondary text in dark mode

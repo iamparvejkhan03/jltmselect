@@ -4,7 +4,7 @@ import './index.css';
 import App from './App.jsx';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PopUpContextProvider } from './contexts/PopUpContextProvider';
-import { Protected, LoadingSpinner, AdminRoute } from './components';
+import { Protected, LoadingSpinner } from './components';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { ThemeProvider } from './contexts/ThemeContext.jsx';
 
@@ -82,6 +82,7 @@ const AdminBidHistory = lazy(() => import('./pages/admin/BidHistory'));
 const AdminAllOffers = lazy(() => import('./pages/admin/AllOffers'));
 const Transactions = lazy(() => import('./pages/admin/Transactions'));
 const Categories = lazy(() => import('./pages/admin/Categories'));
+const Subscriptions = lazy(() => import('./pages/admin/Subscriptions'));
 const AdminPayouts = lazy(() => import('./pages/admin/Payouts'));
 const AdminPayoutMethods = lazy(() => import('./pages/admin/PayoutMethods'));
 
@@ -450,6 +451,16 @@ createRoot(document.getElementById('root')).render(
                                 element={
                                     <Suspense fallback={<LoadingSpinner height={'750px'} />}>
                                         <AllUsers />
+                                    </Suspense>
+                                }
+                            />
+
+                            {/* Admin Subscriptions */}
+                            <Route
+                                path='/admin/subscriptions'
+                                element={
+                                    <Suspense fallback={<LoadingSpinner height={'750px'} />}>
+                                        <Subscriptions />
                                     </Suspense>
                                 }
                             />

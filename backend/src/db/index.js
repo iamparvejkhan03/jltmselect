@@ -3,7 +3,7 @@ import "dotenv/config";
 
 const dbConnect = async () => {
     try {
-        const db = await mongoose.connect(`${process.env.MONGODB_URI}/hangerstock`);
+        const db = await mongoose.connect(`${process.env.MONGODB_URI}/jltmselect`);
 
         if(!db){
             console.error('MongoDB connection failed.');

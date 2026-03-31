@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, Crown } from "lucide-react";
 import Container from "./Container";
 import { useRef, useEffect, useState } from "react";
 
@@ -20,7 +20,7 @@ function CTA() {
     }, []);
 
     return (
-        <section ref={ref} className="relative py-10 bg-bg-primary border-b border-gray-800 overflow-hidden">
+        <section ref={ref} className="relative py-14 bg-bg-primary border-b border-gray-800 overflow-hidden">
 
             {/* Subtle texture - white dots */}
             <div
@@ -54,33 +54,29 @@ function CTA() {
 
                     {/* Badge */}
                     <span
-                        className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-gray-300 bg-bg-primary-light border border-gray-700 rounded-full mb-8 tracking-wider transition-all duration-700 ${
+                        className={`inline-flex items-center transition-all duration-700 text-secondary mb-5 ${
                             visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                         }`}
                     >
-                        <Sparkles size={14} />
-                        Fashion marketplace
+                        <Crown size={40} />
                     </span>
 
                     {/* Heading */}
                     <h2
-                        className={`text-4xl md:text-5xl font-semibold text-white leading-tight transition-all duration-700 delay-100 ${
+                        className={`text-3xl md:text-4xl font-semibold text-white leading-tight transition-all duration-700 delay-100 ${
                             visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                         }`}
                     >
-                        Start trading
-                        <span className="block text-pure-white/80">
-                            premium fashion
-                        </span>
+                        Daily Auctions, Extraordinary Finds
                     </h2>
 
                     {/* Subtext */}
                     <p
-                        className={`text-lg text-pure-white/80 mt-5 mb-10 max-w-xl mx-auto transition-all duration-700 delay-200 ${
+                        className={`text-base text-pure-white/80 mt-5 mb-10 max-w-2xl mx-auto transition-all duration-700 delay-200 ${
                             visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                         }`}
                     >
-                        The thrill of the bid. The joy of the find. The ease of the sale. Experience fashion trading the way it should be.
+                        Every day, a new luxury furniture piece goes up for auction — exclusively for JLTM members. Starting bids from just $1.
                     </p>
 
                     {/* CTA Button */}
@@ -91,7 +87,7 @@ function CTA() {
                         }`}
                     >
                         <span className="relative z-10 flex items-center gap-2 justify-center">
-                            Create your account
+                            Become a Member
                             <ArrowRight
                                 size={20}
                                 className="group-hover:translate-x-1 transition-transform"
@@ -100,28 +96,6 @@ function CTA() {
 
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </button>
-
-                    {/* Stats */}
-                    <div
-                        className={`flex flex-wrap justify-center gap-8 mt-12 text-sm transition-all duration-700 delay-300 ${
-                            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-                        }`}
-                    >
-                        <div>
-                            <span className="font-semibold text-pure-white">10k+</span>
-                            <span className="text-pure-white/80 ml-2">members</span>
-                        </div>
-
-                        <div>
-                            <span className="font-semibold text-pure-white">5k+</span>
-                            <span className="text-pure-white/80 ml-2">items listed</span>
-                        </div>
-
-                        <div>
-                            <span className="font-semibold text-pure-white">24/7</span>
-                            <span className="text-pure-white/80 ml-2">live auctions</span>
-                        </div>
-                    </div>
 
                 </div>
             </Container>

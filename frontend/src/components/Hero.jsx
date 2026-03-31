@@ -1,56 +1,59 @@
 import { heroImg, otherData } from "../assets";
 import { Link } from "react-router-dom";
 import { ArrowRightIcon } from "lucide-react";
+import Container from "./Container";
 
 function Hero() {
-    return (
-        <section className="relative min-h-screen flex items-center justify-center text-center text-white">
+  return (
+    <section className="relative min-h-screen flex items-center justify-start text-left text-pure-white">
 
-            {/* Background Image */}
-            <div className="absolute inset-0 overflow-hidden">
-                <img
-                    src={heroImg}
-                    alt="Fashion Auction"
-                    className="absolute inset-0 w-full h-full object-cover animate-slowZoom"
-                />
-            </div>
+      {/* Background Image */}
+      <div className="absolute inset-0 overflow-hidden">
+        <img
+          src={heroImg}
+          alt="Fashion Auction"
+          className="absolute inset-0 w-full h-full object-center object-cover animate-slowZoom"
+        />
+      </div>
 
-            {/* Dark Overlay */}
-            <div className="absolute inset-0 bg-black/60"></div>
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/95 to-primary/80"></div>
 
-            {/* Content */}
-            <div className="relative z-10 max-w-4xl px-6 animate-fadeUp">
 
-                {/* Small Badge */}
-                <div className="inline-block border border-white/40 px-6 py-2 text-sm tracking-widest mb-6">
-                    WHERE STYLE MEETS STRATEGY
-                </div>
+      {/* Content */}
+      <Container className="relative z-10 max-w-4xl px-6 animate-fadeUp">
 
-                {/* Main Heading */}
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-semibold mb-4">
-                    {otherData?.brandName}
-                </h1>
+        {/* Small Badge */}
+        <div className="flex items-center gap-2 mb-6"><div className="h-px w-12 bg-secondary"></div><span className="text-secondary text-sm font-medium uppercase tracking-[0.2em]">Exclusive Membership</span></div>
 
-                {/* Sub Heading */}
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl italic font-serif tracking-wide mb-6">
-                    The No. 1 Anti-Garment Waste Web
-                </h2>
+        {/* Main Heading */}
+        <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-wide mb-6 font-medium">
+          Welcome to <span className="text-secondary">{otherData?.brandName}</span> Membership
+        </h2>
 
-                {/* Description */}
-                <p className="text-lg md:text-xl text-white/80 font-light max-w-2xl mx-auto leading-relaxed mb-6">
-                    Every year, 100 billion garments are crafted worldwide. Yet, 30% never find a owner—never draped, never worn. At {otherData?.brandName}, we give these pieces a second chance to become part of your story.
-                </p>
+        {/* Description */}
+        <p className="text-lg text-pure-white font-light max-w-2xl leading-relaxed mb-6">
+          Your gateway to luxury furniture at extraordinary value. Enjoy exclusive daily auctions, premium in-store discounts, and behind-the-scenes content.
+        </p>
 
-                <p className="inline-block">
-                    <Link to="/auctions" className="text-white font-medium transition duration-300 flex items-center gap-2 group relative">
-                        <span className="">Explore Auctions</span>
-                        <ArrowRightIcon className="group-hover:translate-x-1 transition-transform duration-300" />
-                    </Link>
-                </p>
+        <div className="flex items-center justify-start gap-5 uppercase">
+          <p className="inline-block">
+            <Link to="/auctions" className="text-pure-white font-medium transition duration-300 flex items-center gap-2 group relative">
+              <span className="">Join Now</span>
+              <ArrowRightIcon className="group-hover:translate-x-1 transition-transform duration-300" />
+            </Link>
+          </p>
 
-            </div>
+          <p className="inline-block">
+            <Link to="/auctions" className="text-pure-white font-medium transition duration-300 flex items-center gap-2 group relative hover:underline">
+              <span className="">View Benefits</span>
+            </Link>
+          </p>
+        </div>
 
-            <style>{`
+      </Container>
+
+      <style>{`
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -79,8 +82,8 @@ function Hero() {
   animation: slowZoom 20s ease-in-out infinite alternate;
 }
 `}</style>
-        </section>
-    );
+    </section>
+  );
 }
 
 export default Hero;

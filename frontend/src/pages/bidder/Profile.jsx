@@ -393,7 +393,7 @@ function Profile() {
                     <AccountInactiveBanner />
                     <div className="max-w-full pt-16 pb-7 md:pt-0">
                         <h2 className="text-3xl md:text-4xl font-bold my-5">Bidder Profile</h2>
-                        {/* <p className="text-secondary">Manage your account settings and bidding preferences</p> */}
+                        {/* <p className="text-bg-primary-light">Manage your account settings and bidding preferences</p> */}
                     </div>
 
                     {error && (
@@ -413,7 +413,7 @@ function Profile() {
                                             onClick={() => setActiveSection(section.id)}
                                             className={`flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${activeSection === section.id
                                                 ? `text-white bg-primary font-medium`
-                                                : "text-secondary hover:bg-gray-100"
+                                                : "text-bg-primary-light hover:bg-gray-100"
                                                 }`}
                                         >
                                             {section.icon}
@@ -447,7 +447,7 @@ function Profile() {
                                                     <button
                                                         onClick={handleCancel}
                                                         disabled={saving}
-                                                        className="flex items-center gap-2 bg-gray-200 text-secondary px-4 py-2 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                                                        className="flex items-center gap-2 bg-gray-200 text-bg-primary-light px-4 py-2 rounded-lg hover:bg-gray-300 disabled:opacity-50"
                                                     >
                                                         <X size={16} />
                                                         Cancel
@@ -493,7 +493,7 @@ function Profile() {
                                                                 </label>
                                                             </div>
                                                             <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-1 shadow-md">
-                                                                <Upload size={12} className="text-secondary" />
+                                                                <Upload size={12} className="text-bg-primary-light" />
                                                             </div>
                                                         </>
                                                     )}
@@ -505,7 +505,7 @@ function Profile() {
 
                                             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="space-y-1">
-                                                    <label className="block text-sm font-medium text-secondary">First Name</label>
+                                                    <label className="block text-sm font-medium text-bg-primary-light">First Name</label>
                                                     <input
                                                         type="text"
                                                         value={userData.firstName || ''}
@@ -515,7 +515,7 @@ function Profile() {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="block text-sm font-medium text-secondary">Last Name</label>
+                                                    <label className="block text-sm font-medium text-bg-primary-light">Last Name</label>
                                                     <input
                                                         type="text"
                                                         value={userData.lastName || ''}
@@ -525,7 +525,7 @@ function Profile() {
                                                     />
                                                 </div>
                                                 <div className="space-y-1 md:col-span-2">
-                                                    <label className="block text-sm font-medium text-secondary">Email</label>
+                                                    <label className="block text-sm font-medium text-bg-primary-light">Email</label>
                                                     <div className="flex items-center gap-2">
                                                         <Mail size={18} className="text-gray-400" />
                                                         <input
@@ -538,7 +538,7 @@ function Profile() {
                                                     <p className="text-sm text-gray-500 mt-1">Email cannot be changed</p>
                                                 </div>
                                                 <div className="space-y-1 md:col-span-2">
-                                                    <label className="block text-sm font-medium text-secondary">Username</label>
+                                                    <label className="block text-sm font-medium text-bg-primary-light">Username</label>
                                                     <div className="flex items-center gap-2">
                                                         <User size={18} className="text-gray-400" />
                                                         <input
@@ -551,21 +551,19 @@ function Profile() {
                                                     <p className="text-sm text-gray-500 mt-1">Username cannot be changed</p>
                                                 </div>
                                                 <div className="space-y-1 md:col-span-2">
-                                                    <label className="block text-sm font-medium text-secondary">Phone</label>
+                                                    <label className="block text-sm font-medium text-bg-primary-light">Phone</label>
                                                     <div className="flex items-center gap-2">
                                                         <Phone size={18} className="text-gray-400" />
                                                         <input
                                                             type="tel"
                                                             value={userData.phone || ''}
                                                             onChange={(e) => handleInputChange('phone', e.target.value)}
-                                                            disabled
                                                             className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100"
                                                         />
                                                     </div>
-                                                    <p className="text-sm text-gray-500 mt-1">Phone cannot be changed</p>
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="block text-sm font-medium text-secondary">Member Since</label>
+                                                    <label className="block text-sm font-medium text-bg-primary-light">Member Since</label>
                                                     <input
                                                         type="text"
                                                         value={new Date(userData.createdAt).toLocaleDateString('en-US')}
@@ -583,7 +581,7 @@ function Profile() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
                                         <div className="space-y-1">
-                                            <label className="block text-sm font-medium text-secondary">Country</label>
+                                            <label className="block text-sm font-medium text-bg-primary-light">Country</label>
                                             {isEditing ? (
                                                 <select
                                                     value={userData.countryCode || ''} // Use countryCode for value
@@ -609,7 +607,7 @@ function Profile() {
                                         </div>
 
                                         <div className="space-y-1">
-                                            <label className="block text-sm font-medium text-secondary">State</label>
+                                            <label className="block text-sm font-medium text-bg-primary-light">State</label>
                                             {states.length > 0 ? (
                                                 <select
                                                     value={userData.address?.state || ''}
@@ -637,7 +635,7 @@ function Profile() {
                                         </div>
 
                                         <div className="md:col-span-2 space-y-1">
-                                            <label className="block text-sm font-medium text-secondary">Street Address</label>
+                                            <label className="block text-sm font-medium text-bg-primary-light">Street Address</label>
                                             <input
                                                 type="text"
                                                 value={userData.address?.street || ''}
@@ -649,7 +647,7 @@ function Profile() {
                                         </div>
 
                                         <div className="space-y-1">
-                                            <label className="block text-sm font-medium text-secondary">City</label>
+                                            <label className="block text-sm font-medium text-bg-primary-light">City</label>
                                             <input
                                                 type="text"
                                                 value={userData.address?.city || ''}
@@ -661,7 +659,7 @@ function Profile() {
                                         </div>
 
                                         <div className="space-y-1">
-                                            <label className="block text-sm font-medium text-secondary">Post Code</label>
+                                            <label className="block text-sm font-medium text-bg-primary-light">Post Code</label>
                                             <input
                                                 type="text"
                                                 value={userData.address?.postCode || ''}
@@ -1034,14 +1032,14 @@ const PasswordChangeForm = ({ onChangePassword, saving }) => {
     return (
         <div className="space-y-6">
             <div className="rounded-lg p-4 bg-blue-50 border border-blue-200">
-                <p className="text-sm text-secondary">
+                <p className="text-sm text-bg-primary-light">
                     Use a strong password that's hard to guess. Strong password provides you an additional layer of security to your account and data.
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-1">
-                    <label className="block text-sm font-medium text-secondary">Current Password</label>
+                    <label className="block text-sm font-medium text-bg-primary-light">Current Password</label>
                     <div className="flex items-center gap-2">
                         <Lock size={18} className="text-gray-400" />
                         <input
@@ -1055,7 +1053,7 @@ const PasswordChangeForm = ({ onChangePassword, saving }) => {
                 </div>
 
                 <div className="space-y-1">
-                    <label className="block text-sm font-medium text-secondary">New Password</label>
+                    <label className="block text-sm font-medium text-bg-primary-light">New Password</label>
                     <div className="flex items-center gap-2">
                         <Lock size={18} className="text-gray-400" />
                         <input
@@ -1069,7 +1067,7 @@ const PasswordChangeForm = ({ onChangePassword, saving }) => {
                 </div>
 
                 <div className="space-y-1">
-                    <label className="block text-sm font-medium text-secondary">Confirm New Password</label>
+                    <label className="block text-sm font-medium text-bg-primary-light">Confirm New Password</label>
                     <div className="flex items-center gap-2">
                         <Lock size={18} className="text-gray-400" />
                         <input
