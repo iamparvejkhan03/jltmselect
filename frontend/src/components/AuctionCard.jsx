@@ -189,7 +189,7 @@ function AuctionCard({ auction }) {
                     </div>
 
                     {/* Watchlist Button */}
-                    <button
+                    {/* <button
                         onClick={handleWatchlist}
                         className={`p-2 relative rounded-full cursor-pointer transition-all ${isWatchlisted
                             ? 'bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 border border-red-200 dark:border-red-800 shadow-md hover:bg-red-100 dark:hover:bg-red-900/50'
@@ -201,7 +201,7 @@ function AuctionCard({ auction }) {
                             size={20}
                             fill={isWatchlisted ? 'currentColor' : 'none'}
                         />
-                    </button>
+                    </button> */}
                 </div>
 
                 {/* Countdown Timer */}

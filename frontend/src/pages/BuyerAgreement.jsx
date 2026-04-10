@@ -45,7 +45,7 @@ const BuyerAgreement = () => {
                             <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">1. Membership Requirement</h2>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">
                                 <li>An active {otherData?.brandName} Membership is required to participate in all auctions</li>
-                                <li>Membership plans: Classic (6 months for $120) and Premium (12 months for $200)</li>
+                                <li>Membership plans: Basic (1 month for $50), Standard (3 months for $125), and Premium (6 months for $250).</li>
                                 <li>Memberships are non-refundable and non-transferable</li>
                                 <li>Membership benefits are available only during active membership status</li>
                                 <li>We do not offer auto-renewal. You will be notified when your membership expires and must purchase a new plan to continue</li>

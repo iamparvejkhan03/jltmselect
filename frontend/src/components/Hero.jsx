@@ -24,10 +24,10 @@ function Hero() {
       <Container className="relative z-10 max-w-4xl px-6 animate-fadeUp">
 
         {/* Small Badge */}
-        <div className="flex items-center gap-2 mb-6"><div className="h-px w-12 bg-secondary"></div><span className="text-secondary text-sm font-medium uppercase tracking-[0.2em]">Exclusive Membership</span></div>
+        <div className="flex items-center gap-2 mb-6"><div className="h-px w-6 md:w-12 bg-secondary"></div><span className="text-secondary text-xs md:text-sm font-medium uppercase tracking-[0.2em]">Exclusive Membership</span></div>
 
         {/* Main Heading */}
-        <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-wide mb-6 font-medium">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-wide mb-6 font-medium">
           Welcome to <span className="text-secondary">{otherData?.brandName}</span> Membership
         </h2>
 
@@ -38,14 +38,14 @@ function Hero() {
 
         <div className="flex items-center justify-start gap-5 uppercase">
           <p className="inline-block">
-            <Link to="/register" className="text-pure-white font-medium transition duration-300 flex items-center gap-2 group relative">
+            <Link to="/register" className="text-pure-white font-medium transition duration-300 flex items-center gap-2 group relative text-sm md:text-base hover:underline">
               <span className="">Join Now</span>
               <ArrowRightIcon className="group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </p>
 
           <p className="inline-block">
-            <Link to="/auctions" className="text-pure-white font-medium transition duration-300 flex items-center gap-2 group relative hover:underline">
+            <Link to="/auctions" className="text-pure-white font-medium transition duration-300 flex items-center gap-2 group relative text-sm md:text-base hover:underline">
               <span className="">View Auctions</span>
             </Link>
           </p>

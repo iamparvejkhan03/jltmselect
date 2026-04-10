@@ -20,10 +20,10 @@ function formatPhone(phone) {
 // (202) 555-0125
 
 const otherData = {
-    phone: '5551234567',
+    phone: '4082500904',
     phoneCode: '+1',
     email: 'tech@jltmselect.com',
-    address: '123 Luxury Lane, New York, NY 10001',
+    address: 'Costa Mesa, CA 92626, USA',
     brandName: 'JLTM',
     formatPhone,
     hours: [

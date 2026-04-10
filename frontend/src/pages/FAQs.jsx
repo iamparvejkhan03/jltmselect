@@ -18,7 +18,7 @@ const faqs = [
             },
             {
                 question: "What membership plans are available?",
-                answer: "We offer two plans: Classic (6 months for $120) and Premium (12 months for $200). Both include full access to all member benefits."
+                answer: "We offer three plans: Basic (1 month for $50), Standard (3 months for $125), and Premium (6 months for $250). All plans include access to all mentioned benefits."
             },
             {
                 question: "Can I cancel my membership?",

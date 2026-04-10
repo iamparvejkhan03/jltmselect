@@ -306,7 +306,7 @@ function Home() {
                                                     Live
                                                 </label>
                                             </div>
-                                            <div className="flex items-center">
+                                            {/* <div className="flex items-center">
                                                 <input
                                                     type="radio"
                                                     name="options"
@@ -318,7 +318,7 @@ function Home() {
                                                 <label htmlFor="sold" className="cursor-pointer rounded py-2 px-4 sm:px-8 text-text-secondary-dark dark:text-text-secondary transition-colors duration-200 peer-checked:bg-secondary peer-checked:text-pure-white">
                                                     Closed
                                                 </label>
-                                            </div>
+                                            </div> */}
                                             <div className="flex items-center">
                                                 <input
                                                     type="radio"

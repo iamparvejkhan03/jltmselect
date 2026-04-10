@@ -101,7 +101,7 @@ function Contact() {
                     <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-y-8 py-6 md:py-16 items-center">
                         {/* LEFT INFO */}
                         <div className="text-text-primary dark:text-text-primary-dark max-w-md">
-                            <h2 className="text-3xl md:text-4xl font-bold mb-6">Visit Our Showroom</h2>
+                            <h2 className="text-2xl md:text-4xl font-bold mb-6">Visit Our Showroom</h2>
 
                             <p className="text-text-secondary dark:text-text-secondary-dark mb-8 text-base">
                                 Curious? concerned? ready to start? The {otherData?.brandName} team is just a click away.

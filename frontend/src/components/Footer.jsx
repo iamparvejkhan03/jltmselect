@@ -40,10 +40,10 @@ function Footer() {
             title: 'Live',
             url: '/auctions?status=active'
         },
-        {
-            title: 'Sold',
-            url: '/auctions?status=sold'
-        },
+        // {
+        //     title: 'Sold',
+        //     url: '/auctions?status=sold'
+        // },
         {
             title: 'Upcoming',
             url: '/auctions?status=approved'

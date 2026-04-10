@@ -83,7 +83,7 @@ const TermsOfUse = () => {
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
                             <h2 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-3">3. Membership Plans & Billing</h2>
                             <p className="text-text-secondary dark:text-text-secondary-dark mb-3">
-                                We offer two membership plans: Classic (6 months for $120) and Premium (12 months for $200). 
+                                We offer three membership plans: Basic (1 month for $50), Standard (3 months for $125), and Premium (6 months for $250).
                                 Membership fees are charged at signup and are non-refundable.
                             </p>
                             <ul className="text-text-secondary dark:text-text-secondary-dark space-y-2 list-disc pl-5">

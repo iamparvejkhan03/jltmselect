@@ -550,9 +550,11 @@ function Profile() {
                                                             type="tel"
                                                             value={userData.phone || ''}
                                                             onChange={(e) => handleInputChange('phone', e.target.value)}
+                                                            disabled
                                                             className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent disabled:bg-gray-100"
                                                         />
                                                     </div>
+                                                    <p className="text-sm text-gray-500 mt-1">Phone number cannot be changed</p>
                                                 </div>
                                                 <div className="space-y-1">
                                                     <label className="block text-sm font-medium text-bg-primary-light">Member Since</label>

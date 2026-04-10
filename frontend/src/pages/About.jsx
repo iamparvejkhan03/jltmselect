@@ -142,7 +142,7 @@ function About() {
             <Container className="bg-bg-secondary dark:bg-bg-primary">
                 <div
                     ref={section1Ref}
-                    className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-16 transition-all duration-700 ${section1Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+                    className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-4 md:py-16 transition-all duration-700 ${section1Visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
                         }`}
                 >
                     {/* Left Side - Text Content */}

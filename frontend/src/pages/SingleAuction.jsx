@@ -19,6 +19,7 @@ const MakeOfferModal = lazy(() => import('../components/MakeOfferModal'));
 function SingleAuction() {
     const { id } = useParams();
     const [auction, setAuction] = useState(null);
+    const [isSoldAuction, setIsSoldAuction] = useState(false);
     const [loading, setLoading] = useState(true);
     const [bidding, setBidding] = useState(false);
     const [buying, setBuying] = useState(false);
@@ -126,13 +127,13 @@ function SingleAuction() {
     };
 
     useEffect(() => {
-        if (!checkingSubscription && !hasCheckedAccess && auction) {
+        if (!checkingSubscription && !hasCheckedAccess && auction && !isSoldAuction) {
             if (!hasActiveSubscription) {
                 guardAction();
             }
             setHasCheckedAccess(true);
         }
-    }, [checkingSubscription, hasActiveSubscription, guardAction, hasCheckedAccess, auction]);
+    }, [checkingSubscription, hasActiveSubscription, guardAction, hasCheckedAccess, auction, isSoldAuction]);
 
     useEffect(() => {
         const fetchAuction = async () => {
@@ -141,6 +142,9 @@ function SingleAuction() {
                 const { data } = await axiosInstance.get(`/api/v1/auctions/${id}`);
                 if (data.success) {
                     setAuction(data.data.auction);
+                    if (data.data.auction.status === 'sold') {
+                        setIsSoldAuction(true);
+                    }
                 }
             } catch (error) {
                 toast.error(error?.response?.data?.message || 'Failed to fetch auction');
@@ -415,6 +419,21 @@ function SingleAuction() {
             auction.auctionType === 'reserve' ||
             auction.auctionType === 'buy_now'); // Include buy_now
 
+    // Calculate discount percentage if it's a bargain deal
+    const getDiscountBadge = () => {
+        if (isSoldAuction && auction?.finalPrice && auction?.retailPrice) {
+            const discountPercentage = ((auction.retailPrice - auction.finalPrice) / auction.retailPrice) * 100;
+            return {
+                label: `${Math.round(discountPercentage)}% OFF`,
+                icon: Zap,
+                color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800'
+            };
+        }
+        return null;
+    };
+
+    const discountBadge = getDiscountBadge();
+
     if (loading) {
         return (
             <Container className="py-32 min-h-[70vh] flex items-center justify-center">
@@ -499,7 +518,7 @@ function SingleAuction() {
                         ))}
                     </div>
                     <div className="flex items-center gap-3">
-                        <button
+                        {/* <button
                             onClick={toggleWatchlist}
                             className={`flex items-center gap-2 text-text-primary dark:text-text-primary-dark py-1 px-3 border border-gray-300 dark:border-bg-primary-light rounded-full transition-colors ${isWatchlisted
                                 ? 'bg-bg-primary dark:bg-bg-secondary text-text-primary-dark dark:text-text-primary'
@@ -508,15 +527,15 @@ function SingleAuction() {
                         >
                             <Heart size={18} fill={isWatchlisted ? 'currentColor' : 'none'} />
                             <span>{watchlistCount || auction?.watchlistCount || 0}</span>
-                        </button>
+                        </button> */}
 
-                        <button
+                        {/* <button
                             onClick={() => handleTabClick('comments')}
                             className="flex items-center gap-2 border border-gray-300 dark:border-bg-primary-light text-text-primary dark:text-text-primary-dark py-1 px-3 rounded-full cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
                         >
                             <MessageSquare size={18} />
                             <span>{pagination?.totalComments || 0}</span>
-                        </button>
+                        </button> */}
 
                         {
                             (auction.auctionType === 'standard' || auction.auctionType === 'reserve') && (
@@ -561,7 +580,7 @@ function SingleAuction() {
                 <h2 className="text-2xl md:text-3xl font-semibold my-6 text-text-primary dark:text-text-primary-dark">{auction.title}</h2>
 
                 {/* Image section */}
-                <ImageLightBox images={auction.photos} auctionType={auction?.auctionType} isReserveMet={auction.currentPrice >= auction.reservePrice} />
+                <ImageLightBox images={auction.photos} auctionType={auction?.auctionType} isReserveMet={auction.currentPrice >= auction.reservePrice} discountBadge={discountBadge} />
 
                 <hr className="my-8 border-gray-200 dark:border-bg-primary-light" />
 
@@ -623,20 +642,12 @@ function SingleAuction() {
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Bundle Manifest Section - Add this after Auction Overview */}
-                    {auction.bundleItems && auction.bundleItems.length > 0 && (
-                        <>
-                            <hr className="my-8 border-gray-200 dark:border-bg-primary-light" />
-                            <div className="my-5">
-                                <BundleManifest
-                                    bundleItems={auction.bundleItems}
-                                    categoryFields={categoryFields || []}
-                                    auction={auction}
-                                />
-                            </div>
-                        </>
-                    )}
+                <div>
+                    <hr className="my-8 border-gray-200 dark:border-bg-primary-light" />
+                    {/* Dynamic Specifications Section */}
+                    <SpecificationsSection auction={auction} />
                 </div>
 
                 {/* Features Section */}
@@ -684,20 +695,6 @@ function SingleAuction() {
                             ))}
                         </div>
                     </div>
-                )}
-
-                {/* Service Records Section */}
-                {auction.serviceRecords && auction.serviceRecords.length > 0 && (
-                    <>
-                        <div>
-                            <h3 className="my-5 text-text-primary dark:text-text-primary-dark text-xl font-semibold">Service Records</h3>
-                            <ImageLightBox
-                                images={auction.serviceRecords}
-                                captions={auction.serviceRecords.map(record => record.caption || '')}
-                                type="logbooks"
-                            />
-                        </div>
-                    </>
                 )}
 
                 {/* Video section */}

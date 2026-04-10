@@ -175,11 +175,11 @@ const SpecificationsSection = ({ auction }) => {
 
     return (
         <div className="mt-8">
-            {/* <h3 className="text-xl font-semibold mb-4">Specifications</h3> */}
+            <h3 className="text-xl font-semibold mb-4">Specifications</h3>
             
             {Object.entries(groupedFields).map(([groupName, fields]) => (
-                <div key={groupName} className="mb-6 bg-primary p-6 rounded-lg border border-white">
-                    <h4 className="text-sm font-medium text-white/80 mb-4 flex items-center">
+                <div key={groupName} className="mb-6 bg-bg-secondary p-6 rounded-lg border border-white0 dark:border-gray-700">
+                    <h4 className="text-sm font-medium text-primary mb-4 flex items-center">
                         <Settings size={20} className="mr-2" />
                         {groupName}
                     </h4>
@@ -188,10 +188,10 @@ const SpecificationsSection = ({ auction }) => {
                             const formattedValue = formatValue(value, fieldType, unit);
                             
                             return (
-                                <div key={key} className="flex items-start gap-3 p-3 bg-white rounded-lg hover:bg-gray-100 transition-colors shadow-sm">
+                                <div key={key} className="flex items-start gap-3 p-3 bg-bg-secondary dark:bg-bg-primary-light rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm">
                                     {/* <DefaultIcon className="flex-shrink-0 w-5 h-5 mt-1 text-primary" strokeWidth={1.5} /> */}
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-secondary text-sm font-medium">{label}</p>
+                                        <p className="text-primary text-sm font-medium">{label}</p>
                                         <div className="text-base font-medium text-gray-900 break-words capitalize">
                                             {formattedValue}
                                         </div>

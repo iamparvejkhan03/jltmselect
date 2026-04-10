@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, LayoutGrid, Shield, Clock, ShoppingCart, ShieldBanIcon, HelpingHand } from 'lucide-react';
 
-const ImageLightBox = ({ images = [], captions = [], auctionType = '', isReserveMet = '', type = 'photos' }) => {
+const ImageLightBox = ({ images = [], captions = [], auctionType = '', isReserveMet = '', type = 'photos', discountBadge = null }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -148,6 +148,14 @@ const ImageLightBox = ({ images = [], captions = [], auctionType = '', isReserve
 
                     {/* Status Badges - Only for photos */}
                     <div className="absolute top-3 right-3 flex flex-wrap gap-2">
+                        {discountBadge && (
+                            <span
+                                className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${discountBadge.color}`}
+                            >
+                                <discountBadge.icon size={12} />
+                                {discountBadge.label}
+                            </span>
+                        )}
                         {statusBadges.map((badge, index) => {
                             const IconComponent = badge.icon;
                             return (

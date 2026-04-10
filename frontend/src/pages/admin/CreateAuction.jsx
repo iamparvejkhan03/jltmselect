@@ -29,7 +29,8 @@ import {
     ChevronRight,
     AlertCircle,
     Banknote,
-    Zap
+    Zap,
+    Sofa
 } from "lucide-react";
 import { RTE, AdminContainer, AdminHeader, AdminSidebar } from '../../components';
 import toast from 'react-hot-toast';
@@ -785,7 +786,7 @@ const CreateAuction = () => {
                                 {step === 1 && (
                                     <div>
                                         <h2 className="text-xl font-semibold mb-6 flex items-center">
-                                            <Car size={20} className="mr-2" />
+                                            <Sofa size={20} className="mr-2" />
                                             Item Details
                                         </h2>
 
