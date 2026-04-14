@@ -147,7 +147,7 @@ function Header() {
                         ))}
 
                         {/* Categories Dropdown */}
-                        <li className={`${isScrolled
+                        {/* <li className={`${isScrolled
                             ? 'text-pure-white dark:text-text-primary-dark'
                             : 'text-pure-white'} relative`}
                         >
@@ -168,7 +168,6 @@ function Header() {
 
                                     <div className="relative w-full max-w-6xl bg-bg-secondary dark:bg-bg-primary shadow-2xl rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
                                         <div className="flex h-[75vh]">
-                                            {/* LEFT SIDEBAR - Dark in light mode, Light in dark mode */}
                                             <div className="w-1/4 overflow-y-auto py-4 border-r border-gray-200 dark:border-gray-700 bg-bg-primary dark:bg-bg-secondary">
                                                 {categories.map((cat) => (
                                                     <div
@@ -187,7 +186,6 @@ function Header() {
                                                 ))}
                                             </div>
 
-                                            {/* RIGHT CONTENT - Light in light mode, Dark in dark mode */}
                                             <div className="w-3/4 bg-bg-secondary dark:bg-bg-primary text-text-primary dark:text-text-primary-dark p-8 overflow-y-auto">
                                                 {categories
                                                     .filter((cat) => cat.slug === hoveredCategory)
@@ -223,7 +221,7 @@ function Header() {
                                     </div>
                                 </div>
                             )}
-                        </li>
+                        </li> */}
 
                         <li>
                             {user ? (
@@ -274,7 +272,7 @@ function Header() {
                             </li>
                         ))}
 
-                        <li className="relative mx-5 py-2 mb-2 justify-self-center">
+                        {/* <li className="relative mx-5 py-2 mb-2 justify-self-center">
                             <button
                                 onClick={() => {
                                     setMobileCategoriesOpen(true);
@@ -285,7 +283,7 @@ function Header() {
                                 Categories
                                 <ChevronRight size={16} />
                             </button>
-                        </li>
+                        </li> */}
 
                         <li>
                             {user ? (

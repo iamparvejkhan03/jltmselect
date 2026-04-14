@@ -26,7 +26,7 @@ otpRouter.post("/send", async (req, res) => {
       expiresAt: Date.now() + 5 * 60 * 1000
     });
 
-    await sendOTP(phone, otp);
+    // await sendOTP(phone, otp);
     // console.log('OTP sent:', otp);
 
     res.json({ success: true });
