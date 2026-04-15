@@ -41,7 +41,7 @@ function Hero() {
           Your gateway to elegant furniture at extraordinary value. Enjoy exclusive auctions, 15% off unlimited in-store purchase, shorroom inventory videos and more.
         </p>
 
-        <div className="flex items-center justify-start gap-5 uppercase">
+        <div className="flex items-center justify-start gap-5">
           <button onClick={() => navigate('/register')} className="text-pure-black bg-pure-white py-2 px-5 rounded-md font-medium transition duration-200 flex items-center gap-2 group relative text-sm md:text-base hover:bg-pure-white/95">
             Join Now / Login
           </button>

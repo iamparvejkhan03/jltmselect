@@ -1,5 +1,5 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { closeMenu, darkLogo, logo, menuIcon } from "../assets";
+import { closeMenu, darkLogo, logo, logoWithBg, menuIcon } from "../assets";
 import Container from "./Container";
 import { ChevronRight, LayoutDashboard, LogIn, Search, ChevronDown, X, Gavel, Clock, DollarSign, Gift, Store, User, UserPlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -120,7 +120,7 @@ function Header() {
             <Container className={`flex items-center justify-between py-4`}>
                 <Link to="/" className="flex items-center justify-center gap-2">
                     <img
-                        src={logo}
+                        src={isMenuOpen ? logoWithBg : logo}
                         alt="Logo"
                         className={`h-8 md:h-10 z-10`}
                     />

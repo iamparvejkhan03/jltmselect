@@ -280,15 +280,13 @@ function Home() {
                                             View More
                                         </button>
                                     )} */}
-                                    {auctions.length > 0 && (
-                                        <button
-                                            id="benefits-section"
-                                            onClick={handleLoadByStatus}
-                                            className=" bg-bg-primary dark:bg-bg-secondary text-pure-white dark:text-pure-black font-medium rounded-lg hover:bg-bg-primary/90 dark:hover:bg-bg-secondary/90 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 mt-10 mx-auto"
-                                        >
-                                            {/* View More */}
-                                        </button>
-                                    )}
+                                    <button
+                                        id="benefits-section"
+                                        onClick={handleLoadByStatus}
+                                        className=" bg-bg-primary dark:bg-bg-secondary text-pure-white dark:text-pure-black font-medium rounded-lg hover:bg-bg-primary/90 dark:hover:bg-bg-secondary/90 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 mt-10 mx-auto"
+                                    >
+                                        {/* View More */}
+                                    </button>
                                 </>
                             )}
                         </Container>

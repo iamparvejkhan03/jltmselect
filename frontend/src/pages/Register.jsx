@@ -891,7 +891,7 @@ const Register = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="md:col-span-1">
                                         <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary-dark mb-2">
-                                            Username <span className='text-red-600'>*</span>
+                                            Public Auction Display Name <span className='text-red-600'>*</span>
                                         </label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
