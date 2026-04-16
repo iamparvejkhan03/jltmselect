@@ -194,7 +194,7 @@ const contactEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -242,7 +242,7 @@ const contactEmail = async (
                         <div class="footer">
                             <p class="footer-text">This email was sent from the contact form on <span class="highlight">JLTM Select</span> website.</p>
                             <p class="footer-text">© ${new Date().getFullYear()} JLTM Select. All rights reserved.</p>
-                            <p class="footer-text">Fashion Closeout Auctions</p>
+                            <p class="footer-text">Furniture Auctions</p>
                         </div>
                     </div>
                 </body>
@@ -297,7 +297,7 @@ const contactConfirmationEmail = async (name, email) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -334,7 +334,7 @@ const contactConfirmationEmail = async (name, email) => {
                             <div class="signature">
                                 <p>Best regards,</p>
                                 <p><strong>The JLTM Select Team</strong></p>
-                                <p>Fashion Closeout Auctions</p>
+                                <p>Furniture Auctions</p>
                             </div>
                         </div>
                         
@@ -444,7 +444,7 @@ const bidConfirmationEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -614,7 +614,7 @@ const offerConfirmationEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -776,7 +776,7 @@ const outbidNotificationEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -993,9 +993,9 @@ const sendAuctionWonEmail = async (auction) => {
     let commissionDisplay = "";
 
     if (auction.commissionType === "fixed") {
-      commissionDisplay = `Fixed Fee: ${formatCurrency(commissionAmount)}`;
+      commissionDisplay = `Sales Tax: ${formatCurrency(commissionAmount)}`;
     } else if (auction.commissionType === "percentage") {
-      commissionDisplay = `${auction.commissionValue}% Fee: ${formatCurrency(commissionAmount)}`;
+      commissionDisplay = `${auction.commissionValue}% Sales Tax: ${formatCurrency(commissionAmount)}`;
     }
 
     const info = await transporter.sendMail({
@@ -1305,7 +1305,7 @@ const sendAuctionEndedSellerEmail = async (auction) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -1521,7 +1521,7 @@ const auctionListedEmail = async (auction, seller) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -1705,7 +1705,7 @@ const auctionEndingSoonEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -1896,9 +1896,9 @@ const paymentCompletedEmail = async (user, auction, paymentAmount) => {
 
     let commissionDisplay = "";
     if (auction.commissionType === "fixed") {
-      commissionDisplay = `Fixed Fee (${formatCurrency(commissionAmount)})`;
+      commissionDisplay = `Sales Tax (${formatCurrency(commissionAmount)})`;
     } else if (auction.commissionType === "percentage") {
-      commissionDisplay = `${auction.commissionValue}% Fee (${formatCurrency(commissionAmount)})`;
+      commissionDisplay = `${auction.commissionValue}% Sales Tax (${formatCurrency(commissionAmount)})`;
     }
 
     const info = await transporter.sendMail({
@@ -1972,7 +1972,7 @@ const paymentCompletedEmail = async (user, auction, paymentAmount) => {
                     <div class="container">
                         <div class="header">
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -1993,14 +1993,14 @@ const paymentCompletedEmail = async (user, auction, paymentAmount) => {
                                     <span class="amount-value">${formatCurrency(finalPrice)}</span>
                                 </div>
                                 <div class="amount-row">
-                                    <span class="amount-label">${auction.commissionType === "fixed" ? "Platform Fee (Fixed)" : "Platform Fee (Percentage)"}:</span>
+                                    <span class="amount-label">${auction.commissionType === "fixed" ? "Sales Tax (Fixed)" : "Sales Tax (Percentage)"}:</span>
                                     <span class="amount-value">${formatCurrency(commissionAmount)}</span>
                                 </div>
                                 <div class="commission-note">
                                     ⚡ ${
                                       auction.commissionType === "fixed"
-                                        ? `A fixed fee of ${formatCurrency(auction.commissionValue)} applies to this purchase.`
-                                        : `A ${auction.commissionValue}% platform fee (${formatCurrency(commissionAmount)}) applies to this purchase.`
+                                        ? `A fixed sales tax of ${formatCurrency(auction.commissionValue)} applies to this purchase.`
+                                        : `A ${auction.commissionValue}% sales tax (${formatCurrency(commissionAmount)}) applies to this purchase.`
                                     }
                                 </div>
                                 <div class="amount-row total">
@@ -2145,7 +2145,7 @@ const paymentCompletedSellerEmail = async (seller, auction, buyer) => {
                     <div class="container">
                         <div class="header">
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -2297,7 +2297,7 @@ const welcomeEmail = async (user, verificationToken) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -2431,7 +2431,7 @@ const resetPasswordEmail = async (email, url) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -2563,7 +2563,7 @@ const newUserRegistrationEmail = async (adminEmail, user) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -2731,7 +2731,7 @@ const auctionWonAdminEmail = async (adminEmail, auction, buyer) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -2988,7 +2988,7 @@ const auctionEndedAdminEmail = async (adminEmail, auction) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -3227,7 +3227,7 @@ const flaggedCommentAdminEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -3442,7 +3442,7 @@ const newCommentSellerEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -3633,7 +3633,7 @@ const newCommentBidderEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -3827,7 +3827,7 @@ const auctionSubmittedForApprovalEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -4064,7 +4064,7 @@ const auctionApprovedEmail = async (seller, auction) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -4314,7 +4314,7 @@ const newAuctionNotificationEmail = async (buyer, auction, seller) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                             <div class="listing-badge">${listingStatus}</div>
                         </div>
                         
@@ -4430,7 +4430,7 @@ const newAuctionNotificationEmail = async (buyer, auction, seller) => {
                         
                         <div class="footer">
                             <p class="footer-text">You're receiving this email because you're a registered buyer on JLTM Select.</p>
-                            <p class="footer-text">© ${new Date().getFullYear()} JLTM Select. Fashion Closeout Auctions.</p>
+                            <p class="footer-text">© ${new Date().getFullYear()} JLTM Select. Furniture Auctions.</p>
                         </div>
                     </div>
                 </body>
@@ -4646,7 +4646,7 @@ const newBidNotificationEmail = async (seller, auction, bidAmount, bidder) => {
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -4839,7 +4839,7 @@ const newOfferNotificationEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -5043,7 +5043,7 @@ const offerCanceledEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -5253,7 +5253,7 @@ const offerAcceptedEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -5454,7 +5454,7 @@ const offerRejectedEmail = async (
                         <div class="header">
                             
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -5630,7 +5630,7 @@ const payoutInitiatedEmail = async (seller, auction, payout) => {
                     <div class="container">
                         <div class="header">
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -5654,7 +5654,7 @@ const payoutInitiatedEmail = async (seller, auction, payout) => {
                                     <span class="amount-value">${payout.formattedTotalAmount}</span>
                                 </div>
                                 <div class="amount-row">
-                                    <span class="amount-label">Platform Commission:</span>
+                                    <span class="amount-label">Sales Tax:</span>
                                     <span class="amount-value">${payout.formattedCommissionAmount}</span>
                                 </div>
                                 <div class="amount-row total">
@@ -5753,7 +5753,7 @@ const payoutCompletedEmail = async (seller, auction, payout) => {
                     <div class="container">
                         <div class="header">
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
@@ -5787,7 +5787,7 @@ const payoutCompletedEmail = async (seller, auction, payout) => {
                                     <span class="amount-value">${payout.formattedTotalAmount}</span>
                                 </div>
                                 <div class="amount-row">
-                                    <span class="amount-label">Platform Commission:</span>
+                                    <span class="amount-label">Sales Tax:</span>
                                     <span class="amount-value">${payout.formattedCommissionAmount}</span>
                                 </div>
                                 <div class="amount-row total">
@@ -5865,7 +5865,7 @@ const payoutFailedEmail = async (seller, payout) => {
                     <div class="container">
                         <div class="header">
                             <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Fashion Closeout Auctions</div>
+                            <div class="tagline">Furniture Auctions</div>
                         </div>
                         
                         <div class="content">
