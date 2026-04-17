@@ -184,7 +184,7 @@ const BargainFiltersSection = ({
                 </div>
 
                 {/* Location */}
-                <div>
+                {/* <div>
                     <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary-dark mb-2">Location</label>
                     <input
                         type="text"
@@ -194,7 +194,7 @@ const BargainFiltersSection = ({
                         onChange={handleFilterChange}
                         className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 bg-bg-secondary dark:bg-bg-primary text-text-primary dark:text-text-primary-dark rounded-lg focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500 focus:border-transparent"
                     />
-                </div>
+                </div> */}
 
                 {/* Auction Type Filter */}
                 <div>
@@ -210,7 +210,7 @@ const BargainFiltersSection = ({
                         <option value="">All Types</option>
                         <option value="standard">Standard Auction</option>
                         <option value="reserve">Reserve Auction</option>
-                        <option value="buy_now">Buy Now Auction</option>
+                        {/* <option value="buy_now">Buy Now Auction</option> */}
                     </select>
                 </div>
             </div>

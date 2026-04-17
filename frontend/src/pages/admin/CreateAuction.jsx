@@ -897,6 +897,7 @@ const CreateAuction = () => {
                                                         {...register('location')}
                                                         id="location"
                                                         type="text"
+                                                        defaultValue={`1585 Sunland Lane, Costa Mesa, CA 92626`}
                                                         className="w-full pl-10 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                                                         placeholder="e.g., Los Angeles, California, USA"
                                                     />

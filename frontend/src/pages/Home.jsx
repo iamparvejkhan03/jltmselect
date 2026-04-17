@@ -128,16 +128,16 @@ function Home() {
             </Container> */}
 
             {/* Category section */}
-            <Suspense fallback={<LoadingSpinner />}>
+            {/* <Suspense fallback={<LoadingSpinner />}>
                 <CategoryIconsSection />
-            </Suspense>
+            </Suspense> */}
 
             {/* Dynamic Auctions section */}
             {
                 hasActiveSubscription && !checkingSubscription ? (
                     <>
                         {/* Dynamic Auctions section */}
-                        <Container className="pb-14 flex flex-col bg-bg-secondary dark:bg-bg-primary">
+                        <Container className="py-14 flex flex-col bg-bg-secondary dark:bg-bg-primary">
                             <div className="gap-y-3">
                                 <div className="flex items-center justify-between flex-wrap gap-y-3">
                                     <h2 className="text-3xl md:text-4xl font-bold text-text-primary dark:text-text-primary-dark order-1">
@@ -293,7 +293,7 @@ function Home() {
                     </>
                 ) :
                     (
-                        <Container className="pb-14 flex flex-col bg-bg-secondary dark:bg-bg-primary">
+                        <Container className="py-14 flex flex-col bg-bg-secondary dark:bg-bg-primary">
                             <div className="gap-y-3">
                                 <div className="flex items-center justify-between flex-wrap gap-y-3">
                                     <h2 className="text-3xl md:text-4xl font-bold text-text-primary dark:text-text-primary-dark order-1">

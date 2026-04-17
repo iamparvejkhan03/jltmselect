@@ -368,14 +368,14 @@ export const createAuction = async (req, res) => {
     });
 
     // Notify admins if needed
-    const adminUsers = await User.find({ userType: "admin" });
-    for (const admin of adminUsers) {
-      await auctionSubmittedForApprovalEmail(
-        admin.email,
-        auction,
-        auction.seller,
-      );
-    }
+    // const adminUsers = await User.find({ userType: "admin" });
+    // for (const admin of adminUsers) {
+    //   await auctionSubmittedForApprovalEmail(
+    //     admin.email,
+    //     auction,
+    //     auction.seller,
+    //   );
+    // }
   } catch (error) {
     console.error("Create auction error:", error);
     res.status(500).json({

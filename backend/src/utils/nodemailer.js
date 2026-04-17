@@ -215,7 +215,7 @@ const contactEmail = async (
                             <div class="field">
                                 <span class="label">Phone Number:</span>
                                 <span class="value">
-                                    <a href="tel:${phone}" class="contact-link">${phone}</a>
+                                    <a href="tel:${phone || '7149689888'}" class="contact-link">${phone || '714-968-9888'}</a>
                                 </span>
                             </div>
                             
@@ -328,7 +328,7 @@ const contactConfirmationEmail = async (name, email) => {
                             
                             <div class="contact-info">
                                 <p><strong>Phone Support:</strong> Available Monday-Friday, 9:00 AM - 6:00 PM CET</p>
-                                <p><strong>Email Support:</strong> ${process.env.EMAIL_USER || "tech@jltmselect.com"}</p>
+                                <p><strong>Email Support:</strong> ${process.env.EMAIL_USER || "help@jltmselect.com"}</p>
                             </div>
                             
                             <div class="signature">
@@ -856,11 +856,6 @@ const outbidNotificationEmail = async (
                                 </div>
                             </div>
                             
-                            <div class="tip-box">
-                                <div class="tip-title">💡 Quick Tip:</div>
-                                <p>For a better chance to win, consider placing a bid that's significantly higher than the current bid. Remember, auctions on JLTM Select use automatic extension - if a bid is placed in the last 2 minutes, the auction extends by 2 minutes.</p>
-                            </div>
-                            
                             <p>Dear <span class="highlight">${userName}</span>,</p>
                             <p>This is an automated notification to let you know that another bidder has placed a higher bid on <strong>${auction.title}</strong>.</p>
                             <p><strong>Act quickly!</strong> This auction is getting competitive. The sooner you place your next bid, the better your chances of winning.</p>
@@ -870,7 +865,7 @@ const outbidNotificationEmail = async (
                             <p class="footer-text">You're receiving this email because you placed a bid on ${auction.title}.</p>
                             <p class="footer-text">This is an automated notification from JLTM Select.</p>
                             <p class="footer-text">© ${new Date().getFullYear()} JLTM Select. All rights reserved.</p>
-                            <p class="footer-text">Need help? Contact support at ${process.env.EMAIL_USER || "tech@jltmselect.com"}</p>
+                            <p class="footer-text">Need help? Contact support at ${process.env.EMAIL_USER || "help@jltmselect.com"}</p>
                         </div>
                     </div>
                 </body>
@@ -1075,10 +1070,10 @@ const sendAuctionWonEmail = async (auction) => {
                         <div class="header">
                             <div class="company-name">JLTM Select</div>
                             <div class="company-address">
-                                Norway
+                                1585 Sunland Lane, Costa Mesa, CA 92626
                             </div>
                             <div class="contact-info">
-                                Web: https://www.JLTM Select.com | Email: tech@jltmselect.com
+                                Web: https://www.jltmselect.com | Email: help@jltmselect.com
                             </div>
                         </div>
                         
@@ -1115,7 +1110,7 @@ const sendAuctionWonEmail = async (auction) => {
                         <!-- Winner Announcement -->
                         <div class="winner-section">
                             <div class="winner-title">🎉 CONGRATULATIONS! YOU WON THE AUCTION</div>
-                            <p>You are the winning bidder for this item. Please complete payment within 7 days.</p>
+                            <p>You are the winning bidder for this item. Pay within 8 hours to secure your deal. If not paid, you may lose the deal and be subject to account suspension.</p>
                             <div class="winning-price">
                                 ${formatCurrency(totalAmount)}
                             </div>
@@ -1165,7 +1160,7 @@ const sendAuctionWonEmail = async (auction) => {
                             <div class="payment-title">💳 COMPLETE YOUR PAYMENT NOW</div>
                             <p>Click the button below to securely complete your payment online:</p>
                             
-                            <a href="${process.env.FRONTEND_URL}/bidder/auctions/won" class="payment-button">
+                            <a href="${process.env.FRONTEND_URL}/checkout/${auction._id}" class="payment-button">
     PAY NOW - ${formatCurrency(totalAmount)}
 </a>
                             
@@ -1174,7 +1169,7 @@ const sendAuctionWonEmail = async (auction) => {
                             </div>
                             
                             <div style="margin-top: 15px; font-size: 13px; color: #666; border-top: 1px dashed #bbdefb; padding-top: 15px;">
-                                <p><span class="highlight">Need help?</span> Contact our support team at <a href="mailto:tech@jltmselect.com" class="support-link">tech@jltmselect.com</a></p>
+                                <p><span class="highlight">Need help?</span> Contact our support team at <a href="mailto:help@jltmselect.com" class="support-link">help@jltmselect.com</a></p>
                                 <p style="margin-top: 5px;">You can also complete your payment by logging into your account and visiting the "Won Auctions" section.</p>
                             </div>
                         </div>
@@ -1182,14 +1177,14 @@ const sendAuctionWonEmail = async (auction) => {
                         <!-- Collection Information -->
                         <div class="collection-info">
                             <div class="collection-title">📦 ITEM COLLECTION</div>
-                            <p><strong>Important Information:</strong> Once your payment has been received and confirmed for the item, we will reach out to you.</p>
+                            <p><strong>Important Information:</strong> Your item is ready for pickup at 1585 Sunland Lane, Costa Mesa, CA 92626. Tel: 714-968-9888</p>
                         </div>
                         
                         <!-- Call to Action -->
                         <div class="cta-section">
                             <p>If you have any questions, please feel free to leave a message.</p>
                             <p style="font-size: 12px; color: #666;">
-                                Questions? Contact <a href="mailto:tech@jltmselect.com" class="support-link">tech@jltmselect.com</a>
+                                Questions? Contact <a href="mailto:help@jltmselect.com" class="support-link">help@jltmselect.com</a>
                             </p>
                         </div>
                         
@@ -1384,37 +1379,14 @@ const sendAuctionEndedSellerEmail = async (auction) => {
                                 </div>
                             </div>
                             
-                            ${
-                              auction?.status === "sold" ||
-                              auction?.status === "sold_buy_now"
-                                ? `
-                            <div class="next-steps">
-                                <div class="next-title">📝 Next Steps</div>
-                                <p>1. Contact the buyer within 24 hours</p>
-                                <p>2. Complete the sale agreement</p>
-                                <p>3. Arrange item collection/delivery</p>
-                            </div>
-                            `
-                                : `
-                            <div class="next-steps">
-                                <div class="next-title">🔄 Next Steps</div>
-                                <p>1. Review your listing and pricing</p>
-                                <p>2. Consider relisting with adjusted price</p>
-                                <p>3. Add more photos or description details</p>
-                                <p>4. Try our featured listing option for more visibility</p>
-                            </div>
-                            `
-                            }
-                            
                             <p>Dear <span class="highlight">${auction?.seller?.firstName || auction?.seller?.username}</span>,</p>
                             <p>Your listing for the <strong>${auction?.title}</strong> on JLTM Select has ended.</p>
-                            <p>For any questions about the sale process or assistance, please contact our support team.</p>
                         </div>
                         
                         <div class="footer">
                             <p class="footer-text">This is an automated notification from JLTM Select.</p>
                             <p class="footer-text">© ${new Date().getFullYear()} JLTM Select. All rights reserved.</p>
-                            <p class="footer-text">Need help? Contact support at ${process.env.EMAIL_USER || "tech@jltmselect.com"}</p>
+                            <p class="footer-text">Need help? Contact support at ${process.env.EMAIL_USER || "help@jltmselect.com"}</p>
                         </div>
                     </div>
                 </body>
@@ -1560,15 +1532,6 @@ const auctionListedEmail = async (auction, seller) => {
                                 }
                             </div>
                             
-                            <div class="tips-box">
-                                <div class="tips-title">💡 Tips for a Successful Sale</div>
-                                <div class="tip-item">Respond quickly to buyer inquiries (within 4 hours)</div>
-                                <div class="tip-item">Share your listing on social media for more visibility</div>
-                                <div class="tip-item">Keep your phone handy for buyer calls</div>
-                                <div class="tip-item">Be prepared to negotiate with serious buyers</div>
-                                <div class="tip-item">Update your listing with additional photos if needed</div>
-                            </div>
-                            
                             <div class="listing-url">
                                 <strong>Your Listing URL:</strong><br>
                                 <a href="${process.env.FRONTEND_URL}/auction/${auction?._id}" style="color: #edcd1f; text-decoration: none;">
@@ -1579,14 +1542,6 @@ const auctionListedEmail = async (auction, seller) => {
                             <p style="text-align: center; margin: 25px 0;">
                                 <a href="${process.env.FRONTEND_URL}/auction/${auction?._id}" class="cta-button">View Your Live Listing</a>
                             </p>
-                            
-                            <div class="notifications-box">
-                                <p><strong>📱 What happens next?</strong></p>
-                                <p>• We'll notify you when you receive offers</p>
-                                <p>• You'll get alerts for buyer questions</p>
-                                <p>• We'll remind you when offers are about to expire</p>
-                                <p>• You'll be notified when a buyer wants to proceed</p>
-                            </div>
                             
                             <p>We wish you a quick and successful sale!</p>
                         </div>
@@ -1867,7 +1822,7 @@ const paymentSuccessEmail = async (user, auction, paymentAmount) => {
 
                             ${auction.seller ? `<p><strong>E-mail:</strong> ${auction.seller?.email}</p>` : ""}
 
-                            ${auction.seller ? `<p><strong>Phone:</strong> ${auction.seller?.phone || "Not provided"}</p>` : ""}
+                            ${auction.seller ? `<p><strong>Phone:</strong> ${auction.seller?.phone || "714-968-9888"}</p>` : ""}
                         `
                             : ``
                         }                        
@@ -2009,53 +1964,18 @@ const paymentCompletedEmail = async (user, auction, paymentAmount) => {
                                 </div>
                             </div>
                             
-                            <div class="seller-info">
-                                <div class="seller-title">
-                                    <span>📞 SELLER INFORMATION</span>
-                                </div>
-                                <p>Your payment has been confirmed. Below are the seller's contact details so you can coordinate the collection/delivery of your item.</p>
-                                
-                                ${
-                                  auction?.seller
-                                    ? `
-                                <div class="contact-details">
-                                    <p><strong>Seller Name:</strong> ${auction?.seller?.firstName || auction?.seller?.username}</p>
-                                    ${auction?.seller?.email ? `<p><strong>Email:</strong> <a href="mailto:${auction?.seller?.email}" class="contact-link">${auction?.seller?.email}</a></p>` : ""}
-                                    ${auction?.seller?.phone ? `<p><strong>Phone:</strong> <a href="tel:${auction?.seller?.phone}" class="contact-link">${auction?.seller?.phone}</a></p>` : ""}
-                                    ${auction?.location ? `<p><strong>Item Location:</strong> ${auction?.location}</p>` : ""}
-                                </div>
-                                `
-                                    : ""
-                                }
-                                
-                                <p style="margin-top: 15px; font-size: 14px;"><strong>Next Step:</strong> Please contact the seller within 48 hours to arrange collection or delivery of your item.</p>
-                            </div>
-                            
-                            <div class="next-steps">
-                                <div class="steps-title">
-                                    <span>📋 WHAT HAPPENS NEXT</span>
-                                </div>
-                                <p>1. <strong>Contact the seller</strong> using the details provided above</p>
-                                <p>2. <strong>Arrange collection/delivery</strong> - Agree on a convenient time and method</p>
-                                <p>3. <strong>Inspect your item</strong> upon collection/delivery</p>
-                                <p>4. <strong>Complete the transaction</strong> by signing any necessary documentation</p>
-                            </div>
-                            
                             <div class="dashboard-box">
                                 <div class="dashboard-title">📋 MANAGE YOUR PURCHASE</div>
-                                <p>You can view all your won items, download invoices, and track the collection process from your dashboard.</p>
                                 <p style="margin: 15px 0;">
                                     <a href="${process.env.FRONTEND_URL}/dashboard/auctions/won" class="cta-button">GO TO MY WINS</a>
                                 </p>
                             </div>
-                            
-                            <p style="margin-top: 25px;">If you have any questions or encounter any issues when contacting the seller, please don't hesitate to reach out to our support team. We're here to help!</p>
                         </div>
                         
                         <div class="footer">
                             <p class="footer-text">This payment confirmation was sent by JLTM Select.</p>
                             <p class="footer-text">© ${new Date().getFullYear()} JLTM Select. All rights reserved.</p>
-                            <p class="footer-text">Need assistance? Contact us at ${process.env.EMAIL_USER || "tech@jltmselect.com"}</p>
+                            <p class="footer-text">Need assistance? Contact us at ${process.env.EMAIL_USER || "help@jltmselect.com"}</p>
                         </div>
                     </div>
                 </body>
@@ -2206,7 +2126,7 @@ const paymentCompletedSellerEmail = async (seller, auction, buyer) => {
                         <div class="footer">
                             <p class="footer-text">This payment confirmation was sent by JLTM Select.</p>
                             <p class="footer-text">© ${new Date().getFullYear()} JLTM Select. All rights reserved.</p>
-                            <p class="footer-text">Need assistance? Contact us at ${process.env.EMAIL_USER || "tech@jltmselect.com"}</p>
+                            <p class="footer-text">Need assistance? Contact us at ${process.env.EMAIL_USER || "help@jltmselect.com"}</p>
                         </div>
                     </div>
                 </body>
@@ -2294,16 +2214,10 @@ const welcomeEmail = async (user, verificationToken) => {
                 </head>
                 <body>
                     <div class="container">
-                        <div class="header">
-                            
-                            <div class="brand-name">JLTM Select</div>
-                            <div class="tagline">Furniture Auctions</div>
-                        </div>
                         
                         <div class="content">
                             <div class="welcome-box">
                                 <div class="welcome-title">👋 WELCOME TO JLTM Select!</div>
-                                <p style="font-size: 18px; color: #1e2d3b;">Your premier destination for online auctions in the US.</p>
                             </div>
                             
                             <div class="user-greeting">
@@ -2346,7 +2260,7 @@ const welcomeEmail = async (user, verificationToken) => {
                         <div class="footer">
                             <p class="footer-text">Welcome to the JLTM Select community - where your next great find awaits!</p>
                             <p class="footer-text">© ${new Date().getFullYear()} JLTM Select. All rights reserved.</p>
-                            <p class="footer-text">Questions? Contact us at ${process.env.EMAIL_USER || "tech@jltmselect.com"}</p>
+                            <p class="footer-text">Questions? Contact us at ${process.env.EMAIL_USER || "help@jltmselect.com"}</p>
                         </div>
                     </div>
                 </body>
@@ -2815,16 +2729,8 @@ const auctionWonAdminEmail = async (adminEmail, auction, buyer) => {
                                 </div>
                             </div>
                             
-                            <div class="seller-card">
-                                <div class="seller-title">🏪 SELLER INFORMATION</div>
-                                <p><strong>Seller:</strong> ${auction?.seller?.firstName || auction?.seller?.username || "N/A"}</p>
-                                <p><strong>Email:</strong> ${auction?.seller?.email || "N/A"}</p>
-                                ${auction?.seller?.phone ? `<p><strong>Phone:</strong> ${auction?.seller?.phone}</p>` : ""}
-                            </div>
-                            
                             <div class="admin-actions">
                                 <div class="actions-title">⚡ ADMIN ACTIONS</div>
-                                <p>You can review this sale, generate invoices, or manage the transaction from the admin panel.</p>
                                 <p style="text-align: center; margin: 20px 0;">
                                     <a href="${process.env.FRONTEND_URL}/admin/auctions/all" class="cta-button">VIEW IN ADMIN</a>
                                 </p>
@@ -3063,19 +2969,6 @@ const auctionEndedAdminEmail = async (adminEmail, auction) => {
                                 )} days</p>
                                 <p>• <strong>Listing ID:</strong> ${auction?._id}</p>
                             </div>
-                            
-                            ${
-                              auction?.seller
-                                ? `
-                            <div class="seller-card">
-                                <div class="seller-title">🏪 SELLER INFORMATION</div>
-                                <p><strong>Seller:</strong> ${auction?.seller?.firstName || auction?.seller?.username}</p>
-                                <p><strong>Email:</strong> ${auction?.seller?.email}</p>
-                                ${auction?.seller?.phone ? `<p><strong>Phone:</strong> ${auction?.seller?.phone}</p>` : ""}
-                            </div>
-                            `
-                                : ""
-                            }
                             
                             ${
                               auction.winner &&
@@ -3874,7 +3767,7 @@ const auctionSubmittedForApprovalEmail = async (
                                     </div>
                                     <div class="detail-item">
                                         <div class="spec-label">Location</div>
-                                        <div class="spec-value">${auction?.location || "Not specified"}</div>
+                                        <div class="spec-value">${auction?.location || "1585 Sunland Lane, Costa Mesa, CA 92626"}</div>
                                     </div>
                                 </div>
                                 
@@ -3900,38 +3793,6 @@ const auctionSubmittedForApprovalEmail = async (
                             `
                                 : ""
                             }
-                            
-                            <div class="seller-card">
-                                <div class="seller-title">👤 SELLER INFORMATION</div>
-                                <div class="item-specs">
-                                    <div class="detail-item">
-                                        <div class="spec-label">Seller Name</div>
-                                        <div class="spec-value">${seller.firstName || seller.username} ${seller.lastName || ""}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <div class="spec-label">Username</div>
-                                        <div class="spec-value">${seller.username}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <div class="spec-label">Email</div>
-                                        <div class="spec-value">${seller.email}</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <div class="spec-label">Phone</div>
-                                        <div class="spec-value">${seller.phone || "Not provided"}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="checklist-box">
-                                <div class="checklist-title">✅ APPROVAL CHECKLIST</div>
-                                <p>• Verify listing information accuracy</p>
-                                <p>• Check photo quality and quantity</p>
-                                <p>• Review pricing appropriateness</p>
-                                <p>• Confirm item condition classification</p>
-                                <p>• Ensure seller compliance with terms</p>
-                                <p>• Validate listing type and options</p>
-                            </div>
                             
                             ${
                               auction.startPrice > 50000
@@ -4122,17 +3983,8 @@ const auctionApprovedEmail = async (seller, auction) => {
                                 </a>
                             </div>
                             
-                            <div class="next-steps">
-                                <div class="steps-title">🚀 NEXT STEPS FOR SUCCESS</div>
-                                <p>• Share your listing URL on social media and with contacts</p>
-                                <p>• Respond promptly to buyer questions and offers</p>
-                                <p>• Monitor your listing's views and engagement</p>
-                                <p>• Be prepared to negotiate with serious buyers</p>
-                            </div>
-                            
                             <div class="cta-box">
                                 <div class="cta-title">📱 VIEW YOUR LIVE LISTING</div>
-                                <p>Check out how your item appears to potential buyers and start managing inquiries.</p>
                                 <p style="margin: 20px 0;">
                                     <a href="${process.env.FRONTEND_URL}/auction/${auction?._id}" class="cta-button">VIEW YOUR LIVE LISTING</a>
                                 </p>
@@ -4315,22 +4167,16 @@ const newAuctionNotificationEmail = async (buyer, auction, seller) => {
                             
                             <div class="brand-name">JLTM Select</div>
                             <div class="tagline">Furniture Auctions</div>
-                            <div class="listing-badge">${listingStatus}</div>
+                            <div class="listing-badge"><a href="${process.env.FRONTEND_URL}/auction/${auction?._id}" target="_blank">View Item</a></div>
                         </div>
                         
                         <div class="content">
                             <p>Dear <span class="highlight">${buyer?.firstName || buyer?.username}</span>,</p>
-                            <p>We're excited to let you know about a new auction listing on JLTM Select that matches your interests!</p>
+                            <p>We're excited to let you know about a new auction listing on JLTM!</p>
                             
                             <div class="item-card">
                                 <div class="item-title">${auction?.title}</div>
                                 ${auction.subTitle ? `<p style="text-align: center; color: #666;">${auction.subTitle}</p>` : ""}
-                                
-                                <div class="listing-options">
-                                    ${auction?.auctionType ? `<span class="option-badge">${auction?.auctionType?.toUpperCase()}</span>` : ""}
-                                    ${auction?.allowOffers ? `<span class="option-badge" style="background: #edcd1f; color: #1e2d3b;">OFFERS ALLOWED</span>` : ""}
-                                    ${auction?.buyNowPrice ? `<span class="option-badge" style="background: #28a745;">BUY NOW AVAILABLE</span>` : ""}
-                                </div>
                                 
                                 <div class="price-section">
                                     <div class="listing-price">
@@ -4354,7 +4200,7 @@ const newAuctionNotificationEmail = async (buyer, auction, seller) => {
                                     </div>
                                     <div class="detail-box">
                                         <div class="detail-label">Location</div>
-                                        <div class="detail-value">${auction?.location || "Not specified"}</div>
+                                        <div class="detail-value">${auction?.location || "1585 Sunland Lane, Costa Mesa, CA 92626"}</div>
                                     </div>
                                 </div>
                                 
@@ -4406,12 +4252,6 @@ const newAuctionNotificationEmail = async (buyer, auction, seller) => {
                             `
                                 : ""
                             }
-                            
-                            <div class="seller-info">
-                                <div class="seller-title">👤 SELLER INFORMATION</div>
-                                <p><strong>Seller:</strong> ${seller?.username}</p>
-                                <p>Check the seller's profile for ratings and reviews from previous buyers.</p>
-                            </div>
                             
                             <div class="action-buttons">
                                 <a href="${process.env.FRONTEND_URL}/auction/${auction?._id}" class="action-button">
@@ -4705,14 +4545,6 @@ const newBidNotificationEmail = async (seller, auction, bidAmount, bidder) => {
                             `
                                 : ""
                             }
-                            
-                            <div class="tips-box">
-                                <div class="tips-title">💡 TIPS FOR SUCCESS</div>
-                                <p>• Respond promptly to bidder questions</p>
-                                <p>• Share your auction on social media for more visibility</p>
-                                <p>• Monitor your auction's progress regularly</p>
-                                <p>• Consider adjusting your reserve price if needed</p>
-                            </div>
                             
                             <p style="text-align: center; margin: 25px 0;">
                                 <a href="${process.env.FRONTEND_URL}/seller/auctions/${auction._id}" class="cta-button">VIEW AUCTION DETAILS</a>
@@ -5095,20 +4927,6 @@ const offerCanceledEmail = async (
                                 </div>
                             </div>
                             
-                            <div class="seller-info">
-                                <div class="seller-title">🏪 SELLER INFORMATION</div>
-                                <p><strong>Seller:</strong> ${seller?.firstName || seller?.username}</p>
-                                <p>The seller has chosen to cancel your offer on their item.</p>
-                            </div>
-                            
-                            <div class="next-steps">
-                                <div class="steps-title">🔄 NEXT STEPS</div>
-                                <p>Don't worry - there are plenty of other great items available!</p>
-                                <p>• You can make a new offer on this item if the seller relists it</p>
-                                <p>• Browse similar items in the same categories</p>
-                                <p>• Use our search filters to find your perfect item</p>
-                            </div>
-                            
                             <div class="cta-box">
                                 <div class="cta-title">🎯 FIND ANOTHER ITEM</div>
                                 <p>Continue your search for the perfect item. JLTM Select has thousands of auctions waiting for you.</p>
@@ -5309,13 +5127,12 @@ const offerAcceptedEmail = async (
                                     <p><strong>Seller:</strong> ${seller?.firstName || seller?.username}</p>
                                     ${seller?.email ? `<p><strong>Email:</strong> <a href="mailto:${seller?.email}" class="contact-link">${seller?.email}</a></p>` : ""}
                                     ${seller?.phone ? `<p><strong>Phone:</strong> <a href="tel:${seller?.phone}" class="contact-link">${seller?.phone}</a></p>` : ""}
-                                    ${auction?.location ? `<p><strong>Location:</strong> ${auction?.location}</p>` : ""}
+                                    ${auction?.location ? `<p><strong>Location:</strong> ${auction?.location || '1585 Sunland Lane, Costa Mesa, CA 92626'}</p>` : ""}
                                 </div>
                             </div>
                             
                             <div class="cta-box">
                                 <div class="cta-title">📦 COMPLETE YOUR PURCHASE</div>
-                                <p>Access your purchase details, download invoices, and contact the seller from your dashboard.</p>
                                 <p style="margin: 20px 0;">
                                     <a href="${process.env.FRONTEND_URL}/bidder/offers" class="cta-button">VIEW OFFERS</a>
                                 </p>
@@ -5327,7 +5144,7 @@ const offerAcceptedEmail = async (
                         <div class="footer">
                             <p class="footer-text">Congratulations on your successful purchase! This is an automated confirmation from JLTM Select.</p>
                             <p class="footer-text">© ${new Date().getFullYear()} JLTM Select. All rights reserved.</p>
-                            <p class="footer-text">Need assistance? Contact support at ${process.env.EMAIL_USER || "tech@jltmselect.com"}</p>
+                            <p class="footer-text">Need assistance? Contact support at ${process.env.EMAIL_USER || "help@jltmselect.com"}</p>
                         </div>
                     </div>
                 </body>
@@ -5517,22 +5334,9 @@ const offerRejectedEmail = async (
                                 </div>
                             </div>
                             
-                            <div class="seller-info">
-                                <div class="seller-title">🏪 SELLER INFORMATION</div>
-                                <p><strong>Seller:</strong> ${seller?.firstName || seller?.username}</p>
-                                <p>The seller has chosen to decline your offer at this time. They may be open to a different offer amount or terms.</p>
-                            </div>
-                            
-                            <div class="next-steps">
-                                <div class="steps-title">🔄 NEXT STEPS & OPTIONS</div>
-                                <p>• <strong>Make a new offer</strong> - Try a different amount or terms</p>
-                                <p>• <strong>Browse other items</strong> - Find similar options that might be a better fit</p>
-                                <p>• <strong>Use Buy Now option</strong> - If available, purchase immediately at the listed price</p>
-                            </div>
-                            
                             <div class="cta-box">
                                 <div class="cta-title">🎯 KEEP SHOPPING</div>
-                                <p>Don't be discouraged - negotiation is part of the auction process. Explore other options or try a different approach.</p>
+                                <p>Explore other options or try a different approach.</p>
                                 <p style="margin: 20px 0;">
                                     <a href="${process.env.FRONTEND_URL}/auctions" class="cta-button">BROWSE OTHER AUCTIONS</a>
                                 </p>
