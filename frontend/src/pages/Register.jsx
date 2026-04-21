@@ -45,7 +45,7 @@ const countryCodes = [
     // { code: 'JP', name: 'Japan', dialCode: '+81', flag: '🇯🇵' },
     // { code: 'KR', name: 'South Korea', dialCode: '+82', flag: '🇰🇷' },
     // { code: 'CN', name: 'China', dialCode: '+86', flag: '🇨🇳' },
-    { code: 'IN', name: 'India', dialCode: '+91', flag: '🇮🇳' },
+    // { code: 'IN', name: 'India', dialCode: '+91', flag: '🇮🇳' },
     // { code: 'SG', name: 'Singapore', dialCode: '+65', flag: '🇸🇬' },
     // { code: 'MY', name: 'Malaysia', dialCode: '+60', flag: '🇲🇾' },
     // { code: 'TH', name: 'Thailand', dialCode: '+66', flag: '🇹🇭' },
