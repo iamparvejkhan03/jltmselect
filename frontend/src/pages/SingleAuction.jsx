@@ -596,6 +596,20 @@ function SingleAuction() {
 
                 <hr className="my-8 border-gray-200 dark:border-bg-primary-light" />
 
+                <Suspense fallback={<LoadingSpinner />}>
+                    <TabSection
+                        ref={commentSectionRef}
+                        description={auction.description}
+                        bids={auction.bids}
+                        offers={auction.offers}
+                        auction={auction}
+                        activatedTab={activeTab}
+                        onAuctionUpdate={updateAuctionState}
+                    />
+                </Suspense>
+
+                <hr className="my-8 border-gray-200 dark:border-bg-primary-light" />
+
                 {/* Info section */}
                 <div>
                     <h3 className="my-5 text-text-primary dark:text-text-primary-dark text-xl font-semibold">Auction Overview</h3>
@@ -721,20 +735,6 @@ function SingleAuction() {
                         </div>
                     </>
                 )}
-
-                <hr className="my-8 border-gray-200 dark:border-bg-primary-light" />
-
-                <Suspense fallback={<LoadingSpinner />}>
-                    <TabSection
-                        ref={commentSectionRef}
-                        description={auction.description}
-                        bids={auction.bids}
-                        offers={auction.offers}
-                        auction={auction}
-                        activatedTab={activeTab}
-                        onAuctionUpdate={updateAuctionState}
-                    />
-                </Suspense>
 
             </section>
 
