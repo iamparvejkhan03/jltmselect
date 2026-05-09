@@ -128,7 +128,7 @@ function About() {
                 >
                     <div className="max-w-full mx-auto text-center px-6 py-16 bg-primary">
 
-                        <div className="flex items-center justify-center gap-3 mb-4"><div className="h-px w-8 bg-secondary"></div><span className="text-secondary text-xs font-medium uppercase tracking-[0.2em]">Choose Your Plan</span><div className="h-px w-8 bg-secondary"></div></div>
+                        <div className="flex items-center justify-center gap-3 mb-4"><div className="h-px w-8 bg-secondary"></div><span className="text-secondary text-xs font-medium uppercase tracking-[0.2em]">Who We Are</span><div className="h-px w-8 bg-secondary"></div></div>
 
                         {/* headline */}
                         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-pure-white dark:text-text-primary-dark leading-tight">
@@ -167,7 +167,7 @@ function About() {
                         </p>
 
                         <p className="text-text-secondary dark:text-text-secondary-dark leading-relaxed">
-                            As a member, you gain access to exclusive auctions featuring premium pieces, 15% in-store discounts, and exclusive weekly previews of what is on the showroom floor.
+                            As a member, you gain access to exclusive auctions featuring premium pieces, 15% in-store discounts, and 7 days of free storage.
                         </p>
                     </div>
 
@@ -228,11 +228,11 @@ function About() {
 
                         {/* Description */}
                         <p className="text-text-secondary dark:text-text-secondary-dark leading-relaxed">
-                            We curate a single auction piece and list it for auction exclusively for our {otherData?.brandName || "Just Like the Model"} Select members. Bidding always starts at 85% or more off MSRP, and the highest bidder at close wins.
+                            We curate unique auction pieces and list it for auction exclusively for our {otherData?.brandName || "Just Like the Model"} Select members. Bidding generally starts at $1 - $100.
                         </p>
 
                         <p className="text-text-secondary dark:text-text-secondary-dark leading-relaxed">
-                            Winners pay online and pick up their items in-store, where our team ensures every detail of the experience is handled with care. It's luxury, made accessible.
+                            Winners pay online and pick up their items in store at our Costa Mesa showroom located at 1585 Sunland Lane.
                         </p>
                     </div>
                 </div>

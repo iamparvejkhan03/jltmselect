@@ -14,7 +14,7 @@ const faqs = [
         questions: [
             {
                 question: "How does JLTM Membership work?",
-                answer: "JLTM Select Membership gives you access to exclusive auctions on items we sell in our showroom, 15% discounts in-store, 7 days of free storage, a weekly inventory walk-through video and more."
+                answer: "JLTM Select Membership gives you access to exclusive auctions on items we sell in our showroom, 15% discounts in-store, and 7 days of free storage."
             },
             {
                 question: "Can I cancel my membership?",
@@ -56,11 +56,11 @@ const faqs = [
             },
             {
                 question: "How is payment handled after winning?",
-                answer: "The winning bidder will be notified to make payment within 8 hours. If payment is not received within this timeframe, you will lose the auction and this may lead to account suspension."
+                answer: "The winning bidder will be notified to make payment within 24 hours. If payment is not received within this timeframe, you will lose the auction and this may lead to account suspension."
             },
             {
                 question: "Can my auction-winning item be shipped to me?",
-                answer: "No, we do not ship auction winnings. You must pick up your auction-winning at the Costa Mesa showroom within 5 days of winning or additional charges will be applied for storage."
+                answer: "No, we do not ship auction winnings. You must pick up your auction-winning at the Costa Mesa showroom within 7 days of winning or additional charges will be applied for storage."
             }
         ]
     },
@@ -70,11 +70,11 @@ const faqs = [
         questions: [
             {
                 question: "How do I pick up my won items?",
-                answer: "Winners have 5 days to pick up their items in-store. You'll need to bring a valid ID. Our staff will coordinate the pickup schedule with you."
+                answer: "Winners have 7 days to pick up their items in-store. You'll need to bring a valid ID. Our staff will coordinate the pickup schedule with you."
             },
             {
                 question: "What are storage fees?",
-                answer: "If you don't pick up your item within 5 days, a $5 per day storage fee applies until the item is collected. Storage fees are paid in person at pickup."
+                answer: "If you don't pick up your item within 7 days, a $5 per day storage fee applies until the item is collected. Storage fees are paid in person at pickup."
             }
         ]
     },
@@ -84,7 +84,7 @@ const faqs = [
         questions: [
             {
                 question: "How does the 15% in-store discount work?",
-                answer: "All have to do is provide the cashier your phone number to verify you are a JLTM Select member and double check that with your ID. Once that is verified your in-store purchase will be discounted 15% of the list price."
+                answer: "All you have to do is provide the cashier your phone number to verify you are a JLTM Select member and present your ID. Once that is verified your in-store purchase will be discounted 15% of the list price."
             }
         ]
     }
