@@ -343,6 +343,7 @@ export const getAllUsers = async (req, res) => {
         { email: { $regex: search, $options: "i" } },
         { username: { $regex: search, $options: "i" } },
         { referredBy: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
       ],
     };
 

@@ -679,7 +679,7 @@ function Auctions() {
                         <div className=" py-8">
                             <div className="container mx-auto">
                                 <h1 className="text-3xl font-bold text-pure-black dark:text-pure-white">All Auctions</h1>
-                                <p className="text-bg-primary-light dark:text-bg-secondary-dark mt-2">Your next find is just a click away. Explore thousands of fashion listings.</p>
+                                <p className="text-bg-primary-light dark:text-bg-secondary-dark mt-2">Your next find is just a click away. Explore thousands of furniture listings.</p>
                             </div>
                         </div>
 
