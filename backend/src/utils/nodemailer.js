@@ -2224,7 +2224,7 @@ const welcomeEmail = async (user, verificationToken) => {
                                 Hello <span>${user.firstName || user.username}</span>!
                             </div>
                             
-                            <p>We're thrilled to welcome you to JLTM Select, where you'll discover exceptional items and great deals across multiple categories. Your account has been successfully created.</p>
+                            <p>We're thrilled to welcome you to JLTM Select, where you'll discover exceptional items and great deals across multiple categories.</p>
 
                             <p>Your account has been successfully created. Please verify your email address to get started.</p>
 
