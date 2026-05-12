@@ -1872,6 +1872,7 @@ export const updateAuction = async (req, res) => {
       location: location || "",
       videoLink: videoLink || "",
       startPrice: parseFloat(startPrice),
+      currentPrice: newStatus === "approved" ?parseFloat(startPrice) : auction?.currentPrice, // Reset current price to start price on update
       retailPrice: retailPrice ? parseFloat(retailPrice) : undefined,
       auctionType,
       allowOffers: allowOffers === "true" || allowOffers === true,

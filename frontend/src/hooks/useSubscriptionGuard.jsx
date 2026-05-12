@@ -16,7 +16,7 @@ export const useSubscriptionGuard = () => {
         if (!user) return false;
         
         // Admins are always exempt
-        if (user.userType === 'admin') return true;
+        if (user.userType === 'admin' || user.userType === 'staff') return true;
         
         // Sellers are exempt (they can view auctions without subscription)
         if (user.userType === 'seller') return true;
