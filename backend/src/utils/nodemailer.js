@@ -3,159 +3,219 @@ import Commission from "../models/commission.model.js";
 import { sendAuctionWonSMS, sendBulkAuctionSMS } from "../services/smsService.js";
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
+    host: process.env.SMTP_HOST,
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+    },
 });
 
 // Add connection verification
 transporter.verify(function (error, success) {
-  if (error) {
-    console.log("SMTP Connection failed:", error);
-  } else {
-    console.log("SMTP Server is ready");
-  }
+    if (error) {
+        console.log("SMTP Connection failed:", error);
+    } else {
+        console.log("SMTP Server is ready");
+    }
 });
 
 // Helper function to format specifications dynamically
 const formatSpecifications = (specifications) => {
-  if (!specifications) return [];
+    if (!specifications) return [];
 
-  const specs =
-    specifications instanceof Map
-      ? Object.fromEntries(specifications)
-      : specifications;
+    const specs =
+        specifications instanceof Map
+            ? Object.fromEntries(specifications)
+            : specifications;
 
-  if (!specs || Object.keys(specs).length === 0) return [];
+    if (!specs || Object.keys(specs).length === 0) return [];
 
-  // Define which fields to show and how to format them
-  const importantFields = [
-    { key: "make", label: "Make" },
-    { key: "model", label: "Model" },
-    { key: "brand", label: "Brand" },
-    { key: "manufacturer", label: "Manufacturer" },
-    { key: "year", label: "Year" },
-    { key: "modelYear", label: "Model Year" },
-    { key: "serialNumber", label: "Serial Number" },
-    { key: "vin", label: "VIN" },
-    { key: "condition", label: "Condition" },
-    { key: "hours", label: "Hours", suffix: " h" },
-    { key: "mileage", label: "Mileage", suffix: " km" },
-    { key: "weight", label: "Weight", suffix: " kg" },
-    { key: "capacity", label: "Capacity" },
-    { key: "power", label: "Power", suffix: " kW" },
-    { key: "engine", label: "Engine" },
-    { key: "fuelType", label: "Fuel Type" },
-    { key: "transmission", label: "Transmission" },
-    { key: "driveType", label: "Drive Type" },
-    { key: "tireSize", label: "Tire Size" },
-    { key: "size", label: "Size" },
-    { key: "dimensions", label: "Dimensions" },
-    { key: "color", label: "Color" },
-    { key: "location", label: "Location" },
-    { key: "country", label: "Country" },
-    { key: "city", label: "City" },
-  ];
+    // Define which fields to show and how to format them
+    const importantFields = [
+        { key: "make", label: "Make" },
+        { key: "model", label: "Model" },
+        { key: "brand", label: "Brand" },
+        { key: "manufacturer", label: "Manufacturer" },
+        { key: "year", label: "Year" },
+        { key: "modelYear", label: "Model Year" },
+        { key: "serialNumber", label: "Serial Number" },
+        { key: "vin", label: "VIN" },
+        { key: "condition", label: "Condition" },
+        { key: "hours", label: "Hours", suffix: " h" },
+        { key: "mileage", label: "Mileage", suffix: " km" },
+        { key: "weight", label: "Weight", suffix: " kg" },
+        { key: "capacity", label: "Capacity" },
+        { key: "power", label: "Power", suffix: " kW" },
+        { key: "engine", label: "Engine" },
+        { key: "fuelType", label: "Fuel Type" },
+        { key: "transmission", label: "Transmission" },
+        { key: "driveType", label: "Drive Type" },
+        { key: "tireSize", label: "Tire Size" },
+        { key: "size", label: "Size" },
+        { key: "dimensions", label: "Dimensions" },
+        { key: "color", label: "Color" },
+        { key: "location", label: "Location" },
+        { key: "country", label: "Country" },
+        { key: "city", label: "City" },
+    ];
 
-  // Return only fields that exist in the specifications
-  return importantFields
-    .filter(
-      (field) =>
-        specs[field.key] !== undefined &&
-        specs[field.key] !== null &&
-        specs[field.key] !== "",
-    )
-    .map((field) => ({
-      label: field.label,
-      value: field.suffix
-        ? `${specs[field.key]}${field.suffix}`
-        : specs[field.key],
-    }));
+    // Return only fields that exist in the specifications
+    return importantFields
+        .filter(
+            (field) =>
+                specs[field.key] !== undefined &&
+                specs[field.key] !== null &&
+                specs[field.key] !== "",
+        )
+        .map((field) => ({
+            label: field.label,
+            value: field.suffix
+                ? `${specs[field.key]}${field.suffix}`
+                : specs[field.key],
+        }));
 };
 
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+    return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(amount);
 };
 
-// Helper to get time remaining
+// Helper to convert UTC to Pacific Time (America/Los_Angeles)
+const formatToPacificTime = (utcDate, format = 'full') => {
+    if (!utcDate) return 'Not set';
+
+    const date = new Date(utcDate);
+
+    // Options for different formats
+    const options = {
+        timeZone: 'America/Los_Angeles',
+        hour12: true,
+    };
+
+    if (format === 'full') {
+        return new Intl.DateTimeFormat('en-US', {
+            ...options,
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        }).format(date);
+    }
+
+    if (format === 'date') {
+        return new Intl.DateTimeFormat('en-US', {
+            ...options,
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        }).format(date);
+    }
+
+    if (format === 'time') {
+        return new Intl.DateTimeFormat('en-US', {
+            ...options,
+            hour: '2-digit',
+            minute: '2-digit',
+        }).format(date);
+    }
+
+    if (format === 'datetime') {
+        return new Intl.DateTimeFormat('en-US', {
+            ...options,
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        }).format(date);
+    }
+
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+};
+
+// Helper to get time remaining (based on Pacific Time)
 const getTimeRemaining = (endDate) => {
-  if (!endDate) return "Time not available";
+    if (!endDate) return "Time not available";
 
-  const remaining = new Date(endDate) - new Date();
-  if (remaining <= 0) return "Auction Ended";
+    // Convert end date to Pacific Time for comparison
+    const now = new Date();
+    const pacificNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+    const pacificEnd = new Date(new Date(endDate).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
 
-  const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
-  const hours = Math.floor(
-    (remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-  );
-  const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+    const remaining = pacificEnd - pacificNow;
+    if (remaining <= 0) return "Auction Ended";
 
-  if (days > 0) return `${days}d ${hours}h`;
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  return `${minutes}m`;
+    const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+        (remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    );
+    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (days > 0) return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${minutes}m`;
 };
 
 // Helper to render specifications as HTML
 const renderSpecifications = (specifications) => {
-  const specs = formatSpecifications(specifications);
-  if (specs.length === 0) return "";
+    const specs = formatSpecifications(specifications);
+    if (specs.length === 0) return "";
 
-  let html =
-    '<div class="specs-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">';
+    let html =
+        '<div class="specs-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">';
 
-  specs.forEach((spec) => {
-    html += `
+    specs.forEach((spec) => {
+        html += `
       <div class="spec-item" style="background: #ffffff; padding: 15px; border-radius: 6px; border: 1px solid #e9ecef; text-align: center;">
         <div class="spec-label" style="color: #666; font-size: 14px; margin-bottom: 5px;">${spec.label}</div>
         <div class="spec-value" style="font-weight: bold; color: #1e2d3b; font-size: 16px;">${spec.value}</div>
       </div>
     `;
-  });
+    });
 
-  html += "</div>";
-  return html;
+    html += "</div>";
+    return html;
 };
 
 // Helper to render specifications as table rows
 const renderSpecificationsRows = (specifications) => {
-  const specs = formatSpecifications(specifications);
-  if (specs.length === 0) return "";
+    const specs = formatSpecifications(specifications);
+    if (specs.length === 0) return "";
 
-  let html = "";
-  specs.forEach((spec) => {
-    html += `
+    let html = "";
+    specs.forEach((spec) => {
+        html += `
       <tr>
         <td style="padding: 8px 12px; border-bottom: 1px solid #e9ecef; color: #666; font-weight: bold;">${spec.label}:</td>
         <td style="padding: 8px 12px; border-bottom: 1px solid #e9ecef; color: #1e2d3b;">${spec.value}</td>
       </tr>
     `;
-  });
+    });
 
-  return html;
+    return html;
 };
 
 const contactEmail = async (
-  name,
-  email,
-  phone,
-  userType = "Bidder",
-  message,
+    name,
+    email,
+    phone,
+    userType = "Bidder",
+    message,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: `${process.env.EMAIL_USER}`,
-      subject: `New Contact Query - ${name}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: `${process.env.EMAIL_USER}`,
+            subject: `New Contact Query - ${name}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -248,21 +308,21 @@ const contactEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    return !!info;
-  } catch (error) {
-    throw new Error(error);
-  }
+        return !!info;
+    } catch (error) {
+        throw new Error(error);
+    }
 };
 
 const contactConfirmationEmail = async (name, email) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: `Thank You for Contacting JLTM Select`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: `Thank You for Contacting JLTM Select`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -347,28 +407,28 @@ const contactConfirmationEmail = async (name, email) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    return !!info;
-  } catch (error) {
-    throw new Error(error);
-  }
+        return !!info;
+    } catch (error) {
+        throw new Error(error);
+    }
 };
 
 // For bid
 const bidConfirmationEmail = async (
-  userEmail,
-  userName,
-  auction,
-  amount,
-  currentBid,
+    userEmail,
+    userName,
+    auction,
+    amount,
+    currentBid,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: userEmail,
-      subject: `Bid Confirmation - ${auction.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: userEmail,
+            subject: `Bid Confirmation - ${auction.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -475,45 +535,32 @@ const bidConfirmationEmail = async (
                                         <span class="detail-value">${amount >= currentBid ? "Leading" : "Not Leading"}</span>
                                     </div>
                                     <div class="detail-row">
-                                        <span class="detail-label">Auction End Date:</span>
-                                        <span class="detail-value">${
-                                          auction.endDate
-                                            ? new Date(
-                                                auction.endDate,
-                                              ).toLocaleDateString("en-US", {
-                                                weekday: "long",
-                                                year: "numeric",
-                                                month: "long",
-                                                day: "numeric",
-                                              })
-                                            : "Not set"
-                                        }</span>
+                                        <span class="detail-label">Auction End Date (Pacific Time):</span>
+                                        <span class="detail-value">${auction.endDate
+                    ? formatToPacificTime(auction.endDate, 'full')
+
+                    : "Not set"
+                }</span>
                                     </div>
                                     <div class="detail-row">
-                                        <span class="detail-label">Auction End Time:</span>
-                                        <span class="detail-value">${
-                                          auction.endDate
-                                            ? new Date(
-                                                auction.endDate,
-                                              ).toLocaleTimeString("en-US", {
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                              })
-                                            : "Not set"
-                                        }</span>
+                                        <span class="detail-label">Auction End Time (Pacific Time):</span>
+                                        <span class="detail-value">${auction.endDate
+                    ? formatToPacificTime(auction.endDate, 'time')
+
+                    : "Not set"
+                }</span>
                                     </div>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
                                 <div class="time-remaining">
                                     <div>Time Remaining:</div>
@@ -552,29 +599,29 @@ const bidConfirmationEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    return !!info;
-  } catch (error) {
-    throw new Error(`Failed to send bid confirmation: ${error.message}`);
-  }
+        return !!info;
+    } catch (error) {
+        throw new Error(`Failed to send bid confirmation: ${error.message}`);
+    }
 };
 
 // For offer
 const offerConfirmationEmail = async (
-  userEmail,
-  userName,
-  auction,
-  offerAmount,
-  listingPrice,
-  offerId,
+    userEmail,
+    userName,
+    auction,
+    offerAmount,
+    listingPrice,
+    offerId,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: userEmail,
-      subject: `Offer Submitted - ${auction.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: userEmail,
+            subject: `Offer Submitted - ${auction.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -646,16 +693,15 @@ const offerConfirmationEmail = async (
                                     </div>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                             </div>
                             
                             <div class="next-steps">
@@ -679,29 +725,29 @@ const offerConfirmationEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    return !!info;
-  } catch (error) {
-    throw new Error(`Failed to send offer confirmation: ${error.message}`);
-  }
+        return !!info;
+    } catch (error) {
+        throw new Error(`Failed to send offer confirmation: ${error.message}`);
+    }
 };
 
 // For bid only
 const outbidNotificationEmail = async (
-  userEmail,
-  userName,
-  auction,
-  newBid,
-  auctionUrl,
-  yourPreviousBid,
+    userEmail,
+    userName,
+    auction,
+    newBid,
+    auctionUrl,
+    yourPreviousBid,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: userEmail,
-      subject: `🚨 You've Been Outbid - ${auction.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: userEmail,
+            subject: `🚨 You've Been Outbid - ${auction.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -807,16 +853,15 @@ const outbidNotificationEmail = async (
                                     </div>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
                                 <div class="time-box">
                                     <div class="time-label">Auction Ends In:</div>
@@ -824,20 +869,11 @@ const outbidNotificationEmail = async (
                                         ${getTimeRemaining(auction.endDate)}
                                     </div>
                                     <div class="time-label">
-                                        ${
-                                          auction.endDate
-                                            ? new Date(
-                                                auction.endDate,
-                                              ).toLocaleDateString("en-US", {
-                                                weekday: "long",
-                                                year: "numeric",
-                                                month: "long",
-                                                day: "numeric",
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                              })
-                                            : ""
-                                        }
+                                        ${auction.endDate
+                    ? formatToPacificTime(auction.endDate, 'full')
+
+                    : ""
+                }
                                     </div>
                                 </div>
                             </div>
@@ -871,133 +907,133 @@ const outbidNotificationEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    return !!info;
-  } catch (error) {
-    throw new Error(`Failed to send outbid notification: ${error.message}`);
-  }
+        return !!info;
+    } catch (error) {
+        throw new Error(`Failed to send outbid notification: ${error.message}`);
+    }
 };
 
 const DEBOUNCE_DELAY = 5000; // 5 seconds
 const lastNotificationTimes = new Map(); // Store last notification time per auction
 
 const sendOutbidNotifications = async (
-  auction,
-  previousHighestBidder,
-  previousBidders,
-  currentBidderId,
-  newBidAmount,
+    auction,
+    previousHighestBidder,
+    previousBidders,
+    currentBidderId,
+    newBidAmount,
 ) => {
-  try {
-    const auctionId = auction._id.toString();
+    try {
+        const auctionId = auction._id.toString();
 
-    // Per-auction debounce check
-    const now = Date.now();
-    const lastTime = lastNotificationTimes.get(auctionId) || 0;
+        // Per-auction debounce check
+        const now = Date.now();
+        const lastTime = lastNotificationTimes.get(auctionId) || 0;
 
-    if (now - lastTime < DEBOUNCE_DELAY) {
-      console.log(
-        `Outbid notifications debounced for auction ${auctionId} - too frequent`,
-      );
-      return;
-    }
-    lastNotificationTimes.set(auctionId, now);
+        if (now - lastTime < DEBOUNCE_DELAY) {
+            console.log(
+                `Outbid notifications debounced for auction ${auctionId} - too frequent`,
+            );
+            return;
+        }
+        lastNotificationTimes.set(auctionId, now);
 
-    // Get all unique bidders who should be notified
-    const biddersToNotify = previousBidders.filter(
-      (bidderId) => bidderId !== currentBidderId.toString(),
-    );
-
-    if (biddersToNotify.length === 0) {
-      console.log("No bidders to notify for outbid");
-      return;
-    }
-
-    // Get user details for all bidders to notify
-    const User = (await import("../models/user.model.js")).default;
-    const users = await User.find({
-      _id: { $in: biddersToNotify },
-      "preferences.emailUpdates": true,
-    });
-
-    if (users.length === 0) {
-      console.log("No users found with outbid notifications enabled");
-      return;
-    }
-
-    // Create auction URL
-    const auctionUrl = `${process.env.FRONTEND_URL}/auction/${auction._id}`;
-
-    // Send notifications to each outbid user
-    const notificationPromises = users.map(async (user) => {
-      try {
-        await outbidNotificationEmail(
-          user.email,
-          user.username || `${user.firstName} ${user.lastName}`,
-          auction,
-          newBidAmount,
-          auctionUrl,
-          null, // Your previous bid - would need to fetch this
+        // Get all unique bidders who should be notified
+        const biddersToNotify = previousBidders.filter(
+            (bidderId) => bidderId !== currentBidderId.toString(),
         );
-      } catch (error) {
-        console.error(
-          `❌ Failed to send outbid notification to ${user.email}:`,
-          error.message,
+
+        if (biddersToNotify.length === 0) {
+            console.log("No bidders to notify for outbid");
+            return;
+        }
+
+        // Get user details for all bidders to notify
+        const User = (await import("../models/user.model.js")).default;
+        const users = await User.find({
+            _id: { $in: biddersToNotify },
+            "preferences.emailUpdates": true,
+        });
+
+        if (users.length === 0) {
+            console.log("No users found with outbid notifications enabled");
+            return;
+        }
+
+        // Create auction URL
+        const auctionUrl = `${process.env.FRONTEND_URL}/auction/${auction._id}`;
+
+        // Send notifications to each outbid user
+        const notificationPromises = users.map(async (user) => {
+            try {
+                await outbidNotificationEmail(
+                    user.email,
+                    user.username || `${user.firstName} ${user.lastName}`,
+                    auction,
+                    newBidAmount,
+                    auctionUrl,
+                    null, // Your previous bid - would need to fetch this
+                );
+            } catch (error) {
+                console.error(
+                    `❌ Failed to send outbid notification to ${user.email}:`,
+                    error.message,
+                );
+            }
+        });
+
+        const results = await Promise.allSettled(notificationPromises);
+
+        // Log summary
+        const successful = results.filter(
+            (result) => result.status === "fulfilled",
+        ).length;
+        const failed = results.filter(
+            (result) => result.status === "rejected",
+        ).length;
+
+        console.log(
+            `Outbid notifications for auction ${auctionId}: ${successful} successful, ${failed} failed`,
         );
-      }
-    });
-
-    const results = await Promise.allSettled(notificationPromises);
-
-    // Log summary
-    const successful = results.filter(
-      (result) => result.status === "fulfilled",
-    ).length;
-    const failed = results.filter(
-      (result) => result.status === "rejected",
-    ).length;
-
-    console.log(
-      `Outbid notifications for auction ${auctionId}: ${successful} successful, ${failed} failed`,
-    );
-  } catch (error) {
-    console.error("Error sending outbid notifications:", error);
-  }
+    } catch (error) {
+        console.error("Error sending outbid notifications:", error);
+    }
 };
 
 const sendAuctionWonEmail = async (auction) => {
-  try {
-    // Safety check - ensure winner is populated and has email
-    if (
-      !auction?.winner ||
-      typeof auction?.winner === "string" ||
-      !auction?.winner.email
-    ) {
-      console.error(
-        "Winner not populated or missing email for auction:",
-        auction?._id,
-      );
-      return false;
-    }
+    try {
+        // Safety check - ensure winner is populated and has email
+        if (
+            !auction?.winner ||
+            typeof auction?.winner === "string" ||
+            !auction?.winner.email
+        ) {
+            console.error(
+                "Winner not populated or missing email for auction:",
+                auction?._id,
+            );
+            return false;
+        }
 
-    const finalPrice = auction?.finalPrice || auction?.currentPrice || 0;
-    const commissionAmount = auction?.commissionAmount || 0;
-    const totalAmount = finalPrice + commissionAmount;
+        const finalPrice = auction?.finalPrice || auction?.currentPrice || 0;
+        const commissionAmount = auction?.commissionAmount || 0;
+        const totalAmount = finalPrice + commissionAmount;
 
-    let commissionDisplay = "";
+        let commissionDisplay = "";
 
-    if (auction.commissionType === "fixed") {
-      commissionDisplay = `Sales Tax: ${formatCurrency(commissionAmount)}`;
-    } else if (auction.commissionType === "percentage") {
-      commissionDisplay = `${auction.commissionValue}% Sales Tax: ${formatCurrency(commissionAmount)}`;
-    }
+        if (auction.commissionType === "fixed") {
+            commissionDisplay = `Sales Tax: ${formatCurrency(commissionAmount)}`;
+        } else if (auction.commissionType === "percentage") {
+            commissionDisplay = `${auction.commissionValue}% Sales Tax: ${formatCurrency(commissionAmount)}`;
+        }
 
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: auction?.winner?.email,
-      subject: `Invoice - ${auction?.title}`,
-      html: `
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: auction?.winner?.email,
+            subject: `Invoice - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -1086,23 +1122,13 @@ const sendAuctionWonEmail = async (auction) => {
                         <div style="padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #e9ecef;">
                             <div style="display: flex; justify-content: space-between; margin: 5px 0;">
                                 <div><strong>Invoice No:</strong> ${auction?.transactionId || `INV-${auction?._id?.toString()?.toUpperCase()}`}</div>
-                                <div><strong>Date:</strong> ${new Date().toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    day: "2-digit",
-                                    month: "long",
-                                    year: "numeric",
-                                  },
-                                )}</div>
+                                <div><strong>Date:</strong> ${formatToPacificTime(new Date(), 'full')}</div>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin: 5px 0;">
-                                <div><strong>Payment Due:</strong> ${new Date(
-                                  Date.now() + 7 * 24 * 60 * 60 * 1000,
-                                ).toLocaleDateString("en-US", {
-                                  day: "2-digit",
-                                  month: "long",
-                                  year: "numeric",
-                                })}</div>
+                                <div><strong>Payment Due:</strong> ${formatToPacificTime(
+                new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                'full'
+            )}</div>
                                 <div><strong>Status:</strong> <span style="color: #dc3545; font-weight: bold;">PENDING</span></div>
                             </div>
                         </div>
@@ -1132,15 +1158,14 @@ const sendAuctionWonEmail = async (auction) => {
                                         <strong>${auction.title}</strong><br>
                                         ${auction.subTitle ? `<small>${auction.subTitle}</small><br>` : ""}
                                         
-                                        ${
-                                          auction.specifications
-                                            ? `
+                                        ${auction.specifications
+                    ? `
                                         <table class="specs-table">
                                             ${renderSpecificationsRows(auction.specifications)}
                                         </table>
                                         `
-                                            : ""
-                                        }
+                    : ""
+                }
                                     </td>
                                     <td class="amount">${formatCurrency(finalPrice)}</td>
                                 </tr>
@@ -1198,46 +1223,46 @@ const sendAuctionWonEmail = async (auction) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(
-      `✅ Auction won invoice email sent to ${auction?.winner?.email}`,
-    );
-    return !!info;
-  } catch (error) {
-    console.error(
-      `❌ Failed to send auction won invoice email for auction ${auction._id}:`,
-      error,
-    );
-    return false;
-  }
+        console.log(
+            `✅ Auction won invoice email sent to ${auction?.winner?.email}`,
+        );
+        return !!info;
+    } catch (error) {
+        console.error(
+            `❌ Failed to send auction won invoice email for auction ${auction._id}:`,
+            error,
+        );
+        return false;
+    }
 };
 
 const sendAuctionEndedSellerEmail = async (auction) => {
-  try {
-    // Safety check - ensure seller is populated and has email
-    if (
-      !auction?.seller ||
-      typeof auction?.seller === "string" ||
-      !auction?.seller?.email
-    ) {
-      console.error(
-        "Seller not populated or missing email for auction:",
-        auction?._id,
-      );
-      return false;
-    }
+    try {
+        // Safety check - ensure seller is populated and has email
+        if (
+            !auction?.seller ||
+            typeof auction?.seller === "string" ||
+            !auction?.seller?.email
+        ) {
+            console.error(
+                "Seller not populated or missing email for auction:",
+                auction?._id,
+            );
+            return false;
+        }
 
-    const statusMessage =
-      auction?.status === "sold" || auction?.status === "sold_buy_now"
-        ? `Sold for ${formatCurrency(auction?.finalPrice || 0)}`
-        : "Listing ended without sale";
+        const statusMessage =
+            auction?.status === "sold" || auction?.status === "sold_buy_now"
+                ? `Sold for ${formatCurrency(auction?.finalPrice || 0)}`
+                : "Listing ended without sale";
 
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: auction?.seller?.email,
-      subject: `Your Listing Has Ended - ${auction?.title}`,
-      html: `
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: auction?.seller?.email,
+            subject: `Your Listing Has Ended - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -1311,33 +1336,30 @@ const sendAuctionEndedSellerEmail = async (auction) => {
                             
                             <div class="item-info">
                                 <div class="item-name">${auction?.title}</div>
-                                ${
-                                  auction?.finalPrice
-                                    ? `
+                                ${auction?.finalPrice
+                    ? `
                                 <div class="final-price">
                                     <span>${formatCurrency(auction?.finalPrice)}</span>
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                             </div>
                             
-                            ${
-                              (auction?.status === "sold" ||
-                                auction?.status === "sold_buy_now") &&
-                              auction?.winner
-                                ? `
+                            ${(auction?.status === "sold" ||
+                    auction?.status === "sold_buy_now") &&
+                    auction?.winner
+                    ? `
                             <div class="buyer-box">
                                 <div class="buyer-title">🎉 Congratulations! Your item has been sold.</div>
                                 <!-- Buyer Information -->
@@ -1350,7 +1372,7 @@ const sendAuctionEndedSellerEmail = async (auction) => {
                                 </div>
                             </div>
                             `
-                                : `
+                    : `
                             <div class="buyer-box">
                                 <div class="buyer-title">⚠️ No Sale This Time</div>
                                 <div class="buyer-info">
@@ -1358,7 +1380,7 @@ const sendAuctionEndedSellerEmail = async (auction) => {
                                 </div>
                             </div>
                             `
-                            }
+                }
                             
                             <div class="details-grid">
                                 <div class="detail-item">
@@ -1392,24 +1414,24 @@ const sendAuctionEndedSellerEmail = async (auction) => {
                 </body>
                 </html>
             `,
-    });
-    return !!info;
-  } catch (error) {
-    console.error(
-      `❌ Failed to send listing ended email to seller for auction ${auction?._id}:`,
-      error,
-    );
-    return false;
-  }
+        });
+        return !!info;
+    } catch (error) {
+        console.error(
+            `❌ Failed to send listing ended email to seller for auction ${auction?._id}:`,
+            error,
+        );
+        return false;
+    }
 };
 
 const auctionListedEmail = async (auction, seller) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: seller.email,
-      subject: `✅ Your Listing is Live on JLTM Select: ${auction?.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: seller.email,
+            subject: `✅ Your Listing is Live on JLTM Select: ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -1520,16 +1542,15 @@ const auctionListedEmail = async (auction, seller) => {
                                 </div>
                                 ${auction?.buyNowPrice ? `<p style="text-align: center; color: #28a745;">Buy Now: ${formatCurrency(auction.buyNowPrice)}</p>` : ""}
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                             </div>
                             
                             <div class="listing-url">
@@ -1555,28 +1576,28 @@ const auctionListedEmail = async (auction, seller) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Item listed email sent to seller ${seller?.email}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send item listed email:`, error);
-    return false;
-  }
+        console.log(`✅ Item listed email sent to seller ${seller?.email}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send item listed email:`, error);
+        return false;
+    }
 };
 
 const auctionEndingSoonEmail = async (
-  userEmail,
-  userName,
-  auction,
-  timeRemaining,
+    userEmail,
+    userName,
+    auction,
+    timeRemaining,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: userEmail,
-      subject: `⏰ Listing Expires Soon: ${auction?.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: userEmail,
+            subject: `⏰ Listing Expires Soon: ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -1681,16 +1702,15 @@ const auctionEndingSoonEmail = async (
                                     <span>${formatCurrency(auction?.startPrice || auction?.buyNowPrice || 0)}</span>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
                                 <div class="listing-details">
                                     <div class="detail-item">
@@ -1719,10 +1739,9 @@ const auctionEndingSoonEmail = async (
                                 <p>• Other buyers are actively interested</p>
                             </div>
                             
-                            ${
-                              auction?.auctionType === "buy_now" &&
-                              auction?.buyNowPrice
-                                ? `
+                            ${auction?.auctionType === "buy_now" &&
+                    auction?.buyNowPrice
+                    ? `
                             <div class="buy-now-box">
                                 <div class="buy-now-title">💰 BUY NOW OPTION</div>
                                 <div class="buy-now-price">${formatCurrency(auction?.buyNowPrice)}</div>
@@ -1732,12 +1751,11 @@ const auctionEndingSoonEmail = async (
                                 </p>
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
-                            ${
-                              auction?.allowOffers
-                                ? `
+                            ${auction?.allowOffers
+                    ? `
                             <div class="offer-box">
                                 <div class="offer-title">💬 MAKE AN OFFER</div>
                                 <p>Submit your best offer before the listing expires. The seller has limited time to respond.</p>
@@ -1746,8 +1764,8 @@ const auctionEndingSoonEmail = async (
                                 </p>
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
                             <p style="text-align: center; margin: 25px 0;">
                                 <a href="${process.env.FRONTEND_URL}/auction/${auction._id}" class="cta-button">VIEW LISTING NOW</a>
@@ -1765,22 +1783,22 @@ const auctionEndingSoonEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send listing expiring soon email:`, error);
-    return false;
-  }
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send listing expiring soon email:`, error);
+        return false;
+    }
 };
 
 const paymentSuccessEmail = async (user, auction, paymentAmount) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: user.email,
-      subject: `Payment Confirmed - ${auction.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: user.email,
+            subject: `Payment Confirmed - ${auction.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -1809,13 +1827,12 @@ const paymentSuccessEmail = async (user, auction, paymentAmount) => {
                             <h4>Payment Details:</h4>
                             <p><strong>Item:</strong> ${auction.title}</p>
                             <p class="amount">${formatCurrency(auction?.commissionAmount || 0)}</p>
-                            <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+                            <p><strong>Date:</strong> ${formatToPacificTime(new Date(), 'full')}</p>
                         </div>
 
-                        ${
-                          auction.status === "sold" ||
-                          auction.status === "sold_buy_now"
-                            ? `
+                        ${auction.status === "sold" ||
+                    auction.status === "sold_buy_now"
+                    ? `
                             <p>Congratulations on being the highest bidder and winning this auction! Now, you can reach out to ${auction.seller?.firstName || auction.seller?.username} on the following details and follow up to arrange payment and transfer details.</p>
 
                             ${auction.seller ? `<p><strong>Seller:</strong> ${auction.seller?.firstName || auction.seller?.username}</p>` : ""}
@@ -1824,8 +1841,8 @@ const paymentSuccessEmail = async (user, auction, paymentAmount) => {
 
                             ${auction.seller ? `<p><strong>Phone:</strong> ${auction.seller?.phone || "714-968-9888"}</p>` : ""}
                         `
-                            : ``
-                        }                        
+                    : ``
+                }                        
                         <p>You can check your order and contact the seller from your dashboard.</p>
                         
                         <p>Thank you for your purchase!</p>
@@ -1833,34 +1850,34 @@ const paymentSuccessEmail = async (user, auction, paymentAmount) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Payment success email sent to ${user.email}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send payment success email:`, error);
-    return false;
-  }
+        console.log(`✅ Payment success email sent to ${user.email}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send payment success email:`, error);
+        return false;
+    }
 };
 
 const paymentCompletedEmail = async (user, auction, paymentAmount) => {
-  try {
-    const finalPrice = auction?.finalPrice || auction?.currentPrice || 0;
-    const commissionAmount = auction?.commissionAmount || 0;
-    const totalAmount = finalPrice + commissionAmount;
+    try {
+        const finalPrice = auction?.finalPrice || auction?.currentPrice || 0;
+        const commissionAmount = auction?.commissionAmount || 0;
+        const totalAmount = finalPrice + commissionAmount;
 
-    let commissionDisplay = "";
-    if (auction.commissionType === "fixed") {
-      commissionDisplay = `Sales Tax (${formatCurrency(commissionAmount)})`;
-    } else if (auction.commissionType === "percentage") {
-      commissionDisplay = `${auction.commissionValue}% Sales Tax (${formatCurrency(commissionAmount)})`;
-    }
+        let commissionDisplay = "";
+        if (auction.commissionType === "fixed") {
+            commissionDisplay = `Sales Tax (${formatCurrency(commissionAmount)})`;
+        } else if (auction.commissionType === "percentage") {
+            commissionDisplay = `${auction.commissionValue}% Sales Tax (${formatCurrency(commissionAmount)})`;
+        }
 
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: user?.email,
-      subject: `✅ Payment Confirmed - ${auction?.title}`,
-      html: `
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: user?.email,
+            subject: `✅ Payment Confirmed - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -1952,11 +1969,10 @@ const paymentCompletedEmail = async (user, auction, paymentAmount) => {
                                     <span class="amount-value">${formatCurrency(commissionAmount)}</span>
                                 </div>
                                 <div class="commission-note">
-                                    ⚡ ${
-                                      auction.commissionType === "fixed"
-                                        ? `A fixed sales tax of ${formatCurrency(auction.commissionValue)} applies to this purchase.`
-                                        : `A ${auction.commissionValue}% sales tax (${formatCurrency(commissionAmount)}) applies to this purchase.`
-                                    }
+                                    ⚡ ${auction.commissionType === "fixed"
+                    ? `A fixed sales tax of ${formatCurrency(auction.commissionValue)} applies to this purchase.`
+                    : `A ${auction.commissionValue}% sales tax (${formatCurrency(commissionAmount)}) applies to this purchase.`
+                }
                                 </div>
                                 <div class="amount-row total">
                                     <span class="amount-label">Total Amount Paid:</span>
@@ -1981,25 +1997,25 @@ const paymentCompletedEmail = async (user, auction, paymentAmount) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Payment completed email sent to buyer ${user?.email}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send payment completed email:`, error);
-    return false;
-  }
+        console.log(`✅ Payment completed email sent to buyer ${user?.email}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send payment completed email:`, error);
+        return false;
+    }
 };
 
 const paymentCompletedSellerEmail = async (seller, auction, buyer) => {
-  try {
-    const finalPrice = auction?.finalPrice || auction?.currentPrice || 0;
+    try {
+        const finalPrice = auction?.finalPrice || auction?.currentPrice || 0;
 
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: seller?.email,
-      subject: `💰 Payment Received - ${auction?.title}`,
-      html: `
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: seller?.email,
+            subject: `💰 Payment Received - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -2097,9 +2113,8 @@ const paymentCompletedSellerEmail = async (seller, auction, buyer) => {
                                 </div>
                                 <p>The buyer is now ready to coordinate collection/delivery. Here are their contact details:</p>
                                 
-                                ${
-                                  buyer
-                                    ? `
+                                ${buyer
+                    ? `
                                 <div class="contact-details">
                                     <p><strong>Buyer Name:</strong> ${buyer?.firstName || buyer?.username} ${buyer?.lastName || ""}</p>
                                     ${buyer?.email ? `<p><strong>Email:</strong> <a href="mailto:${buyer?.email}" class="contact-link">${buyer?.email}</a></p>` : ""}
@@ -2107,8 +2122,8 @@ const paymentCompletedSellerEmail = async (seller, auction, buyer) => {
                                     ${buyer?.address ? `<p><strong>Address:</strong> ${buyer?.address?.street ? `${buyer?.address?.street}, ` : ""}${buyer?.address?.city || ""} ${buyer?.address?.postCode || ""} ${buyer?.address?.country || ""}</p>` : ""}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
                             </div>
                             
@@ -2132,28 +2147,28 @@ const paymentCompletedSellerEmail = async (seller, auction, buyer) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Payment completed email sent to seller ${seller?.email}`);
-    return !!info;
-  } catch (error) {
-    console.error(
-      `❌ Failed to send payment completed email to seller:`,
-      error,
-    );
-    return false;
-  }
+        console.log(`✅ Payment completed email sent to seller ${seller?.email}`);
+        return !!info;
+    } catch (error) {
+        console.error(
+            `❌ Failed to send payment completed email to seller:`,
+            error,
+        );
+        return false;
+    }
 };
 
 const welcomeEmail = async (user, verificationToken) => {
-  try {
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+    try {
+        const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
 
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: user.email,
-      subject: `👋 Welcome to JLTM Select!`,
-      html: `
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: user.email,
+            subject: `👋 Welcome to JLTM Select!`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -2240,7 +2255,7 @@ const welcomeEmail = async (user, verificationToken) => {
                                 <p><strong>Name:</strong> ${user.firstName || ""} ${user.lastName || ""}</p>
                                 <p><strong>Email:</strong> ${user.email}</p>
                                 <p><strong>Account Type:</strong> ${user.userType || "Bidder"}</p>
-                                <p><strong>Member Since:</strong> ${new Date().toLocaleDateString()}</p>
+                                <p><strong>Member Since:</strong> ${formatToPacificTime(new Date(), 'full')}</p>
                             </div>
                             
                             <div class="cta-box">
@@ -2266,23 +2281,23 @@ const welcomeEmail = async (user, verificationToken) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Welcome email sent to ${user.email}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send welcome email:`, error);
-    return false;
-  }
+        console.log(`✅ Welcome email sent to ${user.email}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send welcome email:`, error);
+        return false;
+    }
 };
 
 const resetPasswordEmail = async (email, url) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: `🔒 Reset Your JLTM Select Password`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: `🔒 Reset Your JLTM Select Password`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -2397,21 +2412,21 @@ const resetPasswordEmail = async (email, url) => {
                 </body>
                 </html>
             `,
-    });
-    return !!info;
-  } catch (error) {
-    throw new Error(`Failed to send reset password email: ${error.message}`);
-  }
+        });
+        return !!info;
+    } catch (error) {
+        throw new Error(`Failed to send reset password email: ${error.message}`);
+    }
 };
 
 //For admin
 const newUserRegistrationEmail = async (adminEmail, user) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: adminEmail,
-      subject: `👤 New User Registration - ${user.userType || "Bidder"}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: adminEmail,
+            subject: `👤 New User Registration - ${user.userType || "Bidder"}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -2522,7 +2537,7 @@ const newUserRegistrationEmail = async (adminEmail, user) => {
                                     </div>
                                     <div class="detail-item">
                                         <div class="detail-label">Registration Date</div>
-                                        <div class="detail-value">${new Date(user.createdAt || new Date()).toLocaleString()}</div>
+                                        <div class="detail-value">${formatToPacificTime(new Date(user.createdAt || new Date()), 'full')}</div>
                                     </div>
                                 </div>
                             </div>
@@ -2545,25 +2560,25 @@ const newUserRegistrationEmail = async (adminEmail, user) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(
-      `✅ New user registration email sent to admin for ${user.email}`,
-    );
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send new user registration email:`, error);
-    return false;
-  }
+        console.log(
+            `✅ New user registration email sent to admin for ${user.email}`,
+        );
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send new user registration email:`, error);
+        return false;
+    }
 };
 
 const auctionWonAdminEmail = async (adminEmail, auction, buyer) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: adminEmail,
-      subject: `🏆 Item Sold - ${auction?.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: adminEmail,
+            subject: `🏆 Item Sold - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -2665,16 +2680,15 @@ const auctionWonAdminEmail = async (adminEmail, auction, buyer) => {
                                     <span>${formatCurrency(auction?.finalPrice || auction?.startPrice || auction?.buyNowPrice || 0)}</span>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
                                 <div class="item-details">
                                     <div class="detail-item">
@@ -2694,7 +2708,7 @@ const auctionWonAdminEmail = async (adminEmail, auction, buyer) => {
                                     </div>
                                     <div class="detail-item">
                                         <div class="detail-label">Sale Date</div>
-                                        <div class="detail-value">${new Date().toLocaleString()}</div>
+                                        <div class="detail-value">${formatToPacificTime(new Date(), 'full')}</div>
                                     </div>
                                     <div class="detail-item">
                                         <div class="detail-label">Sale Status</div>
@@ -2746,71 +2760,71 @@ const auctionWonAdminEmail = async (adminEmail, auction, buyer) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Listing sold admin email sent for auction ${auction._id}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send listing sold admin email:`, error);
-    return false;
-  }
+        console.log(`✅ Listing sold admin email sent for auction ${auction._id}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send listing sold admin email:`, error);
+        return false;
+    }
 };
 
 const auctionEndedAdminEmail = async (adminEmail, auction) => {
-  try {
-    const getStatusDetails = (status) => {
-      const statusConfig = {
-        sold: {
-          subject: "🏆 Item Sold",
-          headerColor: "#d4edda",
-          headerText: "Item Successfully Sold",
-          statusBadge: "SOLD",
-          badgeColor: "#28a745",
-          summary: "This auction listing has ended successfully with a buyer.",
-        },
-        sold_buy_now: {
-          subject: "🏆 Item Sold (Buy Now)",
-          headerColor: "#d4edda",
-          headerText: "Item Successfully Sold via Buy Now",
-          statusBadge: "SOLD",
-          badgeColor: "#28a745",
-          summary: "This item was purchased immediately via Buy Now.",
-        },
-        expired: {
-          subject: "📅 Listing Expired",
-          headerColor: "#e2e3e5",
-          headerText: "Item Listing Expired",
-          statusBadge: "EXPIRED",
-          badgeColor: "#6c757d",
-          summary: "This listing has expired without a sale.",
-        },
-        cancelled: {
-          subject: "❌ Listing Cancelled",
-          headerColor: "#f8d7da",
-          headerText: "Item Listing Cancelled",
-          statusBadge: "CANCELLED",
-          badgeColor: "#dc3545",
-          summary: "This listing was cancelled before completion.",
-        },
-        reserve_not_met: {
-          subject: "⚠️ Reserve Not Met",
-          headerColor: "#fff3cd",
-          headerText: "Reserve Price Not Met",
-          statusBadge: "RESERVE NOT MET",
-          badgeColor: "#ffc107",
-          summary: "The auction ended but the reserve price was not met.",
-        },
-      };
-      return statusConfig[status] || statusConfig["expired"];
-    };
+    try {
+        const getStatusDetails = (status) => {
+            const statusConfig = {
+                sold: {
+                    subject: "🏆 Item Sold",
+                    headerColor: "#d4edda",
+                    headerText: "Item Successfully Sold",
+                    statusBadge: "SOLD",
+                    badgeColor: "#28a745",
+                    summary: "This auction listing has ended successfully with a buyer.",
+                },
+                sold_buy_now: {
+                    subject: "🏆 Item Sold (Buy Now)",
+                    headerColor: "#d4edda",
+                    headerText: "Item Successfully Sold via Buy Now",
+                    statusBadge: "SOLD",
+                    badgeColor: "#28a745",
+                    summary: "This item was purchased immediately via Buy Now.",
+                },
+                expired: {
+                    subject: "📅 Listing Expired",
+                    headerColor: "#e2e3e5",
+                    headerText: "Item Listing Expired",
+                    statusBadge: "EXPIRED",
+                    badgeColor: "#6c757d",
+                    summary: "This listing has expired without a sale.",
+                },
+                cancelled: {
+                    subject: "❌ Listing Cancelled",
+                    headerColor: "#f8d7da",
+                    headerText: "Item Listing Cancelled",
+                    statusBadge: "CANCELLED",
+                    badgeColor: "#dc3545",
+                    summary: "This listing was cancelled before completion.",
+                },
+                reserve_not_met: {
+                    subject: "⚠️ Reserve Not Met",
+                    headerColor: "#fff3cd",
+                    headerText: "Reserve Price Not Met",
+                    statusBadge: "RESERVE NOT MET",
+                    badgeColor: "#ffc107",
+                    summary: "The auction ended but the reserve price was not met.",
+                },
+            };
+            return statusConfig[status] || statusConfig["expired"];
+        };
 
-    const statusDetails = getStatusDetails(auction.status);
+        const statusDetails = getStatusDetails(auction.status);
 
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: adminEmail,
-      subject: `${statusDetails.subject} - ${auction?.title}`,
-      html: `
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: adminEmail,
+            subject: `${statusDetails.subject} - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -2911,26 +2925,24 @@ const auctionEndedAdminEmail = async (adminEmail, auction) => {
                                 <div class="item-title">${auction.title}</div>
                                 ${auction.subTitle ? `<p style="text-align: center; color: #666; margin-bottom: 15px;">${auction.subTitle}</p>` : ""}
                                 
-                                ${
-                                  auction?.finalPrice
-                                    ? `
+                                ${auction?.finalPrice
+                    ? `
                                 <div class="sale-price">
                                     <span>${formatCurrency(auction?.finalPrice)}</span>
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
                                 <div class="item-details">
                                     <div class="detail-item">
@@ -2951,7 +2963,7 @@ const auctionEndedAdminEmail = async (adminEmail, auction) => {
                                     </div>
                                     <div class="detail-item">
                                         <div class="detail-label">Ended On</div>
-                                        <div class="detail-value">${new Date().toLocaleString()}</div>
+                                        <div class="detail-value">${formatToPacificTime(new Date(), 'full')}</div>
                                     </div>
                                 </div>
                             </div>
@@ -2961,20 +2973,19 @@ const auctionEndedAdminEmail = async (adminEmail, auction) => {
                                 <p>• <strong>Total Offers/Bids:</strong> ${auction?.offers?.length || auction?.bids?.length || 0}</p>
                                 <p>• <strong>Total Views:</strong> ${auction?.views || 0}</p>
                                 <p>• <strong>Listing Duration:</strong> ${Math.ceil(
-                                  (auction?.endDate
-                                    ? new Date(auction.endDate) -
-                                      new Date(auction.createdAt)
-                                    : 0) /
-                                    (1000 * 60 * 60 * 24),
-                                )} days</p>
+                    (auction?.endDate
+                        ? new Date(auction.endDate) -
+                        new Date(auction.createdAt)
+                        : 0) /
+                    (1000 * 60 * 60 * 24),
+                )} days</p>
                                 <p>• <strong>Listing ID:</strong> ${auction?._id}</p>
                             </div>
                             
-                            ${
-                              auction.winner &&
-                              (auction.status === "sold" ||
-                                auction.status === "sold_buy_now")
-                                ? `
+                            ${auction.winner &&
+                    (auction.status === "sold" ||
+                        auction.status === "sold_buy_now")
+                    ? `
                             <div class="buyer-card">
                                 <div class="buyer-title">👤 BUYER INFORMATION</div>
                                 <p><strong>Buyer:</strong> ${auction?.winner?.firstName || auction?.winner?.username}</p>
@@ -2982,13 +2993,12 @@ const auctionEndedAdminEmail = async (adminEmail, auction) => {
                                 ${auction?.winner?.phone ? `<p><strong>Phone:</strong> ${auction?.winner?.phone}</p>` : ""}
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
-                            ${
-                              auction?.status !== "sold" &&
-                              auction?.status !== "sold_buy_now"
-                                ? `
+                            ${auction?.status !== "sold" &&
+                    auction?.status !== "sold_buy_now"
+                    ? `
                             <div class="action-alert">
                                 <div class="action-title">⚠️ ADMIN ACTION MAY BE REQUIRED</div>
                                 <p>This listing ended without a sale. Consider:</p>
@@ -2997,8 +3007,8 @@ const auctionEndedAdminEmail = async (adminEmail, auction) => {
                                 <p>• Analyzing market demand for similar items</p>
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
                             <p style="text-align: center; margin: 25px 0;">
                                 <a href="${process.env.FRONTEND_URL}/admin/auctions/all" class="cta-button" style="background: #1e2d3b; color: #ffffff !important;">VIEW ALL LISTINGS</a>
@@ -3014,31 +3024,31 @@ const auctionEndedAdminEmail = async (adminEmail, auction) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(
-      `✅ Listing ended admin email sent for auction ${auction?._id} (Status: ${auction?.status})`,
-    );
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send listing ended admin email:`, error);
-    return false;
-  }
+        console.log(
+            `✅ Listing ended admin email sent for auction ${auction?._id} (Status: ${auction?.status})`,
+        );
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send listing ended admin email:`, error);
+        return false;
+    }
 };
 
 const flaggedCommentAdminEmail = async (
-  adminEmail,
-  reason,
-  comment,
-  auction,
-  reportedByUser,
+    adminEmail,
+    reason,
+    comment,
+    auction,
+    reportedByUser,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: adminEmail,
-      subject: `🚩 Flagged Comment - ${auction?.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: adminEmail,
+            subject: `🚩 Flagged Comment - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -3152,8 +3162,8 @@ const flaggedCommentAdminEmail = async (
                                     "${comment?.content}"
                                 </div>
                                 <div class="comment-meta">
-                                    Posted: ${new Date(comment.createdAt).toLocaleString()}
-                                    ${comment?.updatedAt && comment?.updatedAt !== comment?.createdAt ? ` | Last Edited: ${new Date(comment?.updatedAt).toLocaleString()}` : ""}
+                                    Posted: ${formatToPacificTime(new Date(comment.createdAt), 'full')} (Pacific Time)
+                                    ${comment?.updatedAt && comment?.updatedAt !== comment?.createdAt ? ` | Last Edited: ${formatToPacificTime(new Date(comment?.updatedAt), 'full')}` : ""}
                                 </div>
                             </div>
                             
@@ -3200,7 +3210,7 @@ const flaggedCommentAdminEmail = async (
                                     </div>
                                 </div>
                                 <div class="comment-meta" style="text-align: center; margin-top: 15px;">
-                                    Reported at: ${new Date().toLocaleString()}
+                                    Reported at: ${formatToPacificTime(new Date(), 'full')} (Pacific Time)
                                 </div>
                             </div>
                             
@@ -3222,31 +3232,31 @@ const flaggedCommentAdminEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(
-      `✅ Flagged comment email sent to admin for comment ${comment._id}`,
-    );
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send flagged comment email:`, error);
-    return false;
-  }
+        console.log(
+            `✅ Flagged comment email sent to admin for comment ${comment._id}`,
+        );
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send flagged comment email:`, error);
+        return false;
+    }
 };
 
 // Comment emails
 const newCommentSellerEmail = async (
-  seller,
-  auction,
-  comment,
-  commentAuthor,
+    seller,
+    auction,
+    comment,
+    commentAuthor,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: seller?.email,
-      subject: `💬 New Comment on Your Listing: ${auction.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: seller?.email,
+            subject: `💬 New Comment on Your Listing: ${auction.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -3354,16 +3364,15 @@ const newCommentSellerEmail = async (
                                     <span>${formatCurrency(auction?.startPrice)}</span>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                             </div>
                             
                             <div class="comment-card">
@@ -3376,7 +3385,7 @@ const newCommentSellerEmail = async (
                                     "${comment?.content}"
                                 </div>
                                 <div class="comment-meta">
-                                    Posted: ${new Date(comment?.createdAt).toLocaleString()}
+                                    Posted: ${formatToPacificTime(new Date(comment?.createdAt), 'full')} (Pacific Time)
                                 </div>
                             </div>
                             
@@ -3407,28 +3416,28 @@ const newCommentSellerEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ New comment email sent to seller ${seller.email}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send new comment email to seller:`, error);
-    return false;
-  }
+        console.log(`✅ New comment email sent to seller ${seller.email}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send new comment email to seller:`, error);
+        return false;
+    }
 };
 
 const newCommentBidderEmail = async (
-  buyer,
-  auction,
-  comment,
-  commentAuthor,
+    buyer,
+    auction,
+    comment,
+    commentAuthor,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: buyer?.email,
-      subject: `💬 New Activity on Auction: ${auction?.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: buyer?.email,
+            subject: `💬 New Activity on Auction: ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -3545,16 +3554,15 @@ const newCommentBidderEmail = async (
                                     <span>${formatCurrency(auction?.startPrice)}</span>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                             </div>
                             
                             <div class="comment-card">
@@ -3567,7 +3575,7 @@ const newCommentBidderEmail = async (
                                     "${comment?.content}"
                                 </div>
                                 <div class="comment-meta">
-                                    Posted: ${new Date(comment?.createdAt).toLocaleString()}
+                                    Posted: ${formatToPacificTime(new Date(comment?.createdAt), 'full')} (Pacific Time)
                                 </div>
                             </div>
                             
@@ -3579,18 +3587,17 @@ const newCommentBidderEmail = async (
                                 <p>• Gauge seller responsiveness and professionalism</p>
                             </div>
                             
-                            ${
-                              auction?.endDate &&
-                              new Date(auction?.endDate) - new Date() <
-                                24 * 60 * 60 * 1000
-                                ? `
+                            ${auction?.endDate &&
+                    new Date(auction?.endDate) - new Date() <
+                    24 * 60 * 60 * 1000
+                    ? `
                             <div class="urgency-box">
                                 <div class="urgency-title">⏰ AUCTION ENDING SOON!</div>
                                 <p>This auction is ending in less than 24 hours. Don't miss your chance!</p>
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
                             <div class="cta-box">
                                 <div class="cta-title">🎯 TAKE ACTION NOW</div>
@@ -3609,27 +3616,27 @@ const newCommentBidderEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ New comment email sent to buyer ${buyer.email}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send new comment email to buyer:`, error);
-    return false;
-  }
+        console.log(`✅ New comment email sent to buyer ${buyer.email}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send new comment email to buyer:`, error);
+        return false;
+    }
 };
 
 const auctionSubmittedForApprovalEmail = async (
-  adminEmail,
-  auction,
-  seller,
+    adminEmail,
+    auction,
+    seller,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: adminEmail,
-      subject: `📝 New Listing for Approval - ${auction.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: adminEmail,
+            subject: `📝 New Listing for Approval - ${auction.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -3748,16 +3755,15 @@ const auctionSubmittedForApprovalEmail = async (
                                         <div class="price-label">Starting Price</div>
                                         <div class="price-value">${formatCurrency(auction.startPrice)}</div>
                                     </div>
-                                    ${
-                                      auction.buyNowPrice
-                                        ? `
+                                    ${auction.buyNowPrice
+                    ? `
                                     <div class="price-item">
                                         <div class="price-label">Buy Now Price</div>
                                         <div class="price-value" style="color: #28a745;">${formatCurrency(auction.buyNowPrice)}</div>
                                     </div>
                                     `
-                                        : ""
-                                    }
+                    : ""
+                }
                                 </div>
                                 
                                 <div class="item-specs">
@@ -3771,32 +3777,29 @@ const auctionSubmittedForApprovalEmail = async (
                                     </div>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Specifications</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                             </div>
                             
-                            ${
-                              auction.description
-                                ? `
+                            ${auction.description
+                    ? `
                             <div class="description-box">
                                 <div class="description-title">📝 ITEM DESCRIPTION</div>
                                 <p>${auction.description.substring(0, 200)}${auction.description.length > 200 ? "..." : ""}</p>
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
-                            ${
-                              auction.startPrice > 50000
-                                ? `
+                            ${auction.startPrice > 50000
+                    ? `
                             <div class="priority-box">
                                 <div class="priority-title">⚠️ PRIORITY REVIEW RECOMMENDED</div>
                                 <p>This listing may require additional attention due to high value (${formatCurrency(auction.startPrice)})</p>
@@ -3804,8 +3807,8 @@ const auctionSubmittedForApprovalEmail = async (
                                 ${auction.allowOffers ? "<p>• Offers enabled</p>" : ""}
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
                             <div class="admin-actions">
                                 <div class="actions-title">⚡ ADMIN ACTIONS REQUIRED</div>
@@ -3825,25 +3828,25 @@ const auctionSubmittedForApprovalEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(
-      `✅ Listing submission email sent to admin for auction ${auction._id}`,
-    );
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send listing submission email:`, error);
-    return false;
-  }
+        console.log(
+            `✅ Listing submission email sent to admin for auction ${auction._id}`,
+        );
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send listing submission email:`, error);
+        return false;
+    }
 };
 
 const auctionApprovedEmail = async (seller, auction) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: seller.email,
-      subject: `✅ Your Listing is Live: ${auction?.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: seller.email,
+            subject: `✅ Your Listing is Live: ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -3952,28 +3955,26 @@ const auctionApprovedEmail = async (seller, auction) => {
                                         <div class="price-label">Listing Price</div>
                                         <div class="price-value">${formatCurrency(auction?.startPrice)}</div>
                                     </div>
-                                    ${
-                                      auction?.buyNowPrice
-                                        ? `
+                                    ${auction?.buyNowPrice
+                    ? `
                                     <div class="price-item">
                                         <div class="price-label">Buy Now Price</div>
                                         <div class="price-value" style="color: #28a745;">${formatCurrency(auction?.buyNowPrice)}</div>
                                     </div>
                                     `
-                                        : ""
-                                    }
+                    : ""
+                }
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                             </div>
                             
                             <div class="listing-url">
@@ -4004,49 +4005,50 @@ const auctionApprovedEmail = async (seller, auction) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Listing approved email sent to seller ${seller.email}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send listing approved email:`, error);
-    return false;
-  }
+        console.log(`✅ Listing approved email sent to seller ${seller.email}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send listing approved email:`, error);
+        return false;
+    }
 };
 
 const newAuctionNotificationEmail = async (buyer, auction, seller) => {
-  try {
-    // Determine listing status and appropriate wording
-    const isLive =
-      auction?.status === "active" || auction?.status === "approved";
-    const listingStatus = isLive ? "Live Now" : "Coming Soon";
-    const statusColor = isLive ? "#28a745" : "#17a2b8";
+    try {
+        // Determine listing status and appropriate wording
+        const isLive =
+            auction?.status === "active" || auction?.status === "approved";
+        const listingStatus = isLive ? "Live Now" : "Coming Soon";
+        const statusColor = isLive ? "#28a745" : "#17a2b8";
 
-    // Determine available actions based on listing type
-    let primaryAction = "View Details";
-    let primaryColor = "#1e2d3b";
+        // Determine available actions based on listing type
+        let primaryAction = "View Details";
+        let primaryColor = "#1e2d3b";
 
-    if (isLive) {
-      if (auction.auctionType === "buy_now" && auction?.buyNowPrice) {
-        primaryAction = "Buy Now";
-        primaryColor = "#28a745";
-      } else if (auction.allowOffers) {
-        primaryAction = "Make Offer";
-        primaryColor = "#edcd1f";
-      } else {
-        primaryAction = "View Details";
-      }
-    }
+        if (isLive) {
+            if (auction.auctionType === "buy_now" && auction?.buyNowPrice) {
+                primaryAction = "Buy Now";
+                primaryColor = "#28a745";
+            } else if (auction.allowOffers) {
+                primaryAction = "Make Offer";
+                primaryColor = "#edcd1f";
+            } else {
+                primaryAction = "View Details";
+            }
+        }
 
-    const timeInfo = auction?.endDate
-      ? `Ends: ${new Date(auction.endDate).toLocaleString()}`
-      : "No end date set";
+        const timeInfo = auction?.endDate
+            ? `Ends: ${formatToPacificTime(auction.endDate, 'full') 
+} (Pacific Time)`
+            : "No end date set";
 
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: buyer.email,
-      subject: `🎯 New Auction: ${auction?.title}`,
-      html: `
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: buyer.email,
+            subject: `🎯 New Auction: ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -4182,15 +4184,14 @@ const newAuctionNotificationEmail = async (buyer, auction, seller) => {
                                     <div class="listing-price">
                                         <span>${formatCurrency(auction?.startPrice)}</span>
                                     </div>
-                                    ${
-                                      auction?.buyNowPrice
-                                        ? `
+                                    ${auction?.buyNowPrice
+                    ? `
                                     <div class="buy-now-price">
                                         Buy Now: ${formatCurrency(auction?.buyNowPrice)}
                                     </div>
                                     `
-                                        : ""
-                                    }
+                    : ""
+                }
                                 </div>
                                 
                                 <div class="item-details">
@@ -4204,54 +4205,50 @@ const newAuctionNotificationEmail = async (buyer, auction, seller) => {
                                     </div>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Specifications</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                             </div>
                             
-                            ${
-                              auction?.description
-                                ? `
+                            ${auction?.description
+                    ? `
                             <div class="description-preview">
                                 <div class="description-title">📝 ITEM DESCRIPTION</div>
                                 <p>${auction?.description.substring(0, 200)}${auction?.description.length > 200 ? "..." : ""}</p>
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
-                            ${
-                              isLive
-                                ? `
+                            ${isLive
+                    ? `
                             <div class="urgency-box">
                                 <div class="urgency-title">🎯 AVAILABLE NOW!</div>
                                 <p>This item is ready for bidding. ${auction?.buyNowPrice ? "Use Buy Now to secure it immediately or place a bid." : auction?.allowOffers ? "Make an offer to start negotiations." : "Place a bid to compete for this item."}</p>
                             </div>
                             `
-                                : `
+                    : `
                             <div class="urgency-box">
                                 <div class="urgency-title">📅 COMING SOON!</div>
                                 <p>This item will be available shortly. Save it to your watchlist to get notified when it goes live.</p>
                             </div>
                             `
-                            }
+                }
                             
-                            ${
-                              auction?.endDate
-                                ? `
+                            ${auction?.endDate
+                    ? `
                             <div class="time-box">
                                 ⏰ ${timeInfo}
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
                             <div class="action-buttons">
                                 <a href="${process.env.FRONTEND_URL}/auction/${auction?._id}" class="action-button">
@@ -4276,87 +4273,87 @@ const newAuctionNotificationEmail = async (buyer, auction, seller) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(
-      `✅ New listing notification sent to buyer ${buyer?.email} for auction ${auction?._id}`,
-    );
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send new listing notification:`, error);
-    return false;
-  }
+        console.log(
+            `✅ New listing notification sent to buyer ${buyer?.email} for auction ${auction?._id}`,
+        );
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send new listing notification:`, error);
+        return false;
+    }
 };
 
 // Bulk notification function for multiple bidders (UPDATED with SMS support)
 const sendBulkAuctionNotifications = async (buyers, auction, seller) => {
-  try {
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    
-    // ============ EMAIL NOTIFICATIONS ============
-    const emailPromises = buyers?.map(async (buyer) => {
-      try {
-        // Check if buyer has notifications enabled for new listings
-        if (buyer?.preferences?.emailUpdates) {
-          await newAuctionNotificationEmail(buyer, auction, seller);
-          return { success: true, email: buyer.email, type: 'email' };
-        }
+    try {
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+        // ============ EMAIL NOTIFICATIONS ============
+        const emailPromises = buyers?.map(async (buyer) => {
+            try {
+                // Check if buyer has notifications enabled for new listings
+                if (buyer?.preferences?.emailUpdates) {
+                    await newAuctionNotificationEmail(buyer, auction, seller);
+                    return { success: true, email: buyer.email, type: 'email' };
+                }
+                return {
+                    success: false,
+                    email: buyer?.email,
+                    reason: "Email notifications disabled",
+                    type: 'email'
+                };
+            } catch (error) {
+                console.error(
+                    `❌ Failed to send email notification to ${buyer?.email}:`,
+                    error.message,
+                );
+                return { success: false, email: buyer?.email, error: error.message, type: 'email' };
+            }
+        });
+
+        // ============ SMS NOTIFICATIONS ============
+        // SMS will be sent separately using the same buyers array
+        const smsResults = await sendBulkAuctionSMS(buyers, auction, frontendUrl, 5);
+
+        // ============ WAIT FOR EMAIL RESULTS ============
+        const emailResults = await Promise.allSettled(emailPromises);
+
+        // ============ LOG SUMMARY ============
+        const successfulEmails = emailResults.filter(
+            (result) => result.status === "fulfilled" && result.value.success,
+        ).length;
+
+        const failedEmails = emailResults.filter(
+            (result) => result.status === "fulfilled" && !result.value.success,
+        ).length;
+
+        const errorEmails = emailResults.filter(
+            (result) => result.status === "rejected",
+        ).length;
+
+        console.log(`📧 Email summary: ${successfulEmails} successful, ${failedEmails} skipped/failed, ${errorEmails} errors`);
+        console.log(`📱 SMS summary: ${smsResults.successful} sent, ${smsResults.failed} failed, ${smsResults.errors} errors`);
+
         return {
-          success: false,
-          email: buyer?.email,
-          reason: "Email notifications disabled",
-          type: 'email'
+            total: buyers.length,
+            email: {
+                successful: successfulEmails,
+                failed: failedEmails,
+                errors: errorEmails
+            },
+            sms: {
+                total: smsResults.total,
+                successful: smsResults.successful,
+                failed: smsResults.failed,
+                errors: smsResults.errors
+            }
         };
-      } catch (error) {
-        console.error(
-          `❌ Failed to send email notification to ${buyer?.email}:`,
-          error.message,
-        );
-        return { success: false, email: buyer?.email, error: error.message, type: 'email' };
-      }
-    });
-
-    // ============ SMS NOTIFICATIONS ============
-    // SMS will be sent separately using the same buyers array
-    const smsResults = await sendBulkAuctionSMS(buyers, auction, frontendUrl, 5);
-
-    // ============ WAIT FOR EMAIL RESULTS ============
-    const emailResults = await Promise.allSettled(emailPromises);
-
-    // ============ LOG SUMMARY ============
-    const successfulEmails = emailResults.filter(
-      (result) => result.status === "fulfilled" && result.value.success,
-    ).length;
-    
-    const failedEmails = emailResults.filter(
-      (result) => result.status === "fulfilled" && !result.value.success,
-    ).length;
-    
-    const errorEmails = emailResults.filter(
-      (result) => result.status === "rejected",
-    ).length;
-
-    console.log(`📧 Email summary: ${successfulEmails} successful, ${failedEmails} skipped/failed, ${errorEmails} errors`);
-    console.log(`📱 SMS summary: ${smsResults.successful} sent, ${smsResults.failed} failed, ${smsResults.errors} errors`);
-
-    return {
-      total: buyers.length,
-      email: {
-        successful: successfulEmails,
-        failed: failedEmails,
-        errors: errorEmails
-      },
-      sms: {
-        total: smsResults.total,
-        successful: smsResults.successful,
-        failed: smsResults.failed,
-        errors: smsResults.errors
-      }
-    };
-  } catch (error) {
-    console.error("❌ Error in bulk listing notifications:", error);
-    throw error;
-  }
+    } catch (error) {
+        console.error("❌ Error in bulk listing notifications:", error);
+        throw error;
+    }
 };
 
 /**
@@ -4365,59 +4362,59 @@ const sendBulkAuctionNotifications = async (buyers, auction, seller) => {
  * @returns {Promise<Object>} Results of both notifications
  */
 const sendAuctionWonNotifications = async (auction) => {
-  try {
-    const winner = auction.winner;
-    const seller = auction.seller;
-    
-    if (!winner) {
-      console.log("⚠️ No winner found for auction, skipping notifications");
-      return { success: false, reason: "No winner" };
+    try {
+        const winner = auction.winner;
+        const seller = auction.seller;
+
+        if (!winner) {
+            console.log("⚠️ No winner found for auction, skipping notifications");
+            return { success: false, reason: "No winner" };
+        }
+
+        // Send email notification
+        let emailResult = { success: false };
+        if (winner.preferences?.emailUpdates) {
+            try {
+                await sendAuctionWonEmail(auction);
+                emailResult = { success: true, type: "email" };
+                console.log(`✅ Auction won email sent to ${winner.email}`);
+            } catch (emailError) {
+                console.error(`❌ Failed to send auction won email to ${winner.email}:`, emailError);
+                emailResult = { success: false, error: emailError.message, type: "email" };
+            }
+        } else {
+            console.log(`⚠️ Email updates disabled for winner ${winner.email}`);
+            emailResult = { success: false, reason: "Email disabled", type: "email" };
+        }
+
+        // Send SMS notification
+        const smsResult = await sendAuctionWonSMS(winner, auction);
+
+        // Log summary
+        console.log(`📢 Auction won notifications for ${auction._id}: Email: ${emailResult.success ? "✅" : "❌"}, SMS: ${smsResult.success ? "✅" : "❌"}`);
+
+        return {
+            success: true,
+            email: emailResult,
+            sms: smsResult,
+            winner: {
+                email: winner.email,
+                phone: winner.phone
+            }
+        };
+    } catch (error) {
+        console.error("❌ Error in sendAuctionWonNotifications:", error);
+        return { success: false, error: error.message };
     }
-    
-    // Send email notification
-    let emailResult = { success: false };
-    if (winner.preferences?.emailUpdates) {
-      try {
-        await sendAuctionWonEmail(auction);
-        emailResult = { success: true, type: "email" };
-        console.log(`✅ Auction won email sent to ${winner.email}`);
-      } catch (emailError) {
-        console.error(`❌ Failed to send auction won email to ${winner.email}:`, emailError);
-        emailResult = { success: false, error: emailError.message, type: "email" };
-      }
-    } else {
-      console.log(`⚠️ Email updates disabled for winner ${winner.email}`);
-      emailResult = { success: false, reason: "Email disabled", type: "email" };
-    }
-    
-    // Send SMS notification
-    const smsResult = await sendAuctionWonSMS(winner, auction);
-    
-    // Log summary
-    console.log(`📢 Auction won notifications for ${auction._id}: Email: ${emailResult.success ? "✅" : "❌"}, SMS: ${smsResult.success ? "✅" : "❌"}`);
-    
-    return {
-      success: true,
-      email: emailResult,
-      sms: smsResult,
-      winner: {
-        email: winner.email,
-        phone: winner.phone
-      }
-    };
-  } catch (error) {
-    console.error("❌ Error in sendAuctionWonNotifications:", error);
-    return { success: false, error: error.message };
-  }
 };
 
 const newBidNotificationEmail = async (seller, auction, bidAmount, bidder) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: seller.email,
-      subject: `💰 New Bid Received - ${auction.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: seller.email,
+            subject: `💰 New Bid Received - ${auction.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -4511,40 +4508,37 @@ const newBidNotificationEmail = async (seller, auction, bidAmount, bidder) => {
                                     <span class="detail-label">Total Bids:</span>
                                     <span class="detail-value">${(auction.bidCount || 0).toLocaleString()}</span>
                                 </div>
-                                ${
-                                  auction.endDate
-                                    ? `
+                                ${auction.endDate
+                    ? `
                                 <div class="detail-item">
                                     <span class="detail-label">Time Remaining:</span>
                                     <span class="detail-value">${getTimeRemaining(auction.endDate)}</span>
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                             </div>
                             
-                            ${
-                              auction.specifications
-                                ? `
+                            ${auction.specifications
+                    ? `
                             <div class="specs-section">
                                 <div class="specs-title">📋 Item Details</div>
                                 ${renderSpecifications(auction.specifications)}
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
-                            ${
-                              bidder
-                                ? `
+                            ${bidder
+                    ? `
                             <div class="bidder-info">
                                 <div class="bidder-title">👤 BIDDER INFORMATION</div>
                                 <p><strong>Bidder:</strong> ${bidder.username}</p>
                                 ${bidder.rating ? `<p><strong>Bidder Rating:</strong> ${bidder.rating}/5 ⭐</p>` : ""}
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
                             <p style="text-align: center; margin: 25px 0;">
                                 <a href="${process.env.FRONTEND_URL}/seller/auctions/${auction._id}" class="cta-button">VIEW AUCTION DETAILS</a>
@@ -4561,29 +4555,29 @@ const newBidNotificationEmail = async (seller, auction, bidAmount, bidder) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ New bid notification sent to seller ${seller.email}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send new bid notification:`, error);
-    return false;
-  }
+        console.log(`✅ New bid notification sent to seller ${seller.email}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send new bid notification:`, error);
+        return false;
+    }
 };
 
 // Offer emails
 const newOfferNotificationEmail = async (
-  seller,
-  auction,
-  offerAmount,
-  buyer,
+    seller,
+    auction,
+    offerAmount,
+    buyer,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: seller?.email,
-      subject: `💰 New Offer Received - ${auction?.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: seller?.email,
+            subject: `💰 New Offer Received - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -4706,32 +4700,30 @@ const newOfferNotificationEmail = async (
                                     </div>
                                     <div class="detail-item">
                                         <div class="detail-label">Offer Received</div>
-                                        <div class="detail-value">${new Date().toLocaleString()}</div>
+                                        <div class="detail-value">${formatToPacificTime(new Date(), 'full')}</div>
                                     </div>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                             </div>
                             
-                            ${
-                              buyer
-                                ? `
+                            ${buyer
+                    ? `
                             <div class="buyer-info">
                                 <div class="buyer-title">👤 BUYER INFORMATION</div>
                                 <p><strong>Buyer:</strong> ${buyer?.firstName || buyer?.username}</p>
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
                             <div class="response-time">
                                 <div class="response-title">⏰ RESPOND WITHIN 48 HOURS</div>
@@ -4757,30 +4749,30 @@ const newOfferNotificationEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ New offer notification sent to seller ${seller.email}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send new offer notification:`, error);
-    return false;
-  }
+        console.log(`✅ New offer notification sent to seller ${seller.email}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send new offer notification:`, error);
+        return false;
+    }
 };
 
 const offerCanceledEmail = async (
-  buyerEmail,
-  buyerName,
-  seller,
-  auction,
-  offerAmount,
-  offerId,
+    buyerEmail,
+    buyerName,
+    seller,
+    auction,
+    offerAmount,
+    offerId,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: buyerEmail,
-      subject: `❌ Offer Canceled - ${auction?.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: buyerEmail,
+            subject: `❌ Offer Canceled - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -4896,16 +4888,15 @@ const offerCanceledEmail = async (
                                     <span>${formatCurrency(offerAmount)}</span>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
                                 <div class="offer-details">
                                     <div class="detail-item">
@@ -4914,7 +4905,7 @@ const offerCanceledEmail = async (
                                     </div>
                                     <div class="detail-item">
                                         <div class="detail-label">Canceled On</div>
-                                        <div class="detail-value">${new Date().toLocaleString()}</div>
+                                        <div class="detail-value">${formatToPacificTime(new Date(), 'full')}</div>
                                     </div>
                                     <div class="detail-item">
                                         <div class="detail-label">Listing Price</div>
@@ -4950,30 +4941,30 @@ const offerCanceledEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Offer canceled email sent to buyer ${buyerEmail}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send offer canceled email:`, error);
-    return false;
-  }
+        console.log(`✅ Offer canceled email sent to buyer ${buyerEmail}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send offer canceled email:`, error);
+        return false;
+    }
 };
 
 const offerAcceptedEmail = async (
-  buyerEmail,
-  buyerName,
-  seller,
-  auction,
-  offerAmount,
-  offerId,
+    buyerEmail,
+    buyerName,
+    seller,
+    auction,
+    offerAmount,
+    offerId,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: buyerEmail,
-      subject: `✅ Offer Accepted - ${auction?.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: buyerEmail,
+            subject: `✅ Offer Accepted - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -5092,16 +5083,15 @@ const offerAcceptedEmail = async (
                                     <span>${formatCurrency(offerAmount)}</span>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
                                 <div class="deal-summary">
                                     <div class="deal-item">
@@ -5114,7 +5104,7 @@ const offerAcceptedEmail = async (
                                     </div>
                                     <div class="deal-item">
                                         <div class="deal-label">Accepted On</div>
-                                        <div class="deal-value">${new Date().toLocaleString()}</div>
+                                        <div class="deal-value">${formatToPacificTime(new Date(), 'full')}</div>
                                     </div>
                                 </div>
                             </div>
@@ -5150,31 +5140,31 @@ const offerAcceptedEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Offer accepted email sent to buyer ${buyerEmail}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send offer accepted email:`, error);
-    return false;
-  }
+        console.log(`✅ Offer accepted email sent to buyer ${buyerEmail}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send offer accepted email:`, error);
+        return false;
+    }
 };
 
 const offerRejectedEmail = async (
-  buyerEmail,
-  buyerName,
-  seller,
-  auction,
-  offerAmount,
-  offerId,
-  reason,
+    buyerEmail,
+    buyerName,
+    seller,
+    auction,
+    offerAmount,
+    offerId,
+    reason,
 ) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: buyerEmail,
-      subject: `❌ Offer Declined - ${auction?.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: buyerEmail,
+            subject: `❌ Offer Declined - ${auction?.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -5284,16 +5274,15 @@ const offerRejectedEmail = async (
                             <p>Dear <span class="highlight">${buyerName}</span>,</p>
                             <p>We wanted to inform you that the seller has decided not to accept your offer on their item. This is a normal part of the negotiation process on JLTM Select.</p>
                             
-                            ${
-                              reason
-                                ? `
+                            ${reason
+                    ? `
                             <div class="reason-box">
                                 <div class="reason-title">📝 SELLER'S RESPONSE</div>
                                 <p>"${reason}"</p>
                             </div>
                             `
-                                : ""
-                            }
+                    : ""
+                }
                             
                             <div class="item-card">
                                 <div class="item-title">${auction?.title}</div>
@@ -5303,16 +5292,15 @@ const offerRejectedEmail = async (
                                     <span>${formatCurrency(offerAmount)}</span>
                                 </div>
                                 
-                                ${
-                                  auction.specifications
-                                    ? `
+                                ${auction.specifications
+                    ? `
                                 <div class="specs-section">
                                     <div class="specs-title">📋 Item Details</div>
                                     ${renderSpecifications(auction.specifications)}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
                                 <div class="offer-details">
                                     <div class="detail-item">
@@ -5321,7 +5309,7 @@ const offerRejectedEmail = async (
                                     </div>
                                     <div class="detail-item">
                                         <div class="detail-label">Declined On</div>
-                                        <div class="detail-value">${new Date().toLocaleString()}</div>
+                                        <div class="detail-value">${formatToPacificTime(new Date(), 'full')}</div>
                                     </div>
                                     <div class="detail-item">
                                         <div class="detail-label">Listing Price</div>
@@ -5358,31 +5346,31 @@ const offerRejectedEmail = async (
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Offer rejected email sent to buyer ${buyerEmail}`);
-    return !!info;
-  } catch (error) {
-    console.error(`❌ Failed to send offer rejected email:`, error);
-    return false;
-  }
+        console.log(`✅ Offer rejected email sent to buyer ${buyerEmail}`);
+        return !!info;
+    } catch (error) {
+        console.error(`❌ Failed to send offer rejected email:`, error);
+        return false;
+    }
 };
 
 // Note: sendOfferOutbidNotifications is not needed as offers cannot be outbid
 const sendOfferOutbidNotifications = async () => {
-  console.log(
-    "sendOfferOutbidNotifications is deprecated - offers cannot be outbid",
-  );
-  return false;
+    console.log(
+        "sendOfferOutbidNotifications is deprecated - offers cannot be outbid",
+    );
+    return false;
 };
 
 const payoutInitiatedEmail = async (seller, auction, payout) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: seller.email,
-      subject: `💰 Payout Initiated - ${auction.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: seller.email,
+            subject: `💰 Payout Initiated - ${auction.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -5481,23 +5469,23 @@ const payoutInitiatedEmail = async (seller, auction, payout) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Payout initiated email sent to seller ${seller.email}`);
-    return !!info;
-  } catch (error) {
-    console.error("❌ Failed to send payout initiated email:", error);
-    return false;
-  }
+        console.log(`✅ Payout initiated email sent to seller ${seller.email}`);
+        return !!info;
+    } catch (error) {
+        console.error("❌ Failed to send payout initiated email:", error);
+        return false;
+    }
 };
 
 const payoutCompletedEmail = async (seller, auction, payout) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: seller.email,
-      subject: `✅ Payout Completed - ${auction.title}`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: seller.email,
+            subject: `✅ Payout Completed - ${auction.title}`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -5576,15 +5564,14 @@ const payoutCompletedEmail = async (seller, auction, payout) => {
                                 <p><strong>Item:</strong> ${auction.title}</p>
                                 <p><strong>Payout Method:</strong> <span class="method-badge">${payout.payoutMethod}</span></p>
                                 
-                                ${
-                                  payout.transactionId
-                                    ? `
+                                ${payout.transactionId
+                    ? `
                                 <div class="transaction-id">
                                     <strong>Transaction ID:</strong> ${payout.transactionId}
                                 </div>
                                 `
-                                    : ""
-                                }
+                    : ""
+                }
                                 
                                 <div class="amount-row">
                                     <span class="amount-label">Total Sale Amount:</span>
@@ -5614,23 +5601,23 @@ const payoutCompletedEmail = async (seller, auction, payout) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Payout completed email sent to seller ${seller.email}`);
-    return !!info;
-  } catch (error) {
-    console.error("❌ Failed to send payout completed email:", error);
-    return false;
-  }
+        console.log(`✅ Payout completed email sent to seller ${seller.email}`);
+        return !!info;
+    } catch (error) {
+        console.error("❌ Failed to send payout completed email:", error);
+        return false;
+    }
 };
 
 const payoutFailedEmail = async (seller, payout) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
-      to: seller.email,
-      subject: `⚠️ Payout Update - Action Required`,
-      html: `
+    try {
+        const info = await transporter.sendMail({
+            from: `"JLTM Select" <${process.env.EMAIL_USER}>`,
+            to: seller.email,
+            subject: `⚠️ Payout Update - Action Required`,
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -5701,50 +5688,50 @@ const payoutFailedEmail = async (seller, payout) => {
                 </body>
                 </html>
             `,
-    });
+        });
 
-    console.log(`✅ Payout failed email sent to seller ${seller.email}`);
-    return !!info;
-  } catch (error) {
-    console.error("❌ Failed to send payout failed email:", error);
-    return false;
-  }
+        console.log(`✅ Payout failed email sent to seller ${seller.email}`);
+        return !!info;
+    } catch (error) {
+        console.error("❌ Failed to send payout failed email:", error);
+        return false;
+    }
 };
 
 export {
-  contactEmail, //tested
-  contactConfirmationEmail, //tested
-  resetPasswordEmail, //tested
-  bidConfirmationEmail, // tested
-  offerConfirmationEmail, // tested
-  outbidNotificationEmail, // tested
-  sendOutbidNotifications, // tested
-  sendAuctionWonEmail, // tested
-  sendAuctionEndedSellerEmail, // tested
-  auctionListedEmail, // tested
-  auctionEndingSoonEmail, // tested
-  welcomeEmail, // tested
-  newUserRegistrationEmail, // tested
-  auctionWonAdminEmail, // tested
-  auctionEndedAdminEmail, // tested
-  flaggedCommentAdminEmail, // tested
-  newCommentSellerEmail, // tested
-  newCommentBidderEmail, // tested
-  auctionSubmittedForApprovalEmail, // tested
-  auctionApprovedEmail, // tested
-  sendBulkAuctionNotifications, // tested
-  sendAuctionWonNotifications,
-  newBidNotificationEmail, // tested
-  newOfferNotificationEmail, // tested
-  newAuctionNotificationEmail, // tested
-  sendOfferOutbidNotifications, // Not needed
-  paymentCompletedEmail, // tested
-  paymentCompletedSellerEmail,
-  paymentSuccessEmail, // No need to test now
-  offerCanceledEmail, // tested
-  offerAcceptedEmail, // tested
-  offerRejectedEmail, // tested
-  payoutInitiatedEmail,
-  payoutCompletedEmail,
-  payoutFailedEmail,
+    contactEmail, //tested
+    contactConfirmationEmail, //tested
+    resetPasswordEmail, //tested
+    bidConfirmationEmail, // tested
+    offerConfirmationEmail, // tested
+    outbidNotificationEmail, // tested
+    sendOutbidNotifications, // tested
+    sendAuctionWonEmail, // tested
+    sendAuctionEndedSellerEmail, // tested
+    auctionListedEmail, // tested
+    auctionEndingSoonEmail, // tested
+    welcomeEmail, // tested
+    newUserRegistrationEmail, // tested
+    auctionWonAdminEmail, // tested
+    auctionEndedAdminEmail, // tested
+    flaggedCommentAdminEmail, // tested
+    newCommentSellerEmail, // tested
+    newCommentBidderEmail, // tested
+    auctionSubmittedForApprovalEmail, // tested
+    auctionApprovedEmail, // tested
+    sendBulkAuctionNotifications, // tested
+    sendAuctionWonNotifications,
+    newBidNotificationEmail, // tested
+    newOfferNotificationEmail, // tested
+    newAuctionNotificationEmail, // tested
+    sendOfferOutbidNotifications, // Not needed
+    paymentCompletedEmail, // tested
+    paymentCompletedSellerEmail,
+    paymentSuccessEmail, // No need to test now
+    offerCanceledEmail, // tested
+    offerAcceptedEmail, // tested
+    offerRejectedEmail, // tested
+    payoutInitiatedEmail,
+    payoutCompletedEmail,
+    payoutFailedEmail,
 };

@@ -15,9 +15,10 @@ export const useBargainDeals = () => {
         priceMin: '',
         priceMax: '',
         location: '',
-        sortBy: 'discountPercentage',
+        // sortBy: 'discountPercentage',
+        sortBy: 'endDate',
         sortOrder: 'desc',
-        discountMin: 80,
+        // discountMin: 80,
         auctionType: '',
         allowOffers: ''
     });

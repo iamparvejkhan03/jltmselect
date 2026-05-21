@@ -3,7 +3,7 @@ import { LoadingSpinner, AdminContainer, AdminHeader, AdminSidebar } from "../..
 import toast from "react-hot-toast";
 import axiosInstance from "../../utils/axiosInstance";
 import { useState } from "react";
-import { TrendingUp, Users, Gavel, Banknote, Settings, Crown, Heart, MessageCircle, Hand, Store, UserCog, CheckSquare } from "lucide-react";
+import { TrendingUp, Users, Gavel, Banknote, Settings, Crown, Heart, MessageCircle, Hand, Store, UserCog, CheckSquare, BanknoteArrowUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 function Dashboard() {
@@ -53,14 +53,14 @@ function Dashboard() {
             trend: "up",
             description: "Registered Bidders"
         },
-        {
-            title: "Total Sellers",
-            value: adminStats?.userTypeStats?.seller?.toLocaleString('en-US') || 0,
-            change: `+${adminStats.recentUsers || 0} this week`,
-            icon: <Store size={24} />,
-            trend: "up",
-            description: "Registered Sellers"
-        },
+        // {
+        //     title: "Total Sellers",
+        //     value: adminStats?.userTypeStats?.seller?.toLocaleString('en-US') || 0,
+        //     change: `+${adminStats.recentUsers || 0} this week`,
+        //     icon: <Store size={24} />,
+        //     trend: "up",
+        //     description: "Registered Sellers"
+        // },
         {
             title: "Total Admins",
             value: adminStats?.userTypeStats?.admin?.toLocaleString('en-US'),
@@ -68,6 +68,15 @@ function Dashboard() {
             icon: <UserCog size={24} />,
             trend: "up",
             description: "Registered Admins"
+        },
+        {
+            title: "Total Membership Fees",
+            value: adminStats?.subscriptionTotalRevenue?.toLocaleString('en-US'),
+            change: "Record sale",
+            icon: <BanknoteArrowUp size={24} />,
+            trend: "up",
+            currency: "$",
+            description: `From ${adminStats?.totalSubscriptionsPurchased} Subscriptions`
         },
         {
             title: "Total Auctions",
@@ -213,14 +222,6 @@ function Dashboard() {
             icon: <Hand size={24} />,
             trend: "down",
             description: "Offers awaiting review"
-        },
-        {
-            title: "Total Comments",
-            value: adminStats?.totalComments?.toLocaleString('en-US'),
-            change: "Record sale",
-            icon: <MessageCircle size={24} />,
-            trend: "up",
-            description: `By The Users`
         },
         {
             title: "Watchlist",

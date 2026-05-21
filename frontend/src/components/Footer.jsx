@@ -50,7 +50,7 @@ function Footer() {
         },
         {
             title: 'Past',
-            url: '/bargain-deals'
+            url: '/past-auctions'
         },
         {
             title: 'Explore All',

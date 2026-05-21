@@ -66,6 +66,24 @@ export const getAdminStats = async (req, res) => {
     const averageSalePrice = revenueStats[0]?.averageSale || 0;
     const totalSoldAuctions = revenueStats[0]?.totalSold || 0;
 
+    // Get total subscription revenue
+    const subscriptionRevenue = await UserSubscription.aggregate([
+      {
+        $match: {
+          paymentStatus: "succeeded",
+          status: { $in: ["active", "expired", "cancelled"] }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$amountPaid" },
+          totalCount: { $sum: 1 },
+          averageAmount: { $avg: "$amountPaid" }
+        }
+      }
+    ]);
+
     // Get highest sale auction details
     const highestSaleAuction = await Auction.findOne({ status: "sold" })
       .sort({ finalPrice: -1 })
@@ -106,17 +124,17 @@ export const getAdminStats = async (req, res) => {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     const todayRevenueStats = await Auction.aggregate([
-      {
-        $match: {
-          status: "sold",
-          updatedAt: {
-            $gte: today,
-            $lt: tomorrow,
-          },
-        },
+  {
+    $match: {
+      status: "sold",
+      endDate: {  // ← Use endDate
+        $gte: today,
+        $lt: tomorrow,
       },
-      { $group: { _id: null, total: { $sum: "$finalPrice" } } },
-    ]);
+    },
+  },
+  { $group: { _id: null, total: { $sum: "$finalPrice" } } },
+]);
 
     const todayRevenue = todayRevenueStats[0]?.total || 0;
 
@@ -143,7 +161,7 @@ export const getAdminStats = async (req, res) => {
       {
         $count: "count",
       },
-    ]);
+    ]); 
 
     const totalWatchlists = watchlistItems[0]?.count || 0;
 
@@ -243,6 +261,11 @@ export const getAdminStats = async (req, res) => {
       totalAuctions,
       activeAuctions,
       totalSoldAuctions,
+
+      // Subscription revenue
+      subscriptionTotalRevenue: subscriptionRevenue[0]?.totalRevenue || 0,
+      totalSubscriptionsPurchased: subscriptionRevenue[0]?.totalCount || 0,
+      averageSubscriptionAmount: subscriptionRevenue[0]?.averageAmount || 0,
 
       // User statistics
       userTypeStats: userTypeStats.reduce((acc, curr) => {

@@ -815,7 +815,7 @@ function AllAuctions() {
                                     >
                                         &times;
                                     </button>
-                                </div>
+                                </div>{console.log(new Date(selectedAuction.endDate).toLocaleString())}
 
                                 <div className="p-6">
                                     {/* Header Section */}

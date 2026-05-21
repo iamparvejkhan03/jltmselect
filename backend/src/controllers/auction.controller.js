@@ -2679,8 +2679,206 @@ export const getAuctionCommission = async (req, res) => {
   }
 };
 
+// /**
+//  * @desc    Get auctions sold at 80% discount or more (finalPrice <= 20% of retailPrice)
+//  * @route   GET /api/v1/auctions/bargain-deals
+//  * @access  Public
+//  */
+// export const getBargainDeals = async (req, res) => {
+//   try {
+//     const {
+//       page = 1,
+//       limit = 12,
+//       category,
+//       categories,
+//       search,
+//       sortBy = "discountPercentage",
+//       sortOrder = "desc",
+//       priceMin,
+//       priceMax,
+//       location,
+//       auctionType,
+//       allowOffers,
+//     } = req.query;
+
+//     // First, build the base filter (without $expr)
+//     const filter = {};
+
+//     // Only include sold auctions with retailPrice
+//     filter.status = { $in: ["sold", "sold_buy_now"] };
+//     filter.retailPrice = { $exists: true, $ne: null, $gt: 0 };
+
+//     // ========== CATEGORY FILTERING ==========
+//     if (categories || category) {
+//       if (categories) {
+//         let categoriesArray = [];
+//         if (Array.isArray(categories)) {
+//           categoriesArray = categories;
+//         } else if (typeof categories === "string") {
+//           categoriesArray = categories.split(",").filter((c) => c.trim() !== "");
+//         }
+//         if (categoriesArray.length > 0) {
+//           filter.categories = { $in: categoriesArray };
+//         }
+//       } else if (category) {
+//         filter.categories = { $in: [category] };
+//       }
+//     }
+
+//     // Search in title and description
+//     if (search) {
+//       filter.$or = [
+//         { title: { $regex: search, $options: "i" } },
+//         { description: { $regex: search, $options: "i" } },
+//         { subTitle: { $regex: search, $options: "i" } },
+//       ];
+//     }
+
+//     // Location filtering
+//     if (location) {
+//       filter.location = { $regex: location, $options: "i" };
+//     }
+
+//     // Auction type filter
+//     if (auctionType && auctionType !== "") {
+//       filter.auctionType = auctionType;
+//     }
+
+//     // Allow offers filter
+//     if (allowOffers !== undefined && allowOffers !== "") {
+//       filter.allowOffers = allowOffers === "true";
+//     }
+
+//     // Calculate pagination
+//     const skip = (parseInt(page) - 1) * parseInt(limit);
+
+//     // First, get all auctions matching the base filters
+//     let auctions = await Auction.find(filter)
+//       .populate("seller", "username firstName lastName")
+//       .populate("winner", "username firstName lastName")
+//       .lean();
+
+//     // Calculate discount and apply filters
+//     const discountMin = parseFloat(req.query.discountMin || 0);
+//     const maxPriceRatio = (100 - discountMin) / 100;
+
+//     // Filter auctions by discount and price range
+//     let filteredAuctions = auctions.filter(auction => {
+//       const effectiveFinalPrice = auction.finalPrice || auction.currentPrice;
+//       const retailPrice = auction.retailPrice;
+
+//       if (!effectiveFinalPrice || !retailPrice) return false;
+
+//       const priceRatio = effectiveFinalPrice / retailPrice;
+//       const discountPercentage = ((retailPrice - effectiveFinalPrice) / retailPrice) * 100;
+
+//       // Check discount threshold
+//       if (discountPercentage < discountMin) return false;
+
+//       // Check price range filters
+//       if (priceMin && effectiveFinalPrice < parseFloat(priceMin)) return false;
+//       if (priceMax && effectiveFinalPrice > parseFloat(priceMax)) return false;
+
+//       return true;
+//     });
+
+//     // Add calculated fields to each auction
+//     let processedAuctions = filteredAuctions.map(auction => {
+//       const effectiveFinalPrice = auction.finalPrice || auction.currentPrice;
+//       const retailPrice = auction.retailPrice;
+//       const discountPercentage = ((retailPrice - effectiveFinalPrice) / retailPrice) * 100;
+//       const savingsAmount = retailPrice - effectiveFinalPrice;
+
+//       return {
+//         ...auction,
+//         effectiveFinalPrice,
+//         discountPercentage: Math.round(discountPercentage * 100) / 100,
+//         savingsAmount,
+//         formattedDiscount: `${Math.round(discountPercentage)}% OFF`,
+//         priceRatio: effectiveFinalPrice / retailPrice
+//       };
+//     });
+
+//     // Apply sorting
+//     const sortDirection = sortOrder === "desc" ? -1 : 1;
+
+//     if (sortBy === "discountPercentage") {
+//       processedAuctions.sort((a, b) => sortDirection * (a.discountPercentage - b.discountPercentage));
+//     } else if (sortBy === "savingsAmount") {
+//       processedAuctions.sort((a, b) => sortDirection * (a.savingsAmount - b.savingsAmount));
+//     } else if (sortBy === "finalPrice") {
+//       processedAuctions.sort((a, b) => sortDirection * (a.effectiveFinalPrice - b.effectiveFinalPrice));
+//     } else if (sortBy === "retailPrice") {
+//       processedAuctions.sort((a, b) => sortDirection * (a.retailPrice - b.retailPrice));
+//     } else if (sortBy === "endDate") {
+//       processedAuctions.sort((a, b) => sortDirection * (new Date(a.endDate) - new Date(b.endDate)));
+//     } else if (sortBy === "createdAt") {
+//       processedAuctions.sort((a, b) => sortDirection * (new Date(a.createdAt) - new Date(b.createdAt)));
+//     } else {
+//       // Default: highest discount first
+//       processedAuctions.sort((a, b) => b.discountPercentage - a.discountPercentage);
+//     }
+
+//     // Get total count before pagination
+//     const total = processedAuctions.length;
+
+//     // Apply pagination
+//     const paginatedAuctions = processedAuctions.slice(skip, skip + parseInt(limit));
+
+//     // Calculate statistics
+//     const totalSavings = processedAuctions.reduce((sum, a) => sum + a.savingsAmount, 0);
+//     const averageDiscount = total > 0
+//       ? Math.round((processedAuctions.reduce((sum, a) => sum + a.discountPercentage, 0) / total) * 100) / 100
+//       : 0;
+//     const biggestDiscount = total > 0
+//       ? Math.max(...processedAuctions.map(a => a.discountPercentage))
+//       : 0;
+//     const totalRetailValue = processedAuctions.reduce((sum, a) => sum + a.retailPrice, 0);
+//     const totalSoldValue = processedAuctions.reduce((sum, a) => sum + a.effectiveFinalPrice, 0);
+
+//     res.status(200).json({
+//       success: true,
+//       message: `${paginatedAuctions.length} bargain ${paginatedAuctions.length === 1 ? 'deal' : 'deals'} found with ${discountMin}%+ discount`,
+//       data: {
+//         auctions: paginatedAuctions,
+//         filters: {
+//           discountMin,
+//           sortBy,
+//           sortOrder,
+//           search: search || null,
+//           category: category || null,
+//           priceMin: priceMin || null,
+//           priceMax: priceMax || null,
+//         },
+//         stats: {
+//           totalDeals: total,
+//           averageDiscount,
+//           biggestDiscount,
+//           totalSavings,
+//           totalRetailValue,
+//           totalSoldValue,
+//         },
+//         pagination: {
+//           currentPage: parseInt(page),
+//           totalPages: Math.ceil(total / limit),
+//           totalAuctions: total,
+//           limit: parseInt(limit),
+//           hasNextPage: skip + paginatedAuctions.length < total,
+//           hasPrevPage: skip > 0,
+//         },
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Get bargain deals error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal server error while fetching bargain deals",
+//     });
+//   }
+// };
+
 /**
- * @desc    Get auctions sold at 80% discount or more (finalPrice <= 20% of retailPrice)
+ * @desc    Get all sold/past auctions
  * @route   GET /api/v1/auctions/bargain-deals
  * @access  Public
  */
@@ -2692,7 +2890,7 @@ export const getBargainDeals = async (req, res) => {
       category,
       categories,
       search,
-      sortBy = "discountPercentage",
+      sortBy = "endDate",
       sortOrder = "desc",
       priceMin,
       priceMax,
@@ -2701,12 +2899,11 @@ export const getBargainDeals = async (req, res) => {
       allowOffers,
     } = req.query;
 
-    // First, build the base filter (without $expr)
+    // Build the filter for ALL sold auctions
     const filter = {};
 
-    // Only include sold auctions with retailPrice
+    // Include ALL sold auctions (no retailPrice requirement)
     filter.status = { $in: ["sold", "sold_buy_now"] };
-    filter.retailPrice = { $exists: true, $ne: null, $gt: 0 };
 
     // ========== CATEGORY FILTERING ==========
     if (categories || category) {
@@ -2749,100 +2946,93 @@ export const getBargainDeals = async (req, res) => {
       filter.allowOffers = allowOffers === "true";
     }
 
+    // Price range filter (based on finalPrice or currentPrice)
+    if (priceMin || priceMax) {
+      filter.$expr = {};
+      const priceField = { $ifNull: ["$finalPrice", "$currentPrice"] };
+
+      if (priceMin) {
+        filter.$expr.$gte = [priceField, parseFloat(priceMin)];
+      }
+      if (priceMax) {
+        filter.$expr.$lte = [priceField, parseFloat(priceMax)];
+      }
+    }
+
     // Calculate pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // First, get all auctions matching the base filters
+    // Build sort object
+    let sort = {};
+    const sortDirection = sortOrder === "desc" ? -1 : 1;
+
+    if (sortBy === "discountPercentage") {
+      sort = { discountPercentage: sortDirection };
+    } else if (sortBy === "finalPrice") {
+      sort = { finalPrice: sortDirection };
+    } else if (sortBy === "retailPrice") {
+      sort = { retailPrice: sortDirection };
+    } else if (sortBy === "endDate") {
+      sort = { endDate: sortDirection };
+    } else if (sortBy === "createdAt") {
+      sort = { createdAt: sortDirection };
+    } else {
+      sort = { endDate: -1 }; // Default: most recently sold first
+    }
+
+    // Execute query with pagination and sorting
     let auctions = await Auction.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(parseInt(limit))
       .populate("seller", "username firstName lastName")
       .populate("winner", "username firstName lastName")
       .lean();
 
-    // Calculate discount and apply filters
-    const discountMin = parseFloat(req.query.discountMin || 80);
-    const maxPriceRatio = (100 - discountMin) / 100;
+    // Get total count for pagination
+    const total = await Auction.countDocuments(filter);
 
-    // Filter auctions by discount and price range
-    let filteredAuctions = auctions.filter(auction => {
+    // Process auctions to add calculated fields (if retailPrice exists)
+    let processedAuctions = auctions.map(auction => {
       const effectiveFinalPrice = auction.finalPrice || auction.currentPrice;
       const retailPrice = auction.retailPrice;
 
-      if (!effectiveFinalPrice || !retailPrice) return false;
+      // Only calculate discount if retailPrice exists and is > 0
+      let discountPercentage = null;
+      let savingsAmount = null;
 
-      const priceRatio = effectiveFinalPrice / retailPrice;
-      const discountPercentage = ((retailPrice - effectiveFinalPrice) / retailPrice) * 100;
-
-      // Check discount threshold
-      if (discountPercentage < discountMin) return false;
-
-      // Check price range filters
-      if (priceMin && effectiveFinalPrice < parseFloat(priceMin)) return false;
-      if (priceMax && effectiveFinalPrice > parseFloat(priceMax)) return false;
-
-      return true;
-    });
-
-    // Add calculated fields to each auction
-    let processedAuctions = filteredAuctions.map(auction => {
-      const effectiveFinalPrice = auction.finalPrice || auction.currentPrice;
-      const retailPrice = auction.retailPrice;
-      const discountPercentage = ((retailPrice - effectiveFinalPrice) / retailPrice) * 100;
-      const savingsAmount = retailPrice - effectiveFinalPrice;
+      if (retailPrice && retailPrice > 0 && effectiveFinalPrice) {
+        discountPercentage = ((retailPrice - effectiveFinalPrice) / retailPrice) * 100;
+        savingsAmount = retailPrice - effectiveFinalPrice;
+      }
 
       return {
         ...auction,
         effectiveFinalPrice,
-        discountPercentage: Math.round(discountPercentage * 100) / 100,
-        savingsAmount,
-        formattedDiscount: `${Math.round(discountPercentage)}% OFF`,
-        priceRatio: effectiveFinalPrice / retailPrice
+        discountPercentage: discountPercentage ? Math.round(discountPercentage * 100) / 100 : null,
+        savingsAmount: savingsAmount || null,
+        formattedDiscount: discountPercentage ? `${Math.round(discountPercentage)}% OFF` : null,
       };
     });
 
-    // Apply sorting
-    const sortDirection = sortOrder === "desc" ? -1 : 1;
-
-    if (sortBy === "discountPercentage") {
-      processedAuctions.sort((a, b) => sortDirection * (a.discountPercentage - b.discountPercentage));
-    } else if (sortBy === "savingsAmount") {
-      processedAuctions.sort((a, b) => sortDirection * (a.savingsAmount - b.savingsAmount));
-    } else if (sortBy === "finalPrice") {
-      processedAuctions.sort((a, b) => sortDirection * (a.effectiveFinalPrice - b.effectiveFinalPrice));
-    } else if (sortBy === "retailPrice") {
-      processedAuctions.sort((a, b) => sortDirection * (a.retailPrice - b.retailPrice));
-    } else if (sortBy === "endDate") {
-      processedAuctions.sort((a, b) => sortDirection * (new Date(a.endDate) - new Date(b.endDate)));
-    } else if (sortBy === "createdAt") {
-      processedAuctions.sort((a, b) => sortDirection * (new Date(a.createdAt) - new Date(b.createdAt)));
-    } else {
-      // Default: highest discount first
-      processedAuctions.sort((a, b) => b.discountPercentage - a.discountPercentage);
-    }
-
-    // Get total count before pagination
-    const total = processedAuctions.length;
-
-    // Apply pagination
-    const paginatedAuctions = processedAuctions.slice(skip, skip + parseInt(limit));
-
-    // Calculate statistics
-    const totalSavings = processedAuctions.reduce((sum, a) => sum + a.savingsAmount, 0);
-    const averageDiscount = total > 0
-      ? Math.round((processedAuctions.reduce((sum, a) => sum + a.discountPercentage, 0) / total) * 100) / 100
+    // Calculate statistics (only for auctions with retailPrice)
+    const auctionsWithRetail = processedAuctions.filter(a => a.retailPrice && a.retailPrice > 0);
+    const totalSavings = auctionsWithRetail.reduce((sum, a) => sum + (a.savingsAmount || 0), 0);
+    const averageDiscount = auctionsWithRetail.length > 0
+      ? Math.round((auctionsWithRetail.reduce((sum, a) => sum + (a.discountPercentage || 0), 0) / auctionsWithRetail.length) * 100) / 100
       : 0;
-    const biggestDiscount = total > 0
-      ? Math.max(...processedAuctions.map(a => a.discountPercentage))
+    const biggestDiscount = auctionsWithRetail.length > 0
+      ? Math.max(...auctionsWithRetail.map(a => a.discountPercentage || 0))
       : 0;
-    const totalRetailValue = processedAuctions.reduce((sum, a) => sum + a.retailPrice, 0);
-    const totalSoldValue = processedAuctions.reduce((sum, a) => sum + a.effectiveFinalPrice, 0);
+    const totalRetailValue = auctionsWithRetail.reduce((sum, a) => sum + (a.retailPrice || 0), 0);
+    const totalSoldValue = processedAuctions.reduce((sum, a) => sum + (a.effectiveFinalPrice || 0), 0);
 
     res.status(200).json({
       success: true,
-      message: `${paginatedAuctions.length} bargain ${paginatedAuctions.length === 1 ? 'deal' : 'deals'} found with ${discountMin}%+ discount`,
+      message: `${processedAuctions.length} past ${processedAuctions.length === 1 ? 'auction' : 'auctions'} found`,
       data: {
-        auctions: paginatedAuctions,
+        auctions: processedAuctions,
         filters: {
-          discountMin,
           sortBy,
           sortOrder,
           search: search || null,
@@ -2851,7 +3041,7 @@ export const getBargainDeals = async (req, res) => {
           priceMax: priceMax || null,
         },
         stats: {
-          totalDeals: total,
+          totalAuctions: total,
           averageDiscount,
           biggestDiscount,
           totalSavings,
@@ -2860,19 +3050,19 @@ export const getBargainDeals = async (req, res) => {
         },
         pagination: {
           currentPage: parseInt(page),
-          totalPages: Math.ceil(total / limit),
+          totalPages: Math.ceil(total / parseInt(limit)),
           totalAuctions: total,
           limit: parseInt(limit),
-          hasNextPage: skip + paginatedAuctions.length < total,
+          hasNextPage: skip + auctions.length < total,
           hasPrevPage: skip > 0,
         },
       },
     });
   } catch (error) {
-    console.error("Get bargain deals error:", error);
+    console.error("Get past auctions error:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error while fetching bargain deals",
+      message: "Internal server error while fetching past auctions",
     });
   }
 };

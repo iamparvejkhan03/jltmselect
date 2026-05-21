@@ -6,7 +6,7 @@ import { useBargainDeals } from "../hooks/useBargainDeals";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
 
-// FiltersSection Component for Bargain Deals
+// FiltersSection Component for past auctions
 const BargainFiltersSection = ({
     uiFilters,
     setUiFilters,
@@ -75,12 +75,12 @@ const BargainFiltersSection = ({
         window.history.replaceState(null, '', newUrl);
     };
 
-    const discountOptions = [
-        { value: 80, label: "80% OFF & above" },
-        { value: 85, label: "85% OFF & above" },
-        { value: 90, label: "90% OFF & above" },
-        { value: 95, label: "95% OFF & above" }
-    ];
+    // const discountOptions = [
+    //     { value: 80, label: "80% OFF & above" },
+    //     { value: 85, label: "85% OFF & above" },
+    //     { value: 90, label: "90% OFF & above" },
+    //     { value: 95, label: "95% OFF & above" }
+    // ];
 
     return (
         <div className="bg-bg-secondary dark:bg-bg-primary px-4 py-6 rounded-lg shadow-md h-fit border border-gray-200 dark:border-gray-800">
@@ -99,7 +99,7 @@ const BargainFiltersSection = ({
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary dark:text-text-secondary-dark" size={20} />
                         <input
                             type="text"
-                            placeholder="Search bargain deals..."
+                            placeholder="Search past auctions..."
                             className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 bg-bg-secondary dark:bg-bg-primary text-text-primary dark:text-text-primary-dark rounded-lg focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500 focus:border-transparent"
                             value={uiFilters.search}
                             onChange={handleFilterChange}
@@ -143,7 +143,7 @@ const BargainFiltersSection = ({
                 </div>
 
                 {/* Minimum Discount Filter */}
-                <div>
+                {/* <div>
                     <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary-dark mb-2">Minimum Discount</label>
                     <select
                         name="discountMin"
@@ -155,7 +155,7 @@ const BargainFiltersSection = ({
                             <option key={option.value} value={option.value}>{option.label}</option>
                         ))}
                     </select>
-                </div>
+                </div> */}
 
                 {/* Price Range - Based on Final Sale Price */}
                 <div>
@@ -245,9 +245,10 @@ function BargainDeals() {
         priceMin: "",
         priceMax: "",
         location: "",
-        sortBy: "discountPercentage",
+        // sortBy: "discountPercentage",
+        sortBy: "endDate",
         sortOrder: "desc",
-        discountMin: 80,
+        // discountMin: 80,
         auctionType: "",
         allowOffers: "",
     });
@@ -389,9 +390,10 @@ function BargainDeals() {
             priceMin: "",
             priceMax: "",
             location: "",
-            sortBy: "discountPercentage",
+            sortBy: "endDate",
+            // sortBy: "discountPercentage",
             sortOrder: "desc",
-            discountMin: 80,
+            // discountMin: 80,
             auctionType: "",
             allowOffers: "",
         };
@@ -406,12 +408,20 @@ function BargainDeals() {
         loadMoreDeals();
     };
 
+    // const sortOptions = [
+    //     { value: "discountPercentage-desc", label: "Biggest Discount First" },
+    //     // { value: "savingsAmount-desc", label: "Highest Savings First" },
+    //     { value: "finalPrice-asc", label: "Price: Low to High" },
+    //     { value: "finalPrice-desc", label: "Price: High to Low" },
+    //     // { value: "endDate-desc", label: "Recently Sold" },
+    //     { value: "retailPrice-desc", label: "Highest Retail Value" }
+    // ];
+
     const sortOptions = [
-        { value: "discountPercentage-desc", label: "Biggest Discount First" },
-        // { value: "savingsAmount-desc", label: "Highest Savings First" },
+        { value: "endDate-desc", label: "Recently Sold First" },
+        { value: "endDate-asc", label: "Oldest First" },
         { value: "finalPrice-asc", label: "Price: Low to High" },
         { value: "finalPrice-desc", label: "Price: High to Low" },
-        // { value: "endDate-desc", label: "Recently Sold" },
         { value: "retailPrice-desc", label: "Highest Retail Value" }
     ];
 
@@ -438,8 +448,8 @@ function BargainDeals() {
                 {/* Header */}
                 <div className="py-8">
                     <div className="container mx-auto">
-                        <h1 className="text-3xl font-bold text-pure-black dark:text-pure-white">🔥 Bargain Deals</h1>
-                        <p className="text-bg-primary-light dark:text-bg-secondary-dark mt-2">Incredible savings up to 95% OFF retail prices. All-time best offers!</p>
+                        <h1 className="text-3xl font-bold text-pure-black dark:text-pure-white">🔥 Past Auctions</h1>
+                        {/* <p className="text-bg-primary-light dark:text-bg-secondary-dark mt-2">Incredible savings up to 95% OFF retail prices. All-time best offers!</p> */}
                     </div>
                 </div>
 
@@ -472,7 +482,7 @@ function BargainDeals() {
                                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary dark:text-text-secondary-dark" size={20} />
                                     <input
                                         type="text"
-                                        placeholder="Search bargain deals..."
+                                        placeholder="Search past auctions..."
                                         className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 bg-bg-secondary dark:bg-bg-primary text-text-primary dark:text-text-primary-dark rounded-lg focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500 focus:border-transparent"
                                         value={uiFilters.search}
                                         onChange={handleFilterChange}
@@ -493,7 +503,7 @@ function BargainDeals() {
                             {/* Desktop View Toggle and Sort */}
                             <div className="hidden lg:flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-3">
                                 <p className="text-text-secondary dark:text-text-secondary-dark">
-                                    {loading ? "Loading bargain deals..." : `Showing ${auctions.length} of ${pagination?.totalAuctions || 0} amazing deals`}
+                                    {loading ? "Loading past auctions..." : `Showing ${auctions.length} of ${pagination?.totalAuctions || 0} amazing deals`}
                                 </p>
 
                                 <div className="flex items-center gap-3">
@@ -617,14 +627,14 @@ function BargainDeals() {
                                     {/* End of Auctions Message */}
                                     {pagination?.currentPage >= pagination?.totalPages && auctions.length > 0 && (
                                         <div className="text-center py-8 text-text-secondary dark:text-text-secondary-dark">
-                                            <p>You've seen all {pagination.totalAuctions} bargain deals!</p>
+                                            <p>You've seen all {pagination.totalAuctions} past auctions!</p>
                                         </div>
                                     )}
                                 </>
                             ) : (
                                 <div className="text-center py-12">
                                     <Zap size={48} className="mx-auto text-text-secondary dark:text-text-secondary-dark mb-4" />
-                                    <h3 className="text-xl font-medium text-text-primary dark:text-text-primary-dark mb-2">No bargain deals found</h3>
+                                    <h3 className="text-xl font-medium text-text-primary dark:text-text-primary-dark mb-2">No past auctions found</h3>
                                     <p className="text-text-secondary dark:text-text-secondary-dark">Try adjusting your filters to find more amazing deals.</p>
                                 </div>
                             )}

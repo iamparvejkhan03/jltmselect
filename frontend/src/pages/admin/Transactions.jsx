@@ -507,7 +507,7 @@ function Transactions() {
                                             <h3 className="font-semibold text-gray-900 mb-3">Payment Details</h3>
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 <div>
-                                                    <div className="text-sm text-gray-600">Commission</div>
+                                                    <div className="text-sm text-gray-600">Sales Tax ($)</div>
                                                     <div className="font-medium">{formatCurrency(selectedTransaction.commissionAmount)}</div>
                                                 </div>
                                                 <div>

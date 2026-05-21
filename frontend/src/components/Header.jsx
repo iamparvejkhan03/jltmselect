@@ -30,7 +30,7 @@ const navLinks = [
     },
     {
         name: 'Past Auctions',
-        href: '/bargain-deals'
+        href: '/past-auctions'
     },
 ];
 
