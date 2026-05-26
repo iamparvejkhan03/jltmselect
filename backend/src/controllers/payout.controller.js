@@ -1000,13 +1000,13 @@ export const getSellerPayouts = async (req, res) => {
                 style: 'currency',
                 currency: 'USD',
                 minimumFractionDigits: 0,
-                maximumFractionDigits: 0
+                maximumFractionDigits: 2
             }).format(payout.sellerAmount),
             formattedCommissionAmount: new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
                 minimumFractionDigits: 0,
-                maximumFractionDigits: 0
+                maximumFractionDigits: 2
             }).format(payout.commissionAmount)
         }));
 
@@ -1024,13 +1024,13 @@ export const getSellerPayouts = async (req, res) => {
                         style: 'currency',
                         currency: 'USD',
                         minimumFractionDigits: 0,
-                        maximumFractionDigits: 0
+                        maximumFractionDigits: 2
                     }).format(stats.totalPaid),
                     formattedTotalPending: new Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: 'USD',
                         minimumFractionDigits: 0,
-                        maximumFractionDigits: 0
+                        maximumFractionDigits: 2
                     }).format(stats.totalPending)
                 }
             }

@@ -217,7 +217,7 @@ function AllOffers() {
             style: 'currency',
             currency: 'NOK',
             minimumFractionDigits: 0,
-            maximumFractionDigits: 0
+            maximumFractionDigits: 2
         }).format(amount);
     };
 

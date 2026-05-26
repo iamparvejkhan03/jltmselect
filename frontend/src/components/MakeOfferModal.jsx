@@ -67,7 +67,7 @@ const MakeOfferModal = ({
             style: 'currency',
             currency: 'USD',
             minimumFractionDigits: 0,
-            maximumFractionDigits: 1
+            maximumFractionDigits: 2
         }).format(amount);
     };
 

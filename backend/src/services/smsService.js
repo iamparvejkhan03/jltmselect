@@ -151,7 +151,7 @@ const sendAuctionWonSMS = async (user, auction) => {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 2
     }).format(winningAmount);
     
     // Generate SMS content (targeting under 160 chars)

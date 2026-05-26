@@ -296,7 +296,7 @@ function AllAuctions() {
             style: 'currency',
             currency: 'USD',
             minimumFractionDigits: 0,
-            maximumFractionDigits: 0
+            maximumFractionDigits: 2
         }).format(amount);
     };
 
@@ -815,7 +815,7 @@ function AllAuctions() {
                                     >
                                         &times;
                                     </button>
-                                </div>{console.log(new Date(selectedAuction.endDate).toLocaleString())}
+                                </div>
 
                                 <div className="p-6">
                                     {/* Header Section */}
