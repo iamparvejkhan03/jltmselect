@@ -608,7 +608,11 @@ function SingleAuction() {
                     />
                 </Suspense>
 
-                <hr className="my-8 border-gray-200 dark:border-bg-primary-light" />
+                <hr className="mt-8 border-gray-200 dark:border-bg-primary-light" />
+
+                <TimerDisplay countdown={countdown} auction={auction} />
+
+                <hr className="mb-8 border-gray-200 dark:border-bg-primary-light" />
 
                 {/* Info section */}
                 <div>
@@ -741,9 +745,9 @@ function SingleAuction() {
             {/* Bid Section */}
             <section ref={bidSectionRef} className="col-span-1 lg:col-span-1 bg-gradient-to-b from-bg-primary/[0.03] to-transparent dark:from-white/[0.03] dark:to-transparent rounded-lg sticky top-24 border border-gray-200 dark:border-bg-primary-light">
                 {/* Timer section */}
-                <TimerDisplay countdown={countdown} auction={auction} />
+                {/* <TimerDisplay countdown={countdown} auction={auction} />
 
-                <hr className="mx-6 border-gray-200 dark:border-bg-primary-light" />
+                <hr className="mx-6 border-gray-200 dark:border-bg-primary-light" /> */}
 
                 {/* Current bid section */}
                 <div className="p-4 flex flex-col gap-3">

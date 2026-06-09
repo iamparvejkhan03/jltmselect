@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { StaffContainer, StaffHeader, StaffSidebar, LoadingSpinner, PaymentStatusDropdown } from "../../components";
-import { Search, Filter, Gavel, Clock, Eye, Edit, Shield, TrendingUp, User, Award, MoreVertical, Trash2, AlertTriangle, CheckCircle, Star, Crown, Plus, FileText, Banknote, RefreshCcw, Truck, Copy } from "lucide-react";
+import { Search, Filter, Gavel, Clock, Eye, Edit, Shield, TrendingUp, User, Award, MoreVertical, Trash2, AlertTriangle, CheckCircle, Star, Crown, Plus, FileText, Banknote, RefreshCcw, Truck, Copy, Archive } from "lucide-react";
 import { about } from "../../assets";
 import toast from "react-hot-toast";
 import axiosInstance from "../../utils/axiosInstance";
@@ -79,6 +79,19 @@ function AllAuctions() {
         } catch (err) {
             console.error('Fetch auction details error:', err);
             toast.error("Failed to load auction details");
+        }
+    };
+
+    const archiveAuction = async (auctionId) => {
+        try {
+            const { data } = await axiosInstance.patch(`/api/v1/admin/auctions/${auctionId}/archive`);
+            if (data.success) {
+                toast.success('Auction archived successfully');
+                fetchAuctions(); // Refresh the list
+            }
+        } catch (err) {
+            console.error('Archive auction error:', err);
+            toast.error(err.response?.data?.message || "Failed to archive auction");
         }
     };
 
@@ -266,6 +279,7 @@ function AllAuctions() {
                 text: new Date(endDate) > new Date() ? "Active" : "Ending Soon"
             },
             draft: { color: "bg-amber-100 text-amber-800", text: "Pending" },
+            archived: { color: "bg-yellow-100 text-yellow-800", text: "Archived" },
             approved: { color: "bg-green-100 text-green-800", text: "Approved" },
             ended: { color: "bg-gray-100 text-gray-800", text: "Ended" },
             sold: { color: "bg-blue-100 text-blue-800", text: "Sold" },
@@ -417,7 +431,8 @@ function AllAuctions() {
                                     >
                                         <option value="all">All Auctions</option>
                                         <option value="active">Active</option>
-                                        <option value="pending">Pending</option>
+                                        <option value="approved">Upcoming</option>
+                                        <option value="archived">Archived</option>
                                         <option value="ended">Ended</option>
                                         <option value="sold">Sold</option>
                                         <option value="cancelled">Cancelled</option>
@@ -735,6 +750,22 @@ function AllAuctions() {
                                                                         <Star size={16} fill={auction.featured ? "currentColor" : "none"} />
                                                                         <span>{auction.featured ? "Remove Featured" : "Make Featured"}</span>
                                                                     </button> */}
+
+                                                                    {/* Archive Action */}
+                                                                    {auction.status !== 'archived' && (
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                if (window.confirm(`Are you sure you want to archive "${auction.title}"?`)) {
+                                                                                    archiveAuction(auction._id);
+                                                                                    setActiveDropdown(null);
+                                                                                }
+                                                                            }}
+                                                                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-yellow-600 hover:bg-yellow-50 transition-colors"
+                                                                        >
+                                                                            <Archive size={16} />
+                                                                            <span>Archive Auction</span>
+                                                                        </button>
+                                                                    )}
 
                                                                     {/* Delete Action */}
                                                                     <div className="border-t border-gray-100 my-1"></div>

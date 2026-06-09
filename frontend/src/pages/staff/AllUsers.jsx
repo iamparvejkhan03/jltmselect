@@ -317,26 +317,6 @@ function AllUsers() {
                         </div>
                     </div>
 
-                    {/* Stats Overview */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-                            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-                            <div className="text-sm text-gray-500">Total Users</div>
-                        </div>
-                        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-                            <div className="text-2xl font-bold text-purple-600">{stats.admins}</div>
-                            <div className="text-sm text-gray-500">Admins</div>
-                        </div>
-                        {/* <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-                            <div className="text-2xl font-bold text-blue-600">{stats.sellers}</div>
-                            <div className="text-sm text-gray-500">Sellers</div>
-                        </div> */}
-                        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-                            <div className="text-2xl font-bold text-green-600">{stats.bidders}</div>
-                            <div className="text-sm text-gray-500">Bidders</div>
-                        </div>
-                    </div>
-
                     {/* Filters and Search */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
                         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">

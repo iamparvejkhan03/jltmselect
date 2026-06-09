@@ -1632,7 +1632,7 @@ export const placeBid = async (req, res) => {
     const previousBidders = [
       ...new Set(auction.bids
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by most recent
-        .slice(0, 5) // Take top 5 most recent bids
+        .slice(0, 3) // Take top 5 most recent bids
         .map((bid) => bid.bidder.toString())
       ),
     ];
@@ -3063,6 +3063,37 @@ export const getBargainDeals = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Internal server error while fetching past auctions",
+    });
+  }
+};
+
+// Archive Auction
+export const archiveAuction = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const auction = await Auction.findById(id);
+
+    if (!auction) {
+      return res.status(404).json({
+        success: false,
+        message: "Auction not found"
+      });
+    }
+
+    auction.status = "archived";
+    await auction.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Auction archived successfully",
+      data: { auction }
+    });
+  } catch (error) {
+    console.error("Archive auction error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error while archiving auction"
     });
   }
 };

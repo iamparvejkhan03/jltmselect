@@ -19,7 +19,7 @@ const Login = () => {
     useEffect(() => {
         if (user) {
             if(user?.userType === 'bidder'){
-                navigate(`/${user.userType}/auctions/active`);
+                navigate(`/${user.userType}/profile`);
             }else{
                 navigate(`/${user.userType}/profile`);
             }

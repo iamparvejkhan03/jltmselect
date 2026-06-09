@@ -32,6 +32,7 @@ auctionRouter.put('/update/:id', authSeller, upload.fields([
     { name: 'documents' },
     { name: 'serviceRecords' },
 ]), updateAuction);
+
 auctionRouter.delete('/delete/:id', authSeller, deleteAuction);
 auctionRouter.post('/bid/:id', authBidder, placeBid);
 auctionRouter.get('/user/my-auctions', authSeller, getUserAuctions);

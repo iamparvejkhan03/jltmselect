@@ -9,7 +9,7 @@ function MobileNav() {
     const navLinks = [
         { name: 'Home', href: '/', icon: <Home /> },
         { name: 'Auctions', href: '/auctions', icon: <Gavel /> },
-        { name: 'Past Auctions', href: '/bargain-deals', icon: <Gavel /> },
+        { name: 'Past Auctions', href: '/past-auctions', icon: <Gavel /> },
         // { name: 'Categories', onClick:() => openPopup('category'), icon: <Grid2X2 /> },
         { name: 'Account', href: `/login`, icon: <UserCircle /> },
     ];

@@ -248,6 +248,7 @@ const auctionSchema = new Schema(
         "sold",
         "reserve_not_met",
         "sold_buy_now",
+        "archived"
       ], // ADDED 'sold_buy_now'
       default: "draft",
     },

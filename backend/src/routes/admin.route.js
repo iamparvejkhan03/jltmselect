@@ -33,6 +33,7 @@ import { authAdmin } from '../middlewares/auth.middleware.js';
 import upload from '../middlewares/multer.middleware.js';
 import { getAdminTransactions, getTransactionStats } from '../controllers/transaction.controller.js';
 import { requirePermission } from '../middlewares/permission.middleware.js';
+import { archiveAuction } from '../controllers/auction.controller.js';
 
 const AdminRouter = Router();
 
@@ -55,6 +56,7 @@ AdminRouter.patch('/auctions/:auctionId/status', authAdmin, requirePermission("m
 AdminRouter.patch('/auctions/:auctionId/approve', authAdmin, requirePermission("manage_auctions"), approveAuction);
 AdminRouter.patch('/auctions/:auctionId/end', authAdmin, requirePermission("manage_auctions"), endAuction);
 AdminRouter.delete('/auctions/:auctionId', authAdmin, requirePermission("manage_auctions"), deleteAuction);
+AdminRouter.patch('/auctions/:id/archive', authAdmin, archiveAuction);
 AdminRouter.put('/auctions/:id', authAdmin, requirePermission("manage_auctions"), upload.fields([
     { name: 'photos' },
     { name: 'documents' },
