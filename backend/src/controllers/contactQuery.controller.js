@@ -1,10 +1,35 @@
 import ContactQuery from '../models/contactQuery.model.js';
 import { contactConfirmationEmail, contactEmail } from '../utils/nodemailer.js';
 
-// Submit contact form query
+// Add this helper function for Turnstile verification
+async function verifyTurnstileToken(token) {
+    const secretKey = process.env.TURNSTILE_SECRET_KEY; 
+    
+    if (!token) {
+        return { success: false, error: 'No token provided' };
+    }
+    
+    try {
+        const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`
+        });
+        
+        const data = await response.json();
+        return data; // { success: true/false, ... }
+    } catch (error) {
+        console.error('Turnstile verification error:', error);
+        return { success: false, error: 'Verification request failed' };
+    }
+}
+
+// Update your submitContactQuery function
 export const submitContactQuery = async (req, res) => {
     try {
-        const { name, email, phone, userType, message } = req.body;
+        const { name, email, phone, userType, message, turnstileToken } = req.body;
         
         // Validate required fields
         if (!name || !email || !userType || !message) {
@@ -13,6 +38,25 @@ export const submitContactQuery = async (req, res) => {
                 message: 'Name, email, user type, and message are required'
             });
         }
+
+        // --- START: Turnstile Verification ---
+        if (!turnstileToken) {
+            return res.status(400).json({
+                success: false,
+                message: 'Verification required. Please complete the security check.'
+            });
+        }
+
+        const verification = await verifyTurnstileToken(turnstileToken);
+        
+        if (!verification.success) {
+            console.error('Turnstile verification failed:', verification);
+            return res.status(400).json({
+                success: false,
+                message: 'Security verification failed. Please try again.'
+            });
+        }
+        // --- END: Turnstile Verification ---
 
         // Create contact query
         const contactQuery = await ContactQuery.create({
@@ -37,7 +81,8 @@ export const submitContactQuery = async (req, res) => {
             }
         });
 
-        if(contactQuery){
+        // Send emails (don't await - do this after response)
+        if (contactQuery) {
             contactEmail(name, email, phone, userType, message).catch(err => console.error('Contact email error:', err));
             contactConfirmationEmail(name, email).catch(err => console.error('Confirmation email error:', err));
         }
@@ -50,6 +95,8 @@ export const submitContactQuery = async (req, res) => {
         });
     }
 };
+
+// Rest of your controller functions remain the same...
 
 // Get all contact queries for admin
 export const getContactQueries = async (req, res) => {
