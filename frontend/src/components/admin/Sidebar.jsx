@@ -28,7 +28,8 @@ import {
     BanknoteArrowDown,
     BanknoteArrowUp,
     Video,
-    UserPlus
+    UserPlus,
+    UserStar
 } from "lucide-react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logo } from "../../assets";
@@ -90,6 +91,12 @@ const allNavigation = [
         path: '/admin/subscriptions',
         icon: <DollarSign size={20} />,
         permission: 'manage_subscriptions'
+    },
+    {
+        name: 'Family Members',
+        path: '/admin/members/all',
+        icon: <UserStar size={20} />,
+        permission: 'manage_users'
     },
     {
         name: 'Categories',

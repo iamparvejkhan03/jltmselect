@@ -97,6 +97,11 @@ const userSubscriptionSchema = new Schema(
       type: Date,
       required: true,
     },
+    upgradedFrom: {
+      type: Schema.Types.ObjectId,
+      ref: "UserSubscription",
+      default: null,
+    },
   },
   {
     timestamps: true,

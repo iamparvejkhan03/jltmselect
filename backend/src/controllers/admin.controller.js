@@ -3006,3 +3006,171 @@ export const updateStaffStatus = async (req, res) => {
     });
   }
 };
+
+/**
+ * @desc    Update user password (Admin only)
+ * @route   PUT /api/v1/admin/users/:userId/password
+ * @access  Private (Admin)
+ */
+export const updateUserPassword = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { newPassword } = req.body;
+
+        // Validate password
+        if (!newPassword || newPassword.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must be at least 8 characters long",
+            });
+        }
+
+        // Check if user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        // Prevent admin from changing their own password through this endpoint
+        if (user._id.toString() === req.user._id.toString()) {
+            return res.status(400).json({
+                success: false,
+                message: "Use the profile settings to change your own password",
+            });
+        }
+
+        // Prevent changing password for admin users (optional - you can remove this if you want)
+        if (user.userType === "admin") {
+            return res.status(403).json({
+                success: false,
+                message: "Admin passwords cannot be changed through this endpoint",
+            });
+        }
+
+        // Update password - the pre-save middleware will handle hashing
+        user.password = newPassword;
+        await user.save({ validateBeforeSave: false });
+
+        // Clear any existing reset tokens
+        user.resetPasswordToken = undefined;
+        user.resetPasswordTokenExpiry = undefined;
+        await user.save({ validateBeforeSave: false });
+
+        res.status(200).json({
+            success: true,
+            message: "Password updated successfully",
+        });
+    } catch (error) {
+        console.error("Update user password error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error while updating password",
+        });
+    }
+};
+
+/**
+ * @desc    Update user details (Admin only)
+ * @route   PUT /api/v1/admin/users/:userId
+ * @access  Private (Admin)
+ */
+export const updateUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const updateData = req.body;
+
+        // Check if user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        // Prevent updating admin users
+        if (user.userType === "admin") {
+            return res.status(403).json({
+                success: false,
+                message: "Admin accounts cannot be modified through this endpoint",
+            });
+        }
+
+        // Check for unique email if being updated
+        if (updateData.email && updateData.email !== user.email) {
+            const existingEmail = await User.findOne({
+                email: updateData.email.toLowerCase().trim(),
+                _id: { $ne: userId }
+            });
+            if (existingEmail) {
+                return res.status(409).json({
+                    success: false,
+                    message: "Email already exists",
+                });
+            }
+            updateData.email = updateData.email.toLowerCase().trim();
+        }
+
+        // Check for unique username if being updated
+        if (updateData.username && updateData.username !== user.username) {
+            const existingUsername = await User.findOne({
+                username: updateData.username.toLowerCase().trim(),
+                _id: { $ne: userId }
+            });
+            if (existingUsername) {
+                return res.status(409).json({
+                    success: false,
+                    message: "Username already exists",
+                });
+            }
+            updateData.username = updateData.username.toLowerCase().trim();
+        }
+
+        // Remove sensitive fields that shouldn't be updated
+        delete updateData.password;
+        delete updateData._id;
+        delete updateData.__v;
+        delete updateData.createdAt;
+        delete updateData.updatedAt;
+        delete updateData.refreshToken;
+        delete updateData.resetPasswordToken;
+        delete updateData.resetPasswordTokenExpiry;
+        delete updateData.emailVerificationToken;
+        delete updateData.emailVerificationExpiry;
+
+        // Update user
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            updateData,
+            {
+                new: true,
+                runValidators: true,
+            }
+        ).select("-password -refreshToken -resetPasswordToken -emailVerificationToken");
+
+        res.status(200).json({
+            success: true,
+            message: "User updated successfully",
+            data: { user: updatedUser },
+        });
+
+    } catch (error) {
+        console.error("Update user error:", error);
+        
+        if (error.name === "ValidationError") {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: messages.join(", "),
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Internal server error while updating user",
+        });
+    }
+};

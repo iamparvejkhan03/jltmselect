@@ -1,19 +1,23 @@
 import { Router } from "express";
+import { auth, authCashier } from "../middlewares/auth.middleware.js";
 import {
-  getBiddersWithActiveSubscription,
-  toggleDiscountAvailed,
+    getBiddersWithActiveSubscription,
+    toggleDiscountAvailed,
+    getDiscountStatus,
 } from "../controllers/cashier.controller.js";
-import { authCashier } from "../middlewares/auth.middleware.js";
 
 const cashierRouter = Router();
 
-// All cashier routes require cashier authentication
-cashierRouter.use(authCashier);
+// All routes require authentication and cashier role
+cashierRouter.use(auth, authCashier);
 
-// Get all bidders with active subscription
+// Get all bidders with active subscriptions (including members)
 cashierRouter.get("/bidders", getBiddersWithActiveSubscription);
 
-// Toggle discount availed status
-cashierRouter.patch("/bidders/:userId/discount", toggleDiscountAvailed);
+// Toggle discount availed for bidder or member
+cashierRouter.patch("/:type/:id/discount", toggleDiscountAvailed);
+
+// Get discount status for bidder or member
+cashierRouter.get("/:type/:id/discount-status", getDiscountStatus);
 
 export default cashierRouter;

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { AdminContainer, AdminHeader, AdminSidebar, LoadingSpinner } from "../../components";
-import { Search, Filter, Mail, Phone, MapPin, Calendar, Award, Gavel, Shield, User, Edit, MoreVertical, UserX, Trash2, TrendingUp, Eye, Hand, Building, Home, Banknote, FileText, CheckCircle, Clock, AlertCircle, RefreshCw, Download, X, Tag, XCircle } from "lucide-react";
+import { Search, Filter, Mail, Phone, MapPin, Calendar, Award, Gavel, Shield, User, Edit, MoreVertical, UserX, Trash2, TrendingUp, Eye, Hand, Building, Home, Banknote, FileText, CheckCircle, Clock, AlertCircle, RefreshCw, Download, X, Tag, XCircle, UserPen } from "lucide-react";
 import { about, dummyUserImg } from "../../assets";
 import toast from "react-hot-toast";
 import axiosInstance from "../../utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 function AllUsers() {
     const [users, setUsers] = useState([]);
@@ -26,6 +27,8 @@ function AllUsers() {
         hasNext: false,
         hasPrev: false
     });
+
+    const navigate = useNavigate();
 
     const [isIdVerificationModalOpen, setIsIdVerificationModalOpen] = useState(false);
     const [selectedUserForVerification, setSelectedUserForVerification] = useState(null);
@@ -463,6 +466,14 @@ function AllUsers() {
                                                             title="View Details"
                                                         >
                                                             <Eye size={20} />
+                                                        </button>
+
+                                                        <button
+                                                            onClick={() => navigate(`/admin/users/edit/${user?._id}`)}
+                                                            className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                                                            title="Edit User"
+                                                        >
+                                                            <UserPen size={20} />
                                                         </button>
 
                                                         {/* Dropdown Menu */}

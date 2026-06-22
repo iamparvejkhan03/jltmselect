@@ -12,7 +12,8 @@ import {
     CreditCard,
     Hand,
     DollarSign,
-    Video
+    Video,
+    UserStar
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { logo } from "../../assets";
@@ -28,6 +29,7 @@ const navigation = [
     { name: 'Won Auctions', path: '/bidder/auctions/won', icon: <Award size={20} /> },
     { name: 'Past Auctions', path: '/bidder/auctions/past', icon: <Bookmark size={20} /> },
     { name: 'Membership', path: '/bidder/subscriptions', icon: <DollarSign size={20} /> },
+    { name: 'All Members', path: '/bidder/members/all', icon: <UserStar size={20} /> },
     { name: 'Billing', path: '/bidder/billing', icon: <CreditCard size={20} /> },
     { name: 'My Dashboard', path: '/bidder/dashboard', icon: <LayoutDashboard size={20} /> },
     // { name: 'Notifications', path: '/bidder/notifications', icon: <Bell size={20} /> },
@@ -37,7 +39,7 @@ const navigation = [
 function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
 
     // Handle window resize
     useEffect(() => {

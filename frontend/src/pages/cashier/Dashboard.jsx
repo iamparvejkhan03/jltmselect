@@ -4,12 +4,12 @@ import {
     CashierHeader,
     CashierSidebar,
 } from "../../components";
-import { Search, User, Mail, Phone, Calendar, Tag, Shield, CheckCircle, XCircle } from "lucide-react";
+import { Search, User, Mail, Phone, Calendar, Tag, Shield, CheckCircle, XCircle, Users, UserPlus } from "lucide-react";
 import toast from "react-hot-toast";
 import axiosInstance from "../../utils/axiosInstance";
 
 const Dashboard = () => {
-    const [bidders, setBidders] = useState([]);
+    const [people, setPeople] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [debounceTimer, setDebounceTimer] = useState(null);
@@ -35,7 +35,7 @@ const Dashboard = () => {
             const { data } = await axiosInstance.get(`/api/v1/cashier/bidders?${params}`);
 
             if (data.success) {
-                setBidders(data.data.bidders);
+                setPeople(data.data.bidders);
                 setPagination(data.data.pagination);
             }
         } catch (error) {
@@ -64,20 +64,20 @@ const Dashboard = () => {
         setDebounceTimer(timer);
     };
 
-    const handleToggleDiscount = async (bidderId, currentStatus) => {
+    const handleToggleDiscount = async (id, currentStatus, type) => {
         try {
             const { data } = await axiosInstance.patch(
-                `/api/v1/cashier/bidders/${bidderId}/discount`
+                `/api/v1/cashier/${type}/${id}/discount`
             );
 
             if (data.success) {
                 toast.success(data.message);
                 // Update local state
-                setBidders((prev) =>
-                    prev.map((bidder) =>
-                        bidder._id === bidderId
-                            ? { ...bidder, isDiscountAvailed: !currentStatus }
-                            : bidder
+                setPeople((prev) =>
+                    prev.map((person) =>
+                        person._id === id
+                            ? { ...person, isDiscountAvailed: !currentStatus }
+                            : person
                     )
                 );
             }
@@ -95,6 +95,23 @@ const Dashboard = () => {
         });
     };
 
+    const getTypeBadge = (isMember) => {
+        if (isMember) {
+            return (
+                <span className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-purple-100 text-purple-700">
+                    <Users size={12} />
+                    Member
+                </span>
+            );
+        }
+        return (
+            <span className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                <User size={12} />
+                Bidder
+            </span>
+        );
+    };
+
     return (
         <section className="flex min-h-screen bg-gray-50">
             <CashierSidebar />
@@ -107,15 +124,15 @@ const Dashboard = () => {
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                             <div>
                                 <h2 className="text-3xl md:text-4xl font-bold my-5">
-                                    Bidders with Active Subscription
+                                    Active Members & Bidders
                                 </h2>
                                 <p className="text-gray-600">
-                                    Manage discount availed status for active subscribers
+                                    Manage discount availed status for active subscribers and members
                                 </p>
                             </div>
-                            <div className="mt-4 md:mt-0">
+                            <div className="mt-4 md:mt-0 flex gap-2">
                                 <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                                    {pagination.totalBidders} active bidders
+                                    {pagination.totalBidders} active
                                 </span>
                             </div>
                         </div>
@@ -135,19 +152,22 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {/* Bidders Table */}
+                    {/* People Table */}
                     {loading ? (
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                         </div>
-                    ) : bidders.length > 0 ? (
+                    ) : people.length > 0 ? (
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-16">
                             <div className="overflow-x-auto">
                                 <table className="w-full">
                                     <thead className="bg-gray-50 border-b border-gray-200">
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Bidder
+                                                Person
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Type
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Contact
@@ -164,27 +184,39 @@ const Dashboard = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
-                                        {bidders.map((bidder) => (
-                                            <tr key={bidder._id} className="hover:bg-gray-50">
+                                        {people.map((person) => (
+                                            <tr key={person._id} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                                            <User size={18} className="text-blue-600" />
+                                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${person.isMember ? 'bg-purple-100' : 'bg-blue-100'}`}>
+                                                            {person.isMember ? (
+                                                                <Users size={18} className="text-purple-600" />
+                                                            ) : (
+                                                                <User size={18} className="text-blue-600" />
+                                                            )}
                                                         </div>
                                                         <div>
                                                             <p className="font-medium text-gray-900">
-                                                                {bidder.firstName} {bidder.lastName}
+                                                                {person.firstName} {person.lastName}
                                                             </p>
+                                                            {person.isMember && person.mainSubscriber && (
+                                                                <p className="text-xs text-gray-500">
+                                                                    Added by: {person.mainSubscriber.firstName} {person.mainSubscriber.lastName}
+                                                                </p>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
+                                                    {getTypeBadge(person.isMember)}
+                                                </td>
+                                                <td className="px-6 py-4">
                                                     <div className="space-y-1">
                                                         <p className="text-sm text-gray-600 flex items-center gap-1">
-                                                            <Mail size={14} /> {bidder.email}
+                                                            <Mail size={14} /> {person.email || "N/A"}
                                                         </p>
                                                         <p className="text-sm text-gray-500 flex items-center gap-1">
-                                                            <Phone size={14} /> {bidder.phone}
+                                                            <Phone size={14} /> {person.phone}
                                                         </p>
                                                     </div>
                                                 </td>
@@ -192,7 +224,7 @@ const Dashboard = () => {
                                                     <div className="flex items-center gap-2">
                                                         <Tag size={14} className="text-green-500" />
                                                         <span className="text-sm font-medium text-gray-900">
-                                                            {bidder.subscriptionTitle}
+                                                            {person.subscriptionTitle}
                                                         </span>
                                                     </div>
                                                 </td>
@@ -200,20 +232,24 @@ const Dashboard = () => {
                                                     <div className="flex items-center gap-2">
                                                         <Calendar size={14} className="text-gray-400" />
                                                         <span className="text-sm text-gray-600">
-                                                            {formatDate(bidder.subscriptionExpiry)}
+                                                            {formatDate(person.subscriptionExpiry)}
                                                         </span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <button
                                                         onClick={() =>
-                                                            handleToggleDiscount(bidder._id, bidder.isDiscountAvailed)
+                                                            handleToggleDiscount(
+                                                                person._id, 
+                                                                person.isDiscountAvailed, 
+                                                                person.isMember ? 'member' : 'bidder'
+                                                            )
                                                         }
-                                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${bidder.isDiscountAvailed ? "bg-green-600" : "bg-gray-300"
+                                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${person.isDiscountAvailed ? "bg-green-600" : "bg-gray-300"
                                                             }`}
                                                     >
                                                         <span
-                                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${bidder.isDiscountAvailed ? "translate-x-6" : "translate-x-1"
+                                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${person.isDiscountAvailed ? "translate-x-6" : "translate-x-1"
                                                                 }`}
                                                         />
                                                     </button>
@@ -255,8 +291,8 @@ const Dashboard = () => {
                             <h3 className="text-lg font-semibold text-gray-700 mb-2">No active subscriptions found</h3>
                             <p className="text-gray-500">
                                 {searchTerm
-                                    ? "No bidders match your search criteria"
-                                    : "There are no bidders with active subscriptions at the moment"}
+                                    ? "No results match your search criteria"
+                                    : "There are no active bidders or members at the moment"}
                             </p>
                             {searchTerm && (
                                 <button

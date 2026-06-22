@@ -74,6 +74,8 @@ const BidderBilling = lazy(() => import('./pages/bidder/Billing'));
 const BidderSubscriptions = lazy(() => import('./pages/bidder/Subscriptions'));
 const BidderVideos = lazy(() => import('./pages/bidder/Videos'));
 const BidderPastAuctions = lazy(() => import('./pages/bidder/PastAuctions'));
+const BidderAddMember = lazy(() => import('./pages/bidder/AddMember'));
+const BidderAllMembers = lazy(() => import('./pages/bidder/AllMembers'));
 
 {/* Staff Pages */ }
 const StaffLayout = lazy(() => import('./pages/staff/Layout'));
@@ -106,6 +108,7 @@ const StaffEditStaff = lazy(() => import('./pages/staff/EditStaff'));
 const AdminLayout = lazy(() => import('./pages/admin/Layout'));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AllUsers = lazy(() => import('./pages/admin/AllUsers'));
+const AdminEditUser = lazy(() => import('./pages/admin/EditUser'));
 const AllCashiers = lazy(() => import('./pages/admin/AllCashiers'));
 const AddCashier = lazy(() => import('./pages/admin/AddCashier'));
 const AdminAllAuctions = lazy(() => import('./pages/admin/AllAuctions'));
@@ -128,6 +131,8 @@ const AdminVideos = lazy(() => import('./pages/admin/Videos'));
 const AddStaff = lazy(() => import('./pages/admin/AddStaff'));
 const AllStaff = lazy(() => import('./pages/admin/AllStaff'));
 const EditStaff = lazy(() => import('./pages/admin/EditStaff'));
+const AdminAllMembers = lazy(() => import('./pages/admin/AllMembers'));
+const AdminEditMember = lazy(() => import('./pages/admin/EditMember'));
 
 createRoot(document.getElementById('root')).render(
     //<StrictMode>
@@ -486,6 +491,26 @@ createRoot(document.getElementById('root')).render(
                                 }
                             />
 
+                            {/* Bidder All Members */}
+                            <Route
+                                path='/bidder/members/all'
+                                element={
+                                    <Suspense fallback={<LoadingSpinner height={'750px'} />}>
+                                        <BidderAllMembers />
+                                    </Suspense>
+                                }
+                            />
+
+                            {/* Bidder Add Members */}
+                            <Route
+                                path='/bidder/members/add'
+                                element={
+                                    <Suspense fallback={<LoadingSpinner height={'750px'} />}>
+                                        <BidderAddMember />
+                                    </Suspense>
+                                }
+                            />
+
                             {/* Bidder Notifications */}
                             {/* <Route
                                 path='/bidder/notifications'
@@ -563,6 +588,16 @@ createRoot(document.getElementById('root')).render(
                                 }
                             />
 
+                            {/* Admin Edit User */}
+                            <Route
+                                path='/admin/users/edit/:id'
+                                element={
+                                    <Suspense fallback={<LoadingSpinner height={'750px'} />}>
+                                        <AdminEditUser />
+                                    </Suspense>
+                                }
+                            />
+
                             {/* Admin All Cashiers */}
                             <Route
                                 path='/admin/cashiers'
@@ -619,6 +654,26 @@ createRoot(document.getElementById('root')).render(
                                 element={
                                     <Suspense fallback={<LoadingSpinner height={'750px'} />}>
                                         <Subscriptions />
+                                    </Suspense>
+                                }
+                            />
+
+                            {/* Admin All Members */}
+                            <Route
+                                path='/admin/members/all'
+                                element={
+                                    <Suspense fallback={<LoadingSpinner height={'750px'} />}>
+                                        <AdminAllMembers />
+                                    </Suspense>
+                                }
+                            />
+
+                            {/* Admin Edit Member */}
+                            <Route
+                                path='/admin/members/edit/:memberId'
+                                element={
+                                    <Suspense fallback={<LoadingSpinner height={'750px'} />}>
+                                        <AdminEditMember />
                                     </Suspense>
                                 }
                             />

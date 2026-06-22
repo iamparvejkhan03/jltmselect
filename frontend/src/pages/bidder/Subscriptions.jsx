@@ -18,7 +18,8 @@ import {
     Zap,
     ChevronRight,
     Star,
-    Award
+    Award,
+    Loader
 } from "lucide-react";
 import axiosInstance from "../../utils/axiosInstance";
 import { Link } from "react-router-dom";
@@ -37,6 +38,12 @@ function Subscriptions() {
         totalPurchases: 0,
         daysRemaining: 0
     });
+
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [upgradePlans, setUpgradePlans] = useState([]);
+    const [loadingUpgrade, setLoadingUpgrade] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState(null);
+    const [upgradeEligibility, setUpgradeEligibility] = useState(null);
 
     useEffect(() => {
         fetchSubscriptions();
@@ -105,6 +112,80 @@ function Subscriptions() {
             }
         } catch (err) {
             toast.error(err?.response?.data?.message || "Failed to activate plan");
+        }
+    };
+
+    const checkUpgradeEligibility = async (planId) => {
+        try {
+            const { data } = await axiosInstance.get(`/api/v1/user-subscription/upgrade/${planId}/check`);
+            if (data.success) {
+                setUpgradeEligibility(data.data);
+                return data.data;
+            }
+        } catch (err) {
+            console.error("Check eligibility error:", err);
+            return null;
+        }
+    };
+
+    // Add this function to handle upgrade
+    const handleUpgrade = async (planId) => {
+        try {
+            setLoadingUpgrade(true);
+            const { data } = await axiosInstance.post("/api/v1/user-subscription/upgrade", {
+                subscriptionId: planId,
+                paymentMethodId: null
+            });
+
+            if (data.success) {
+                toast.success(data.message);
+                setShowUpgradeModal(false);
+                // Refresh data
+                await fetchSubscriptions();
+                await fetchActiveSubscription();
+            }
+        } catch (err) {
+            toast.error(err?.response?.data?.message || "Failed to upgrade subscription");
+        } finally {
+            setLoadingUpgrade(false);
+        }
+    };
+
+    const handleUpgradeClick = async () => {
+        try {
+            // Fetch available plans for upgrade
+            const { data } = await axiosInstance.get("/api/v1/subscriptions/public/active");
+            if (data.success) {
+                const allPlans = data.data;
+
+                // Filter plans that are upgrades (longer duration)
+                const currentDuration = getDurationInDays(
+                    activeSubscription.duration.value,
+                    activeSubscription.duration.unit
+                );
+
+                const eligiblePlans = allPlans.filter(plan => {
+                    const planDuration = getDurationInDays(plan.duration.value, plan.duration.unit);
+                    return planDuration > currentDuration;
+                });
+
+                setUpgradePlans(eligiblePlans);
+                setShowUpgradeModal(true);
+            }
+        } catch (err) {
+            console.error("Failed to load upgrade plans:", err);
+            toast.error("Failed to load upgrade plans");
+        }
+    };
+
+    // Helper function to convert duration to days
+    const getDurationInDays = (value, unit) => {
+        switch (unit) {
+            case "day": return value;
+            case "week": return value * 7;
+            case "month": return value * 30;
+            case "year": return value * 365;
+            default: return value;
         }
     };
 
@@ -275,12 +356,22 @@ function Subscriptions() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="bg-white/10 rounded-xl p-4 text-center">
-                                            <Wallet size={32} className="text-white mx-auto mb-2" />
-                                            <p className="text-white text-2xl font-bold">
-                                                {formatCurrency(activeSubscription.amountPaid)}
-                                            </p>
-                                            <p className="text-emerald-100 text-sm">Subscription Paid</p>
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="bg-white/10 rounded-xl p-4 text-center">
+                                                <Wallet size={32} className="text-white mx-auto mb-2" />
+                                                <p className="text-white text-2xl font-bold">
+                                                    {formatCurrency(activeSubscription.amountPaid)}
+                                                </p>
+                                                <p className="text-emerald-100 text-sm">Subscription Paid</p>
+                                            </div>
+                                            {/* Add Upgrade Button */}
+                                            <button
+                                                onClick={handleUpgradeClick}
+                                                className="bg-white text-emerald-600 hover:bg-emerald-50 px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 w-full justify-center"
+                                            >
+                                                <Zap size={18} />
+                                                Upgrade Plan
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -354,7 +445,7 @@ function Subscriptions() {
                     )}
 
                     {/* Subscription History */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-white mt-5 rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div className="p-6 border-b border-gray-200">
                             <h3 className="text-xl font-semibold text-gray-900">
                                 Purchase History
@@ -440,29 +531,20 @@ function Subscriptions() {
                                                         </div>
                                                     )}
 
-                                                    {subscription?.isCurrent ? (
-                                                        <div className="flex flex-col items-end gap-2">
-                                                            <span className="text-xs font-medium px-3 py-1 rounded-full bg-green-100 text-green-700 inline-flex items-center gap-1">
-                                                                <CheckCircle size={12} />
-                                                                Currently Active
-                                                            </span>
-                                                            {/* <Link
+                                                    {subscription?.isCurrent &&
+                                                    <div className="flex flex-col items-end gap-2">
+                                                        <span className="text-xs font-medium px-3 py-1 rounded-full bg-green-100 text-green-700 inline-flex items-center gap-1">
+                                                            <CheckCircle size={12} />
+                                                            Currently Active
+                                                        </span>
+                                                        {/* <Link
                                                                 to="/pricing"
                                                                 className="text-primary hover:text-primary/80 text-sm font-semibold inline-flex items-center gap-1"
                                                             >
                                                                 Renew Plan
                                                                 <ChevronRight size={14} />
                                                             </Link> */}
-                                                        </div>
-                                                    ) : (
-                                                        <button
-                                                            onClick={() => handleActivatePlan(subscription._id)}
-                                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold inline-flex items-center gap-1 transition-colors"
-                                                        >
-                                                            <Zap size={14} />
-                                                            Activate This Plan
-                                                        </button>
-                                                    )}
+                                                    </div>}
                                                 </div>
                                             </div>
                                         </div>
@@ -473,6 +555,7 @@ function Subscriptions() {
                     </div>
                 </BidderContainer>
             </div>
+
             {/* Subscription Modal */}
             <SubscriptionModal
                 isOpen={showSubscriptionModal}
@@ -482,6 +565,179 @@ function Subscriptions() {
                     fetchActiveSubscription();
                 }}
             />
+
+            {/* Upgrade Modal */}
+            {showUpgradeModal && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900">Upgrade Your Plan</h2>
+                                <p className="text-gray-500 text-sm mt-1">
+                                    Get more features and longer duration
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setShowUpgradeModal(false)}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                <XCircle size={24} className="text-gray-500" />
+                            </button>
+                        </div>
+
+                        <div className="p-6">
+                            {/* Current Plan Info */}
+                            <div className="bg-gray-50 rounded-xl p-4 mb-6">
+                                <p className="text-sm text-gray-500">Current Plan</p>
+                                <div className="flex items-center justify-between mt-1">
+                                    <div>
+                                        <h3 className="font-semibold text-gray-900">{activeSubscription?.title}</h3>
+                                        <p className="text-sm text-gray-600">
+                                            {activeSubscription?.duration.value} {activeSubscription?.duration.unit}
+                                            {activeSubscription?.duration.value > 1 ? 's' : ''}
+                                        </p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm text-gray-500">Remaining</p>
+                                        <p className="font-semibold text-emerald-600">{statistics.daysRemaining} days</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {upgradePlans.length === 0 ? (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-500">No upgrade plans available</p>
+                                    <button
+                                        onClick={() => setShowUpgradeModal(false)}
+                                        className="mt-4 bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {upgradePlans.map((plan) => (
+                                        <div
+                                            key={plan._id}
+                                            className={`border rounded-xl p-4 transition-all ${selectedPlan?._id === plan._id
+                                                ? 'border-primary bg-primary/5'
+                                                : 'border-gray-200 hover:border-gray-300'
+                                                }`}
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className="font-semibold text-gray-900">{plan.title}</h4>
+                                                        {plan.isPopular && (
+                                                            <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">
+                                                                Popular
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-sm text-gray-500 mt-1">{plan.description}</p>
+                                                    <div className="flex items-center gap-4 mt-2">
+                                                        <span className="text-sm text-gray-600">
+                                                            {plan.duration.value} {plan.duration.unit}
+                                                            {plan.duration.value > 1 ? 's' : ''}
+                                                        </span>
+                                                        <span className="text-sm font-semibold text-primary">
+                                                            {formatCurrency(plan.price.amount)}
+                                                        </span>
+                                                    </div>
+                                                    {/* Features */}
+                                                    <div className="mt-2 flex flex-wrap gap-2">
+                                                        {plan.features.slice(0, 3).map((feature, idx) => (
+                                                            feature.included !== false && (
+                                                                <span key={idx} className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full flex items-center gap-1">
+                                                                    <CheckCircle size={10} />
+                                                                    {feature.text}
+                                                                </span>
+                                                            )
+                                                        ))}
+                                                        {plan.features.length > 3 && (
+                                                            <span className="text-xs text-gray-400">+{plan.features.length - 3} more</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={async () => {
+                                                        const eligibility = await checkUpgradeEligibility(plan._id);
+                                                        if (eligibility?.eligible) {
+                                                            setSelectedPlan(plan);
+                                                        } else {
+                                                            toast.error("This plan cannot be upgraded to");
+                                                        }
+                                                    }}
+                                                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${selectedPlan?._id === plan._id
+                                                        ? 'bg-primary text-white'
+                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                        }`}
+                                                >
+                                                    {selectedPlan?._id === plan._id ? 'Selected' : 'Select'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Upgrade Summary */}
+                            {selectedPlan && upgradeEligibility && (
+                                <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                    <h4 className="font-semibold text-gray-900 mb-2">Upgrade Summary</h4>
+                                    <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Current Plan</span>
+                                            <span className="font-medium">{activeSubscription?.title}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">New Plan</span>
+                                            <span className="font-medium">{selectedPlan.title}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Remaining Days</span>
+                                            <span className="font-medium text-emerald-600">{upgradeEligibility.remainingDays} days</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">New Duration</span>
+                                            <span className="font-medium">
+                                                {selectedPlan.duration.value} {selectedPlan.duration.unit}
+                                                {selectedPlan.duration.value > 1 ? 's' : ''}
+                                                + {upgradeEligibility.remainingDays} days bonus
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between border-t border-blue-200 pt-2 mt-2">
+                                            <span className="font-semibold text-gray-900">Amount to Pay</span>
+                                            <span className="font-bold text-primary">
+                                                {formatCurrency(selectedPlan.price.amount)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => handleUpgrade(selectedPlan._id)}
+                                        disabled={loadingUpgrade}
+                                        className="mt-4 w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {loadingUpgrade ? (
+                                            <>
+                                                <Loader size={18} className="animate-spin-slow" />
+                                                Processing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Zap size={18} />
+                                                Confirm Upgrade
+                                            </>
+                                        )}
+                                    </button>
+
+                                    <p className="text-xs my-2 text-gray-600">Note: This amount will be charged from your saved card.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </section>
     );
 }

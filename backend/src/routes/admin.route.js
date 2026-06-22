@@ -5,6 +5,7 @@ import {
     getUserDetails,
     updateUserStatus,
     deleteUser,
+    updateUser,
     updateUserType,
     getAllAuctions,
     getAuctionDetails,
@@ -27,13 +28,15 @@ import {
     getStaffById,
     updateStaff,
     deleteStaff,
-    updateStaffStatus
+    updateStaffStatus,
+    updateUserPassword
 } from '../controllers/admin.controller.js';
 import { authAdmin } from '../middlewares/auth.middleware.js';
 import upload from '../middlewares/multer.middleware.js';
 import { getAdminTransactions, getTransactionStats } from '../controllers/transaction.controller.js';
 import { requirePermission } from '../middlewares/permission.middleware.js';
 import { archiveAuction } from '../controllers/auction.controller.js';
+import { deleteMember, getAllMembers, getMemberById, toggleMemberStatus, updateMember } from '../controllers/member.controller.js';
 
 const AdminRouter = Router();
 
@@ -45,9 +48,18 @@ AdminRouter.get('/users', authAdmin, requirePermission("manage_users"), getAllUs
 AdminRouter.get('/users/:userId', authAdmin, requirePermission("manage_users"), getUserDetails);
 AdminRouter.patch('/users/:userId/status', authAdmin, requirePermission("manage_users"), updateUserStatus);
 AdminRouter.patch('/users/:userId/type', authAdmin, requirePermission("manage_users"), updateUserType);
+AdminRouter.put('/users/:userId', authAdmin, requirePermission("manage_users"), updateUser);
 AdminRouter.delete('/users/:userId', authAdmin, requirePermission("manage_users"), deleteUser);
 AdminRouter.patch('/users/:userId/identificationDocument/verify', authAdmin, requirePermission("manage_users"), verifyUserIdentity);
 AdminRouter.patch('/users/:userId/identificationDocument/reject', authAdmin, requirePermission("manage_users"), rejectUserIdentity);
+AdminRouter.put( '/users/:userId/password', authAdmin, requirePermission("manage_users"), updateUserPassword);
+
+// Family Member Management
+AdminRouter.get("/members", authAdmin, requirePermission("manage_users"), getAllMembers);
+AdminRouter.patch("/members/:memberId/status", authAdmin, requirePermission("manage_users"), toggleMemberStatus);
+AdminRouter.delete("/members/:memberId", authAdmin, requirePermission("manage_users"), deleteMember);
+AdminRouter.get("/members/:memberId", authAdmin, requirePermission("manage_users"), getMemberById);
+AdminRouter.patch("/members/:memberId", authAdmin, requirePermission("manage_users"), updateMember);
 
 // Auction Management - requires manage_auctions permission
 AdminRouter.get('/auctions', authAdmin, requirePermission("manage_auctions"), getAllAuctions);

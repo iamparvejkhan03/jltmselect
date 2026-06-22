@@ -71,6 +71,7 @@ import OTP from "./OTP";
 import ThemeToggle from "./ThemeToggle";
 import SubscriptionSection from "./SubscriptionSection";
 import SubscriptionModal from "./SubscriptionModal";
+import Modal from "./admin/Modal";
 
 export {
     Container,
@@ -146,4 +147,5 @@ export {
     ThemeToggle,
     SubscriptionSection,
     SubscriptionModal,
+    Modal,
 }

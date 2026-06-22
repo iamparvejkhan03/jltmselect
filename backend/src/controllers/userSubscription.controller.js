@@ -423,3 +423,290 @@ export const getAllUserSubscriptions = async (req, res) => {
         });
     }
 };
+
+/**
+ * @desc    Upgrade subscription plan
+ * @route   POST /api/v1/subscriptions/upgrade
+ * @access  Private
+ */
+export const upgradeSubscription = async (req, res) => {
+    try {
+        const { subscriptionId, paymentMethodId } = req.body;
+        const userId = req.user._id;
+
+        // Get user's current active subscription
+        const currentSubscription = await UserSubscription.findOne({
+            user: userId,
+            status: "active",
+            expiresAt: { $gt: new Date() },
+            isCurrent: true
+        });
+
+        if (!currentSubscription) {
+            return res.status(400).json({
+                success: false,
+                message: "No active subscription found to upgrade",
+            });
+        }
+
+        // Get the new subscription plan
+        const newPlan = await Subscription.findOne({
+            _id: subscriptionId,
+            isActive: true,
+        });
+
+        if (!newPlan) {
+            return res.status(404).json({
+                success: false,
+                message: "Subscription plan not found",
+            });
+        }
+
+        // Check if new plan is actually an upgrade (higher duration)
+        const currentDurationInDays = getDurationInDays(currentSubscription.duration.value, currentSubscription.duration.unit);
+        const newDurationInDays = getDurationInDays(newPlan.duration.value, newPlan.duration.unit);
+
+        // Calculate remaining days in current subscription
+        const now = new Date();
+        const expiryDate = new Date(currentSubscription.expiresAt);
+        const remainingDays = Math.max(0, Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24)));
+
+        // Calculate upgrade cost (pro-rated)
+        // You're paying for the new plan, and we add the remaining days to the new subscription
+        const amountToPay = newPlan.price.amount;
+
+        // Get user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        let paymentMethodToUse = paymentMethodId;
+        if (!paymentMethodToUse && user.paymentMethodId) {
+            paymentMethodToUse = user.paymentMethodId;
+        }
+
+        if (!paymentMethodToUse) {
+            return res.status(400).json({
+                success: false,
+                message: "Payment method is required",
+            });
+        }
+
+        // Ensure user has Stripe customer ID
+        if (!user.stripeCustomerId) {
+            const customer = await StripeService.createCustomer(
+                user.email,
+                `${user.firstName} ${user.lastName}`
+            );
+            user.stripeCustomerId = customer.id;
+            await StripeService.attachPaymentMethod(user.stripeCustomerId, paymentMethodToUse);
+            await user.save();
+        }
+
+        let paymentIntent = null;
+        try {
+            paymentIntent = await StripeService.createImmediateCharge(
+                user.stripeCustomerId,
+                paymentMethodToUse,
+                amountToPay,
+                `Upgrade to ${newPlan.title} - Added ${remainingDays} days from previous plan`
+            );
+
+            if (paymentIntent.status !== "succeeded") {
+                throw new Error("Payment failed");
+            }
+        } catch (paymentError) {
+            console.error("Payment error:", paymentError);
+            return res.status(400).json({
+                success: false,
+                message: `Payment failed: ${paymentError.message}`,
+            });
+        }
+
+        // Calculate new end date (new plan duration + remaining days from current subscription)
+        const startDate = new Date();
+        let endDate = new Date(startDate);
+        const durationValue = newPlan.duration.value;
+        const durationUnit = newPlan.duration.unit;
+
+        // Add the new plan duration
+        switch (durationUnit) {
+            case "day":
+                endDate.setDate(endDate.getDate() + durationValue);
+                break;
+            case "week":
+                endDate.setDate(endDate.getDate() + durationValue * 7);
+                break;
+            case "month":
+                endDate.setMonth(endDate.getMonth() + durationValue);
+                break;
+            case "year":
+                endDate.setFullYear(endDate.getFullYear() + durationValue);
+                break;
+            default:
+                endDate.setMonth(endDate.getMonth() + 1);
+        }
+
+        // Add remaining days from current subscription
+        if (remainingDays > 0) {
+            endDate.setDate(endDate.getDate() + remainingDays);
+        }
+
+        // Create new user subscription record
+        const newUserSubscription = await UserSubscription.create({
+            user: userId,
+            subscription: subscriptionId,
+            title: newPlan.title,
+            description: newPlan.description,
+            features: newPlan.features,
+            duration: newPlan.duration,
+            price: newPlan.price,
+            startDate,
+            endDate,
+            expiresAt: endDate,
+            paymentIntentId: paymentIntent.id,
+            paymentStatus: "succeeded",
+            amountPaid: amountToPay,
+            currency: newPlan.price.currency,
+            status: "active",
+            isCurrent: true,
+            upgradedFrom: currentSubscription._id // Track that this is an upgrade
+        });
+
+        // Set all other subscriptions as not current
+        await UserSubscription.updateMany(
+            { user: userId, _id: { $ne: newUserSubscription._id } },
+            { isCurrent: false }
+        );
+
+        // Mark the old subscription as expired/upgraded
+        await UserSubscription.findByIdAndUpdate(currentSubscription._id, {
+            status: "expired",
+            isCurrent: false
+        });
+
+        // Update new plan's subscriber count
+        await Subscription.findByIdAndUpdate(subscriptionId, {
+            $inc: { subscriberCount: 1 }
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Subscription upgraded successfully",
+            data: {
+                subscription: newUserSubscription,
+                previousSubscription: currentSubscription,
+                remainingDaysAdded: remainingDays,
+                paymentIntent: {
+                    id: paymentIntent.id,
+                    status: paymentIntent.status,
+                    amount: paymentIntent.amount,
+                },
+            },
+        });
+    } catch (error) {
+        console.error("Upgrade subscription error:", error);
+        res.status(500).json({
+            success: false,
+            message: error.message || "Failed to upgrade subscription",
+        });
+    }
+};
+
+// Helper function to convert duration to days
+function getDurationInDays(value, unit) {
+    switch (unit) {
+        case "day":
+            return value;
+        case "week":
+            return value * 7;
+        case "month":
+            return value * 30;
+        case "year":
+            return value * 365;
+        default:
+            return value;
+    }
+}
+
+/**
+ * @desc    Check if user can upgrade and get upgrade details
+ * @route   GET /api/v1/subscriptions/upgrade/:planId/check
+ * @access  Private
+ */
+export const checkUpgradeEligibility = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { planId } = req.params;
+
+        // Get current active subscription
+        const currentSubscription = await UserSubscription.findOne({
+            user: userId,
+            status: "active",
+            expiresAt: { $gt: new Date() },
+            isCurrent: true
+        });
+
+        if (!currentSubscription) {
+            return res.status(400).json({
+                success: false,
+                message: "No active subscription found",
+                eligible: false
+            });
+        }
+
+        // Get the new plan
+        const newPlan = await Subscription.findOne({
+            _id: planId,
+            isActive: true
+        });
+
+        if (!newPlan) {
+            return res.status(404).json({
+                success: false,
+                message: "Plan not found",
+                eligible: false
+            });
+        }
+
+        // Calculate remaining days
+        const now = new Date();
+        const expiryDate = new Date(currentSubscription.expiresAt);
+        const remainingDays = Math.max(0, Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24)));
+
+        // Check if it's actually an upgrade (higher duration)
+        const currentDays = getDurationInDays(currentSubscription.duration.value, currentSubscription.duration.unit);
+        const newDays = getDurationInDays(newPlan.duration.value, newPlan.duration.unit);
+
+        const eligible = newDays > currentDays;
+
+        res.status(200).json({
+            success: true,
+            data: {
+                eligible,
+                currentPlan: {
+                    title: currentSubscription.title,
+                    duration: `${currentSubscription.duration.value} ${currentSubscription.duration.unit}`,
+                    expiresAt: currentSubscription.expiresAt
+                },
+                newPlan: {
+                    title: newPlan.title,
+                    duration: `${newPlan.duration.value} ${newPlan.duration.unit}`,
+                    price: newPlan.price
+                },
+                remainingDays,
+                willGetExtraDays: remainingDays
+            }
+        });
+    } catch (error) {
+        console.error("Check upgrade eligibility error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to check upgrade eligibility",
+        });
+    }
+};
