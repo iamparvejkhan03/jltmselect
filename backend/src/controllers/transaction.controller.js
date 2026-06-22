@@ -62,8 +62,6 @@ export const getAdminTransactions = async (req, res) => {
             .populate('auction', 'title category startPrice currentPrice status winner startDate endDate')
             .populate('bidder', 'username firstName lastName email company stripeCustomerId')
             .sort({ createdAt: -1 })
-            .limit(limit * 1)
-            .skip((page - 1) * limit);
 
         // Transform data for admin view with null checking
         const transformedTransactions = transactions.map(transaction => {
