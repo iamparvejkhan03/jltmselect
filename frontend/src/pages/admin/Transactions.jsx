@@ -11,7 +11,6 @@ function Transactions() {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({});
     const [filterOptions, setFilterOptions] = useState({});
-    console.log(allTransactions)
 
     // Filters
     const [filters, setFilters] = useState({
