@@ -300,14 +300,14 @@ const AllMembers = () => {
                     </BidderContainer>
                 </div>
                 {/* Subscription Modal */}
-                    <SubscriptionModal
-                        isOpen={showSubscriptionModal}
-                        onClose={() => setShowSubscriptionModal(false)}
-                        onSuccess={() => {
-                            fetchSubscriptions();
-                            fetchActiveSubscription();
-                        }}
-                    />
+                <SubscriptionModal
+                    isOpen={showSubscriptionModal}
+                    onClose={() => setShowSubscriptionModal(false)}
+                    onSuccess={() => {
+                        fetchSubscriptions();
+                        fetchActiveSubscription();
+                    }}
+                />
             </section>
         );
     }
@@ -331,9 +331,6 @@ const AllMembers = () => {
                                         My Members
                                     </h2>
                                 </div>
-                                <p className="text-gray-600">
-                                    View and manage all members added to your JLTM Junkie subscription
-                                </p>
                             </div>
                             {memberStatus && memberStatus.remainingSlots > 0 && (
                                 <button
@@ -341,10 +338,13 @@ const AllMembers = () => {
                                     className="mt-4 md:mt-0 flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
                                 >
                                     <UserPlus size={18} />
-                                    Add Member ({memberStatus.remainingSlots} slots left)
+                                    Add Member for $20 each ({memberStatus.remainingSlots} slots left)
                                 </button>
                             )}
                         </div>
+                        <p className="text-gray-600 mt-3 text-[15px]">
+                            View and manage members. Additional members only qualify for in-store discounts and may pick up items in-store on your behalf. Added members do not gain access to your “Auction Account” and may not place auctions on your behalf. To participate in auctions and place bids, please have additional members create a new account.
+                        </p>
                     </div>
 
                     {/* Statistics Cards */}

@@ -187,8 +187,7 @@ const AddMember = () => {
                                     </h2>
                                 </div>
                                 <p className="text-gray-600">
-                                    Add family members to your JLTM Junkie subscription.
-                                    Each member costs $20 and gets in-store discounts.
+                                    For $20 each, you can add up to 2 members to your JLTM Junkie subscription
                                 </p>
                             </div>
                             <div className="mt-4 md:mt-0 bg-gray-100 rounded-xl px-4 py-2">
@@ -206,7 +205,7 @@ const AddMember = () => {
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="font-semibold text-gray-900 flex items-center gap-2">
                                             <User size={18} className="text-primary" />
-                                            Member {index + 1}
+                                            Member {index + 1}: In-store Discount & In-Store Item Pickup Access Only
                                         </h3>
                                         {index >= 1 && (
                                             <button
