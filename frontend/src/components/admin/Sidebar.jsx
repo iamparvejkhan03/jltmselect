@@ -130,12 +130,12 @@ const allNavigation = [
         icon: <SquareMousePointer size={20} />,
         permission: 'manage_sms'
     },
-    // {
-    //     name: 'SMS Templates',
-    //     path: '/admin/sms/templates',
-    //     icon: <LayoutTemplate size={20} />,
-    //     permission: 'manage_sms'
-    // },
+    {
+        name: 'SMS Templates',
+        path: '/admin/sms/templates',
+        icon: <LayoutTemplate size={20} />,
+        permission: 'manage_sms'
+    },
     {
         name: 'Profile',
         path: '/admin/profile',

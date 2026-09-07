@@ -854,14 +854,14 @@ createRoot(document.getElementById('root')).render(
                             />
 
                             {/* Admin SMS Templates */}
-                            {/* <Route
+                            <Route
                                 path='/admin/sms/templates'
                                 element={
                                     <Suspense fallback={<LoadingSpinner height={'750px'} />}>
                                         <AdminSmsTemplates />
                                     </Suspense>
                                 }
-                            /> */}
+                            />
                         </Route>
 
                         {/* Staff Layout */}

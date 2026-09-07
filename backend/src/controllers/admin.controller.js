@@ -85,6 +85,47 @@ export const getAdminStats = async (req, res) => {
       }
     ]);
 
+    // Get users who have expired subscriptions (churned users)
+    const expiredSubscribersAgg = await UserSubscription.aggregate([
+      {
+        $group: {
+          _id: "$user",
+          subscriptions: { $push: "$$ROOT" }
+        }
+      },
+      {
+        $project: {
+          hasActive: {
+            $gt: [
+              {
+                $size: {
+                  $filter: {
+                    input: "$subscriptions",
+                    as: "sub",
+                    cond: {
+                      $and: [
+                        { $eq: ["$$sub.status", "active"] },
+                        { $gt: ["$$sub.expiresAt", new Date()] }
+                      ]
+                    }
+                  }
+                }
+              },
+              0
+            ]
+          }
+        }
+      },
+      {
+        $match: { hasActive: false }
+      },
+      {
+        $count: "total"
+      }
+    ]);
+
+    const expiredSubscribersCount = expiredSubscribersAgg[0]?.total || 0;
+
     // Get highest sale auction details
     const highestSaleAuction = await Auction.findOne({ status: "sold" })
       .sort({ finalPrice: -1 })
@@ -267,6 +308,8 @@ export const getAdminStats = async (req, res) => {
       subscriptionTotalRevenue: subscriptionRevenue[0]?.totalRevenue || 0,
       totalSubscriptionsPurchased: subscriptionRevenue[0]?.totalCount || 0,
       averageSubscriptionAmount: subscriptionRevenue[0]?.averageAmount || 0,
+
+      expiredSubscribers: expiredSubscribersCount,
 
       // User statistics
       userTypeStats: userTypeStats.reduce((acc, curr) => {
