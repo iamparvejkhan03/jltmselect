@@ -3,7 +3,7 @@ import { LoadingSpinner, StaffContainer, StaffHeader, StaffSidebar } from "../..
 import toast from "react-hot-toast";
 import axiosInstance from "../../utils/axiosInstance";
 import { useState } from "react";
-import { TrendingUp, Users, Gavel, Banknote, Settings, Crown, Heart, MessageCircle, Hand, Store, UserCog, CheckSquare } from "lucide-react";
+import { TrendingUp, Users, Gavel, Banknote, Settings, Crown, Heart, MessageCircle, Hand, Store, UserCog, CheckSquare, DollarSign } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 function Dashboard() {
@@ -225,13 +225,21 @@ function Dashboard() {
             trend: "up",
             description: `By The Users`
         },
+        // {
+        //     title: "Watchlist",
+        //     value: adminStats?.totalWatchlists?.toLocaleString('en-US'),
+        //     change: "Record sale",
+        //     icon: <Heart size={24} />,
+        //     trend: "up", 
+        //     description: `Saved to Watch Later`
+        // },
         {
-            title: "Watchlist",
-            value: adminStats?.totalWatchlists?.toLocaleString('en-US'),
-            change: "Record sale",
-            icon: <Heart size={24} />,
+            title: "Did Not Renew",
+            value: adminStats?.expiredSubscribers?.toLocaleString('en-US'),
+            change: "Not renewed subscription",
+            icon: <DollarSign size={24} />,
             trend: "up",
-            description: `Saved to Watch Later`
+            description: `Not renewed subscription`
         },
         {
             title: "Success Rate",
